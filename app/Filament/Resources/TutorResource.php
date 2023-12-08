@@ -1,15 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
+use App\Enums\FamilyRelationship;
+use App\Enums\Gender;
+use App\Enums\Occupation;
+use App\Enums\ReasonsIsNotPresent;
 use App\Filament\Resources\TutorResource\Pages;
-use App\Filament\Resources\TutorResource\RelationManagers;
 use App\Models\Tutor;
-use Filament\Forms;
+use Auth;
+use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -17,11 +26,15 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-class TutorResource extends Resource
+final class TutorResource extends Resource
 {
     protected static ?string $model = Tutor::class;
 
@@ -30,105 +43,181 @@ class TutorResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                TextInput::make('name')
-                    ->required(),
-                TextInput::make('dni')
-                    ->required()
-                    ->disabledOn('edit'),
-                //TODO add regex for dni
-                TextInput::make('mobile_phone')
-                    ->required()
-                    ->tel()
-                    ->telRegex('/^09\d{8}$/'),
-                DatePicker::make('birthdate')
-                    ->required()
-                    ->native(false),
-                Select::make('gender')
-                    ->options([
-                        'male' => 'Male',
-                        'female' => 'Female'
-                    ])
-                    ->native(false)
-                    ->required(),
-                Toggle::make('is_parent'),
-                Toggle::make('is_present')
-                    ->reactive(),
-                Select::make('reason_not_present')
-                    ->options([
-                        'divorced' => 'Divorced',
-                        'separated' => 'Separated',
-                        'lives_elsewhere' => 'Lives Elsewhere',
-                        'dead' => 'Dead',
-                        'other' => 'Other',
-                    ])
-                    ->native(false),
-                Textarea::make('specific_reason'),
-                DatePicker::make('deathdate'),
-                Select::make('occupation')
-                    ->options([
-                        'private_employee' => 'Private Employee',
-                        'artisan' => 'Artisan',
-                        'farmer' => 'Farmer',
-                        'animal_keeper' => 'Animal Keeper',
-                        'cook' => 'Cook',
-                        'carpenter' => 'Carpenter',
-                        'builder' => 'Builder',
-                        'day_laborer' => 'Day Laborer',
-                        'mechanic' => 'Mechanic',
-                        'salesman' => 'Salesman',
-                        'paid_household_work' => 'Paid Household Work',
-                        'unpaid_household_work' => 'Unpaid Household Work',
-                        'unknown' => 'Unknown',
-                        'other' => 'Other',
-                    ])
-                    ->native(false)
-                    ->required(),
-                TextInput::make('specific_occupation'),
-                TextInput::make('salary')
-                    ->numeric()
-                    ->minValue(1),
-            ]);
+            ->columns(3)
+            ->schema(self::getSchemaForm());
+    }
+
+    public static function getSchemaForm(): array
+    {
+        return [
+            TextInput::make('name')
+                ->required(),
+            TextInput::make('dni')
+                ->prefixIcon('heroicon-o-identification')
+                ->numeric()
+                ->unique(ignoreRecord: true)
+                ->required(),
+            Group::make()
+                ->relationship('mobile_number')
+                ->schema([
+                    PhoneInput::make('number')
+                        ->required(),
+                ]),
+            DatePicker::make('birthdate')
+                ->prefixIcon('heroicon-o-calendar')
+                ->native(false)
+                ->maxDate(now())
+                ->closeOnDateSelection()
+                ->required(),
+            Select::make('gender')
+                ->prefixIcon('heroicon-o-sparkles')
+                ->options(Gender::class)
+                ->native(false)
+                ->required(),
+            Select::make('relationship')
+                ->options(FamilyRelationship::class)
+                ->native(false)
+                ->required(),
+            Toggle::make('is_present')
+                ->onColor('success')
+                ->offColor('gray')
+                ->columnSpanFull()
+                ->onIcon('heroicon-o-hand-thumb-up')
+                ->reactive(),
+            Section::make()
+                ->hidden(
+                    fn(Get $get, $state) => $state = $get('is_present')
+                )
+                ->schema([
+                    Select::make('reason_not_present')
+                        ->prefixIcon('heroicon-o-question-mark-circle')
+                        ->options(ReasonsIsNotPresent::class)
+                        ->native(false)
+                        ->reactive(),
+                    Textarea::make('specific_reason')
+                        ->required()
+                        ->visible(
+                            fn(Get $get, $state) => $state = ReasonsIsNotPresent::Other->value == $get('reason_not_present')
+                        ),
+                    DatePicker::make('deathdate')
+                        ->prefixIcon('heroicon-o-calendar')
+                        ->required()
+                        ->native(false)
+                        ->maxDate(now())
+                        ->visible(
+                            fn(Get $get, $state) => $state = ReasonsIsNotPresent::Dead->value == $get('reason_not_present')
+                        ),
+                ]),
+            Section::make()
+                ->schema([
+                    Select::make('occupation')
+                        ->prefixIcon('heroicon-o-briefcase')
+                        ->options(Occupation::class)
+                        ->native(false)
+                        ->required()
+                        ->reactive(),
+                    TextInput::make('specific_occupation')
+                        ->prefixIcon('heroicon-o-question-mark-circle')
+                        ->required()
+                        ->visible(
+                            fn(Get $get, $state) => $state = Occupation::Other === $get('occupation')
+                        ),
+                    TextInput::make('salary')
+                        ->prefixIcon('heroicon-o-currency-dollar')
+                        ->numeric()
+                        ->minValue(1),
+                ])
+                ->hidden(
+                    fn(Get $get, $state) => $state = !$get('is_present')
+                ),
+        ];
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                TextColumn::make('dni')
-                    ->searchable(),
-                TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('gender')
-                    ->searchable()
-                    ->badge(),
-                TextColumn::make('mobile_phone')
-                    ->searchable(),
-                IconColumn::make('is_parent')
-                    ->boolean(),
-                IconColumn::make('is_present')
-                    ->boolean(),
-            ])
+            ->columns(self::getTableSchema())
             ->filters([
-                //
+                SelectFilter::make('gender')
+                    ->options(Gender::class),
+                SelectFilter::make('Tutor type')
+                    ->options([
+                        true => 'Parents',
+                        false => 'Guardians',
+                    ])
+                    ->attribute('is_parent'),
+                Filter::make('is_present')
+                    ->query(
+                        fn(Builder $query, $state) => $query->where('is_parent', $state)
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make('With the fields that appear in the registration form')
+                        ->withFilename(fn($resource) => 'tutors-' . date('YmdHis'))
+                        ->fromForm(),
+                    ExcelExport::make('All the information')
+                        ->withFilename(fn($resource) => 'tutors-' . date('YmdHis'))
+                        ->fromModel(),
+                ]),
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
-            ]);
+            ])
+            ->modifyQueryUsing(
+                fn(Builder $query) => Auth::user()->can('view_any_tutor')
+                    ? $query
+                    : $query->where('updated_by', auth()->id())
+            );
+    }
+
+    public static function getTableSchema(): array
+    {
+        return [
+            TextColumn::make('dni')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('name')
+                ->searchable()
+                ->sortable(),
+            TextColumn::make('birthdate')
+                ->formatStateUsing(
+                    fn($state) => Carbon::parse($state)->age
+                )
+                ->badge()
+                ->color('info')
+                ->label('Age'),
+            TextColumn::make('gender')
+                ->searchable()
+                ->badge()
+                ->sortable(),
+
+            IconColumn::make('is_parent')
+                ->boolean()
+                ->alignCenter()
+                ->toggleable(isToggledHiddenByDefault: true),
+            IconColumn::make('is_present')
+                ->alignCenter()
+                ->boolean()
+                ->toggleable(isToggledHiddenByDefault: true),
+            IconColumn::make('deathdate')
+                ->alignCenter()
+                ->boolean()
+                ->toggleable(isToggledHiddenByDefault: true),
+        ];
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            //FamilyNucleiRelationManager::class,
         ];
     }
 

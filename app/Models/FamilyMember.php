@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\FamilyRelationship;
+use App\Enums\Gender;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -28,7 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property User $user
  * @property FamilyNucleus $family_nucleus
- * @package App\Models
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyMember newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyMember newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyMember query()
@@ -43,8 +45,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyMember whereRelationship($value)
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyMember whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyMember whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperFamilyMember
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class FamilyMember extends Model
 {
@@ -55,8 +62,10 @@ final class FamilyMember extends Model
     protected $casts = [
         'family_nucleus_id' => 'int',
         'birthdate' => 'datetime',
+        'gender' => Gender::class,
+        'relationship' => FamilyRelationship::class,
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -67,7 +76,7 @@ final class FamilyMember extends Model
         'relationship',
         'education_level',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function family_nucleus()

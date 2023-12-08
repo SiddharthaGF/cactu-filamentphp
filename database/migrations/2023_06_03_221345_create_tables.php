@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Enums\StatusVigency;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -36,7 +35,7 @@ return new class() extends Migration
 
         Schema::create('zones', function (Blueprint $table): void {
             $table->foreignUlid('city_code', 4)->constrained('cities', 'code');
-            $table->char('code', 6)->index();
+            $table->char('code', 6)->primary();
             $table->string('name', 100);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
@@ -50,7 +49,7 @@ return new class() extends Migration
             $table->foreignUlid('zone_code', 6)->constrained('zones', 'code');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
-            $table->enum('vigency', ['active', 'inactive'])->default('active');
+            $table->enum('vigency', StatusVigency::getAll())->default('Inactive');
             $table->timestamps();
             $table->unique(['name', 'zone_code']);
         });
@@ -64,32 +63,31 @@ return new class() extends Migration
             $table->timestamps();
         });
 
+        Schema::create('family_nuclei', function (Blueprint $table): void {
+            $table->id();
+            $table->char('conventional_phone', 9)->nullable();
+            $table->json('risk_factors')->nullable();
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by');
+            $table->timestamps();
+        });
+
         schema::create('tutors', function (Blueprint $table): void {
             $table->id();
+            $table->foreignId('family_nucleus_id')->constrained()
+                ->cascadeOnDelete();
             $table->string('name');
             $table->char('dni', 10)->unique();
-            $table->enum('gender', ['male', 'female']);
-            $table->char('mobile_phone', 10)->unique()->nullable();
+            $table->unsignedTinyInteger('gender');
             $table->date('birthdate');
-            $table->boolean('is_parent')->default(true);
-            $table->boolean('is_present')->default(true)
-                ->comment('only if the is_parent field is true');
-            $table->enum('reason_not_present', [
-                'divorced', 'separated', 'lives_elsewhere', 'dead', 'other',
-            ])->nullable()->comment('only if the is_parent field is true');
-            $table->string('specific_reason')->nullable()
-                ->comment('only if the is_parent field is true');
-            $table->date('deathdate')->nullable()
-                ->comment('only si el field reason_not_present is dead');
-            $table->enum('occupation', [
-                'private_employee', 'artisan', 'farmer', 'animal_keeper',
-                'cook', 'carpenter', 'builder', 'day_laborer', 'mechanic',
-                'salesman', 'paid_household_work', 'unpaid_household_work',
-                'unknown', 'other',
-            ]);
-            $table->string('specific_occupation')->nullable()
-                ->comment('only if the field occupation is other');
-            $table->decimal('salary')->default(0);
+            $table->unsignedTinyInteger('relationship');
+            $table->boolean('is_present')->default(true);
+            $table->unsignedTinyInteger('reason_not_present')->nullable();
+            $table->string('specific_reason')->nullable();
+            $table->date('deathdate')->nullable();
+            $table->unsignedTinyInteger('occupation')->nullable();
+            $table->string('specific_occupation')->nullable();
+            $table->decimal('salary')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();
@@ -113,147 +111,73 @@ return new class() extends Migration
             $table->timestamps();
         });
 
-        Schema::create('family_nuclei', function (Blueprint $table): void {
-            $table->id();
-            $table->foreignId('tutor1_id')->nullable()
-                ->constrained('tutors');
-            $table->foreignId('tutor2_id')->nullable()->constrained('tutors');
-            $table->char('conventional_phone', 9)->nullable();
-            $table->unsignedBigInteger('created_by');
-            $table->unsignedBigInteger('updated_by');
-            $table->timestamps();
-        });
 
         Schema::create('children', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('manager_id')->constrained('users');
-            $table->char('children_number', 9)->nullable()
-                ->comment('Assigned by ChildFund.');
-            $table->string('case_number', 8)->nullable()
-                ->comment('Assigned by local partner.');
-            $table->foreignId('family_nucleus_id')
-                ->comment('A family_nucleus_id can be registered a maximum of 3 times')
-                ->constrained();
+            $table->foreignId('manager_id')->constrained('users')->cascadeOnDelete();
+            $table->char('children_number', 9)->nullable();
+            $table->string('case_number', 8)->nullable();
+            $table->foreignId('family_nucleus_id')->constrained();
             $table->foreignUlid('contact_id', 8)->nullable()->constrained();
             $table->string('name');
-            $table->char('dni')->unique()->regex('/^[0-9]{10}$/');
-            $table->enum('gender', ['male', 'female']);
+            $table->char('dni')->unique();
+            $table->tinyInteger('gender');
             $table->date('birthdate');
-            $table->enum(
-                'affiliation_status',
-                ['pending', 'affiliated', 'disaffiliated', 'rejected']
-            )
-                ->default('pending');
+            $table->tinyInteger('affiliation_status');
             $table->string('pseudonym', 100);
-            $table->enum('sexual_identity', ['boy', 'girl', 'other']);
-            $table->enum('literacy', ['none', 'write', 'Read', 'both']);
-            $table->enum('language', ['SPANISH', 'QUECHUA', 'OTHER'])
-                ->default('SPANISH');
-            $table->string('specific_language', 50)->nullable()
-                ->comment('only if the language field is other');
+            $table->tinyInteger('sexual_identity');
+            $table->tinyInteger('literacy');
+            $table->tinyInteger('language');
+            $table->string('specific_language', 50)->nullable();
             $table->string('religious')->nullable();
-            $table->enum('nationality', ['ECUADORIAN', 'OTHER'])
-                ->comment('only if the nationality field is other');
+            $table->tinyInteger('nationality');
             $table->string('specific_nationality', 50)->nullable();
-            $table->enum(
-                'migratory_status',
-                ['NONE', 'MIGRANT', 'REFUGEE']
-            )->default('NONE');
-            $table->enum(
-                'ethnic_group',
-                ['AFRO-ECUADORIAN', 'INDIGENOUS', 'MESTIZO', 'OTHER']
-            );
+            $table->tinyInteger('migratory_status');
+            $table->tinyInteger('ethnic_group');
             $table->json('activities_for_family_support')->nullable();
             $table->json('recreation_activities')->nullable();
             $table->json('additional_information')->nullable();
-            $table->timestamps();
-            $table->foreignId('reviewed_by')->nullable()
-                ->constrained('users');
+            $table->tinyInteger('health_status');
+            $table->foreignId('reviewed_by')->nullable()->constrained('users');
             $table->dateTime('reviewed_at')->nullable();
-            $table->foreignId('disaffiliated_by')->nullable()
-                ->constrained('users');
+            $table->foreignId('disaffiliated_by')->nullable()->constrained('users');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->dateTime('disaffiliated_at')->nullable();
+            $table->timestamps();
         });
-
-        DB::unprepared(
-            /** @lang MySQL */
-            '
-            CREATE TRIGGER prevent_underage_children
-            BEFORE INSERT ON children
-            FOR EACH ROW
-            BEGIN
-                IF NEW.birthdate > CURDATE() THEN
-                    SIGNAL SQLSTATE "45000"
-                        SET MESSAGE_TEXT = "Cannot insert children younger than current date";
-                END IF;
-            END
-        '
-        );
 
         Schema::create('banking_information', function ($table): void {
             $table->id();
-            $table->foreignId('family_nucleus_id')->nullable()->constrained();
-            $table->foreignId('child_id')->nullable()->constrained();
-            $table->enum('account_type', ['savings', 'current']);
-            $table->enum(
-                'type_banking',
-                ['bank', 'cooperative', 'mutualist']
-            );
-            $table->string('name_bank');
-            $table->string('account number', 15);
+            $table->unsignedBigInteger('banking_informationable_id');
+            $table->string('banking_informationable_type');
+            $table->unsignedTinyInteger('account_type');
+            $table->unsignedTinyInteger('financial_institution_types');
+            $table->string('financial_institution_bank');
+            $table->string('account_number', 15);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();
         });
 
-        DB::unprepared(
-            /** @lang MySQL */
-            '
-            ALTER TABLE banking_information
-            ADD CONSTRAINT only_one_nullable
-            CHECK (
-                (family_nucleus_id IS NULL AND child_id IS NOT NULL) OR
-                (family_nucleus_id IS NOT NULL AND child_id IS NULL)
-            )
-        '
-        );
-
-        DB::unprepared(
-            /** @lang MySQL */
-            '
-            CREATE TRIGGER prevent_both_null
-            BEFORE INSERT ON banking_information
-            FOR EACH ROW
-            BEGIN
-                IF NEW.family_nucleus_id IS NULL AND NEW.child_id IS NULL THEN
-                    SIGNAL SQLSTATE "45000"
-                        SET MESSAGE_TEXT = "Cannot have both family_nucleus_id and child_id as null";
-                END IF;
-            END
-        '
-        );
+        Schema::create('mobile_numbers', function ($table): void {
+            $table->id();
+            $table->unsignedBigInteger('mobile_numerable_id');
+            $table->string('mobile_numerable_type');
+            $table->char('number', 14)->unique();
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by');
+            $table->timestamps();
+        });
 
         Schema::create('family_members', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('family_nucleus_id')->constrained();
             $table->string('name', 100);
             $table->date('birthdate');
-            $table->enum('gender', ['MALE', 'FEMALE']);
-            $table->enum('relationship', [
-                'father/mother', 'grandfather/grandmother', 'brother/sister',
-                'uncle/aunt', 'cousin', 'stepfather/stepmother',
-                'stepbrother/stepsister', 'other',
-            ]);
-            $table->enum(
-                'education_level',
-                [
-                    'none', 'basic_preparatory_education',
-                    'elementary_basic_education', 'medium_basic_education',
-                    'higher_basic_education', 'baccalaureate', 'superior',
-                ]
-            );
+            $table->unsignedTinyInteger('gender');
+            $table->unsignedTinyInteger('relationship');
+            $table->unsignedTinyInteger('education_level');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();
@@ -262,104 +186,68 @@ return new class() extends Migration
         Schema::create('educational_institutions', function (Blueprint $table): void {
             $table->id();
             $table->string('name', 200);
-            $table->enum(
-                'type',
-                ['public', 'private', 'fiscomisional', 'municipal']
-            )
-                ->default('public');
-            $table->enum('ideology', ['secular', 'religious'])
-                ->default('secular');
-            $table->foreignUlid('city_code', 4)->constrained('cities', 'code');
+            $table->string('education_type', 20);
+            $table->string('financing_type', 20);
+            $table->char('zone_code', 6);
+            $table->string('address', 100)->nullable();
+            $table->string('area', 20);
+            $table->string('academic_regime', 20);
+            $table->string('modality', 120);
+            $table->string('academic_day', 50);
+            $table->string('educative_level', 40);
+            $table->string('typology', 100);
             $table->unsignedBigInteger('created_by');
-            $table->unsignedBigInteger('updated_by');;
+            $table->unsignedBigInteger('updated_by');
             $table->timestamps();
-            $table->unique(['name', 'city_code']);
+            $table->unique(['name', 'zone_code']);
         });
 
         Schema::create('educational_record', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('child_id')->constrained();
             $table->foreignId('educational_institution_id')->constrained();
-            $table->unsignedTinyInteger('grade');
+            $table->unsignedTinyInteger('status');
+            $table->string('level');
+            $table->string('fovorite_subject');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();
         });
-
-        Schema::create(
-            'preschool_educational_record',
-            function (Blueprint $table): void {
-                $table->id();
-                $table->foreignId('child_id')->constrained();
-                $table->string('name_institution', 150);
-                $table->enum('type', ['KINDERGARTEN', 'INITIAL']);
-                $table->enum('level', [
-                    'CMH', 'CDN', 'INITIAL_1', 'INITIAL_2', 'INITIAL_3',
-                    'OTHER',
-                ]);
-                $table->unsignedBigInteger('created_by');
-                $table->unsignedBigInteger('updated_by');
-                $table->timestamps();
-            }
-        );
 
         Schema::create('mailboxes', function (Blueprint $table): void {
-            $table->foreignId('id')->primary()->constrained('children');
-            $table->enum('vigency', ['ACTIVE', 'INACTIVE']);
+            $table->foreignId('id')->primary()->constrained('children')
+                ->cascadeOnDelete();
+            $table->unsignedTinyInteger('vigency');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
+            $table->string('token')->unique();
             $table->timestamps();
         });
 
-        Schema::create('letters', function (Blueprint $table): void {
+        Schema::create('mails', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('mailbox_id')->constrained();
-            $table->enum(
-                'letter_type',
-                ['initial', 'response', 'thanks', 'goodbye']
-            );
-            $table->enum('status', ['create', 'sent', 'replied', 'due']);
-            $table->string('letter_photo_1_path', 2048);
-            $table->string('letter_photo_2_path', 2048)->nullable();
-            $table->string('answer', 2048)->nullable();
+            $table->foreignId('mailbox_id')->constrained()->cascadeOnDelete();
+            $table->unsignedTinyInteger('type');
+            $table->foreignId('reply_mail_id')->nullable()->constrained('mails');
+            $table->unsignedTinyInteger('status');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();
         });
 
-        Schema::create('tickets', function (Blueprint $table): void {
+        Schema::create('answers', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('letter_id')->unique()->constrained();
-            $table->date('date_request');
-            $table->date('due_date');
-            $table->string('ticket_photo_path', 2048);
+            $table->foreignId('mail_id')->constrained()->cascadeOnDelete();
+            $table->text('content');
+            $table->string('attached_file_path');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();
         });
-
-        DB::unprepared(
-            /** @lang MySQL */
-            '
-            CREATE TRIGGER enforce_specific_language
-            BEFORE INSERT ON children
-            FOR EACH ROW
-            BEGIN
-                IF NEW.language = "OTHER" AND NEW.specific_language IS NULL THEN
-                    SIGNAL SQLSTATE "45000"
-                        SET MESSAGE_TEXT = "Specific language must be filled when language is set to OTHER";
-                END IF;
-
-                IF NEW.nationality = "OTHER" AND NEW.specific_nationality IS NULL THEN
-                    SIGNAL SQLSTATE "45000"
-                        SET MESSAGE_TEXT = "Specific nationality must be filled when nationality is set to OTHER";
-                END IF;
-            END
-        '
-        );
 
         Schema::create('reasons_leaving_study', function (Blueprint $table): void {
-            $table->foreignId('child_id')->primary()->constrained();
+            $table->id();
+            $table->foreignId('child_id')->constrained()->cascadeOnDelete();
             $table->text('reason');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
@@ -368,58 +256,51 @@ return new class() extends Migration
 
         Schema::create('health_status_record', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('child_id')->constrained();
-            $table->enum('health_status', [
-                'not specified', 'good', 'excellent',
-                'presents health problems',
-            ]);
-            $table->json('health_problem_specification')->nullable()
-                ->comment('only if the language field is "presents health problems"');
-            $table->json('disabilities')->nullable();
+            $table->foreignId('child_id')->constrained()->cascadeOnDelete();
+            $table->string('description')->nullable();
+            $table->string('treatment')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();
         });
 
-        DB::unprepared(
-            /** @lang MySQL */
-            '
-            CREATE TRIGGER enforce_health_problem_specification
-            BEFORE INSERT ON health_status_record
-            FOR EACH ROW
-            BEGIN
-                IF NEW.health_status = "presents health problems" AND NEW.health_problem_specification IS NULL THEN
-                    SIGNAL SQLSTATE "45000"
-                        SET MESSAGE_TEXT = "Health problem specification must be filled when health status is set to presents health problems";
-                END IF;
-            END
-        '
-        );
+        Schema::create('disabilities', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('health_status_record_id')->constrained('health_status_record')->cascadeOnDelete();
+            $table->unsignedTinyInteger('type');
+            $table->unsignedTinyInteger('percent');
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by');
+            $table->timestamps();
+        });
 
         Schema::create('houses', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('family_nucleus_id')->constrained();
-            $table->enum('property', ['self-owned', 'rental', 'borrowed']);
-            $table->enum(
-                'home_space',
-                ['room', 'room and kitchen', 'other']
-            );
-            $table->enum('roof', [
-                'thatched', 'tile', 'asbestos', 'earthenware/tin', 'other',
-            ]);
-            $table->enum('walls', [
-                'brick', 'adobe', 'cinder block', 'wood', 'bahareque', 'cane',
-                'other',
-            ]);
-            $table->enum('floor', [
-                'dirt floor', 'cement floor', 'wood floor', 'other',
-            ]);
-            $table->json('basic services');
+            $table->unsignedTinyInteger('property');
+            $table->unsignedTinyInteger('home_space');
+            $table->unsignedTinyInteger('roof');
+            $table->unsignedTinyInteger('walls');
+            $table->unsignedTinyInteger('floor');
+            $table->json('basic_services');
             $table->json('extras');
+            $table->double('latitude');
+            $table->double('longitude');
+            $table->string('neighborhood');
             $table->foreignId('created_by');
             $table->foreignId('updated_by');
             $table->timestamps();
         });
+
+        Schema::create('risks_near_home', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('house_id')->constrained();
+            $table->string('description');
+            $table->foreignId('created_by');
+            $table->foreignId('updated_by');
+            $table->timestamps();
+        });
+
     }
 
     /**

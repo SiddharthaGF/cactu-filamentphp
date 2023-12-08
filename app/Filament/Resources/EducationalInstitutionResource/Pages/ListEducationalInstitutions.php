@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\EducationalInstitutionResource\Pages;
 
 use App\Filament\Resources\EducationalInstitutionResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListEducationalInstitutions extends ListRecords
+final class ListEducationalInstitutions extends ListRecords
 {
     protected static string $resource = EducationalInstitutionResource::class;
 

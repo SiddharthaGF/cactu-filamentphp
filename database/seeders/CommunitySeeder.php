@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Community;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 
 final class CommunitySeeder extends Seeder
@@ -15,7 +14,6 @@ final class CommunitySeeder extends Seeder
      */
     public function run(): void
     {
-        $admin_id = User::where('email', env('MAIL_ADMIN'))->first()->id;
         $communities = [
             [
                 'name' => 'GUAYTACAMA NORTE',
@@ -86,7 +84,6 @@ final class CommunitySeeder extends Seeder
             Community::create([
                 'name' => $community['name'],
                 'zone_code' => $community['zone_code'],
-                'created_by' => $admin_id,
                 'created_by' => 1,
                 'updated_by' => 1,
 

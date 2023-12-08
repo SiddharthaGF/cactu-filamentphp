@@ -11,6 +11,8 @@ namespace App\Models;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class House
@@ -30,8 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property User $user
  * @property FamilyNucleus $family_nucleus
- * @package App\Models
- * @property array $basic services
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|House newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|House newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|House query()
@@ -48,8 +49,18 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|House whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|House whereUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|House whereWalls($value)
+ *
+ * @property array $basic_services
+ * @property float $latitude
+ * @property float $longitude
+ * @property-read \App\Models\User|null $creator
+ * @property array $location
+ * @property-read \App\Models\User|null $updater
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|House whereLatitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|House whereLongitude($value)
+ *
  * @mixin \Eloquent
- * @mixin IdeHelperHouse
  */
 final class House extends Model
 {
@@ -59,10 +70,10 @@ final class House extends Model
 
     protected $casts = [
         'family_nucleus_id' => 'int',
-        'basic services' => 'json',
+        'basic_services' => 'json',
         'extras' => 'json',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -72,14 +83,58 @@ final class House extends Model
         'roof',
         'walls',
         'floor',
-        'basic services',
+        'latitude',
+        'longitude',
+        'location',
+        'basic_services',
         'extras',
+        'neighborhood',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
-    public function family_nucleus()
+    protected $appends = [
+        'location',
+    ];
+
+    public static function getComputedLocation(): string
+    {
+        return 'location';
+    }
+
+    public static function getLatLngAttributes(): array
+    {
+        return [
+            'lat' => 'latitude',
+            'lng' => 'longitude',
+        ];
+    }
+
+    public function setLocationAttribute(?array $location): void
+    {
+        if (is_array($location)) {
+            $this->attributes['latitude'] = $location['lat'];
+            $this->attributes['longitude'] = $location['lng'];
+            unset($this->attributes['location']);
+        }
+    }
+
+    public function getLocationAttribute(): array
+    {
+        return [
+            'lat' => (float) $this->latitude,
+            'lng' => (float) $this->longitude,
+        ];
+    }
+
+    public function family_nucleus(): BelongsTo
     {
         return $this->belongsTo(FamilyNucleus::class);
     }
+
+    public function risks_near_home(): HasMany
+    {
+        return $this->hasMany(RiskNearHome::class);
+    }
+
 }

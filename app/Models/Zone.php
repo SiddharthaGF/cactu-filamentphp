@@ -26,8 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property City $city
  * @property User $user
  * @property Collection|Community[] $communities
- * @package App\Models
  * @property-read int|null $communities_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Zone newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Zone newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Zone query()
@@ -38,20 +38,27 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Zone whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Zone whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Zone whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperZone
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class Zone extends Model
 {
     use UserStamps;
 
     public $incrementing = false;
+
     public $primaryKey = 'code';
+
     protected $table = 'zones';
 
     protected $casts = [
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -59,7 +66,7 @@ final class Zone extends Model
         'city_code',
         'name',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function city()

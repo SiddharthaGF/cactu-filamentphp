@@ -8,12 +8,19 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Traits\HasManagerId;
+use App\Enums\AffiliationStatus;
+use App\Enums\Gender;
+use App\Enums\HealthStatus;
+use App\Traits\HasRecords;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * Class Child
@@ -58,53 +65,62 @@ use Illuminate\Database\Eloquent\Model;
  * @property Mailbox $mailbox
  * @property Collection|PreschoolEducationalRecord[] $preschool_educational_records
  * @property ReasonsLeavingStudy $reasons_leaving_study
- * @package App\Models
  * @property-read int|null $banking_informations_count
  * @property-read int|null $educational_records_count
  * @property-read int|null $health_status_records_count
  * @property-read int|null $preschool_educational_records_count
- * @method static \Illuminate\Database\Eloquent\Builder|Child newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Child newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Child query()
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereActivitiesForFamilySupport($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereAdditionalInformation($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereAffiliationStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereBirthdate($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereCaseNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereChildrenNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereContactId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereDisaffiliatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereDisaffiliatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereDni($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereEthnicGroup($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereFamilyNucleusId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereGender($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereLanguage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereLiteracy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereMigratoryStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereNationality($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child wherePseudonym($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereRecreationActivities($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereReligious($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereReviewedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereReviewedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereSexualIdentity($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereSpecificLanguage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereSpecificNationality($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Child whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
+ * @method static Builder|Child newModelQuery()
+ * @method static Builder|Child newQuery()
+ * @method static Builder|Child query()
+ * @method static Builder|Child whereActivitiesForFamilySupport($value)
+ * @method static Builder|Child whereAdditionalInformation($value)
+ * @method static Builder|Child whereAffiliationStatus($value)
+ * @method static Builder|Child whereBirthdate($value)
+ * @method static Builder|Child whereCaseNumber($value)
+ * @method static Builder|Child whereChildrenNumber($value)
+ * @method static Builder|Child whereContactId($value)
+ * @method static Builder|Child whereCreatedAt($value)
+ * @method static Builder|Child whereCreatedBy($value)
+ * @method static Builder|Child whereDisaffiliatedAt($value)
+ * @method static Builder|Child whereDisaffiliatedBy($value)
+ * @method static Builder|Child whereDni($value)
+ * @method static Builder|Child whereEthnicGroup($value)
+ * @method static Builder|Child whereFamilyNucleusId($value)
+ * @method static Builder|Child whereGender($value)
+ * @method static Builder|Child whereId($value)
+ * @method static Builder|Child whereLanguage($value)
+ * @method static Builder|Child whereLiteracy($value)
+ * @method static Builder|Child whereMigratoryStatus($value)
+ * @method static Builder|Child whereName($value)
+ * @method static Builder|Child whereNationality($value)
+ * @method static Builder|Child wherePseudonym($value)
+ * @method static Builder|Child whereRecreationActivities($value)
+ * @method static Builder|Child whereReligious($value)
+ * @method static Builder|Child whereReviewedAt($value)
+ * @method static Builder|Child whereReviewedBy($value)
+ * @method static Builder|Child whereSexualIdentity($value)
+ * @method static Builder|Child whereSpecificLanguage($value)
+ * @method static Builder|Child whereSpecificNationality($value)
+ * @method static Builder|Child whereUpdatedAt($value)
+ * @method static Builder|Child whereUpdatedBy($value)
+ *
  * @mixin IdeHelperChild
+ *
+ * @property int $manager_id
+ * @property-read BankingInformation|null $banking_information
+ * @property-read User|null $creator
+ * @property-read User $manager
+ * @property-read User|null $updater
+ *
+ * @method static Builder|Child whereManagerId($value)
+ *
+ * @mixin Eloquent
  */
 final class Child extends Model
 {
-
+    use HasRecords;
     use UserStamps;
-    use HasManagerId;
 
     protected $table = 'children';
 
@@ -119,7 +135,10 @@ final class Child extends Model
         'disaffiliated_by' => 'int',
         'created_by' => 'int',
         'updated_by' => 'int',
-        'disaffiliated_at' => 'datetime'
+        'disaffiliated_at' => 'datetime',
+        'gender' => Gender::class,
+        'affiliation_status' => AffiliationStatus::class,
+        'health_status' => HealthStatus::class,
     ];
 
     protected $fillable = [
@@ -150,51 +169,52 @@ final class Child extends Model
         'disaffiliated_by',
         'created_by',
         'updated_by',
-        'disaffiliated_at'
+        'disaffiliated_at',
+        'health_status'
     ];
 
-    public function contact()
+    public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
     }
 
-    public function manager()
+    public function manager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'manager_id');
     }
 
-    public function family_nucleus()
+    public function family_nucleus(): BelongsTo
     {
         return $this->belongsTo(FamilyNucleus::class);
     }
 
-    public function banking_informations()
+    public function banking_information(): MorphOne
     {
-        return $this->hasMany(BankingInformation::class);
+        return $this->morphOne(BankingInformation::class, 'banking_informationable');
     }
 
-    public function educational_records()
+    public function educational_record(): HasOne
     {
-        return $this->hasMany(EducationalRecord::class);
+        return $this->hasOne(EducationalRecord::class);
     }
 
-    public function health_status_records()
+    public function health_status_record(): HasOne
     {
-        return $this->hasMany(HealthStatusRecord::class);
+        return $this->hasOne(HealthStatusRecord::class);
     }
 
-    public function mailbox()
+    public function mailbox(): HasOne
     {
         return $this->hasOne(Mailbox::class, 'id');
     }
 
-    public function preschool_educational_records()
-    {
-        return $this->hasMany(PreschoolEducationalRecord::class);
-    }
-
-    public function reasons_leaving_study()
+    public function reasons_leaving_study(): HasOne
     {
         return $this->hasOne(ReasonsLeavingStudy::class);
+    }
+
+    public function mobile_number(): MorphOne
+    {
+        return $this->morphOne(MobileNumber::class, 'mobile_numerable');
     }
 }

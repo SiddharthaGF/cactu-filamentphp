@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Child $child
  * @property User $user
  * @property EducationalInstitution $educational_institution
- * @package App\Models
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalRecord newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalRecord newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalRecord query()
@@ -38,8 +38,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalRecord whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalRecord whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalRecord whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperEducationalRecord
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class EducationalRecord extends Model
 {
@@ -50,17 +55,18 @@ final class EducationalRecord extends Model
     protected $casts = [
         'child_id' => 'int',
         'educational_institution_id' => 'int',
-        'grade' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'child_id',
         'educational_institution_id',
-        'grade',
+        'status',
+        'level',
+        'fovorite_subject',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function child()

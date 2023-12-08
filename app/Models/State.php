@@ -25,8 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property User $user
  * @property Collection|City[] $cities
- * @package App\Models
  * @property-read int|null $cities_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|State newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|State newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|State query()
@@ -37,21 +37,29 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|State whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|State whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|State whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperState
+ *
+ * @property-read \App\Models\User|null $coordinator
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class State extends Model
 {
     use UserStamps;
 
     public $incrementing = false;
+
     protected $table = 'states';
+
     protected $primaryKey = 'code';
 
     protected $casts = [
         'coordinator_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -59,7 +67,7 @@ final class State extends Model
         'name',
         'coordinator_id',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function coordinator()

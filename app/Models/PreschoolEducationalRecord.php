@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property Child $child
  * @property User $user
- * @package App\Models
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|PreschoolEducationalRecord newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PreschoolEducationalRecord newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PreschoolEducationalRecord query()
@@ -39,8 +39,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|PreschoolEducationalRecord whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PreschoolEducationalRecord whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PreschoolEducationalRecord whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperPreschoolEducationalRecord
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class PreschoolEducationalRecord extends Model
 {
@@ -51,7 +56,7 @@ final class PreschoolEducationalRecord extends Model
     protected $casts = [
         'child_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -60,7 +65,7 @@ final class PreschoolEducationalRecord extends Model
         'type',
         'level',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function child()

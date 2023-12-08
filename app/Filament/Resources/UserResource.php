@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
@@ -14,8 +15,11 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
-class UserResource extends Resource
+final class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
@@ -24,6 +28,7 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         fn (Get $get, Set $set) => $set('aux_community_id', $get('community_id'));
+
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
@@ -37,7 +42,7 @@ class UserResource extends Resource
                     ->password()
                     ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                     ->dehydrated(fn ($state) => filled($state))
-                    ->required(fn (string $context): bool => $context === 'create'),
+                    ->required(fn (string $context): bool => 'create' === $context),
                 Forms\Components\Toggle::make('vigency'),
                 Select::make('role')
                     ->relationship('roles', 'name')
@@ -78,14 +83,23 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Impersonate::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                ]),
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make('Only what appears in the table')
+                        ->withFilename('Users')
+                        ->fromTable(),
+                    ExcelExport::make('With the fields that appear in the registration form')->fromForm(),
+                    ExcelExport::make('All the information')->fromModel(),
                 ]),
             ])
             ->emptyStateActions([
@@ -95,9 +109,7 @@ class UserResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

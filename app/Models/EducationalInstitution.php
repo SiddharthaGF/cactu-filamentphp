@@ -28,8 +28,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property City $city
  * @property User $user
  * @property Collection|EducationalRecord[] $educational_records
- * @package App\Models
  * @property-read int|null $educational_records_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution query()
@@ -42,8 +42,35 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperEducationalInstitution
+ *
+ * @property string $education_type
+ * @property string $financing_type
+ * @property string $zone_code
+ * @property string|null $address
+ * @property string $area
+ * @property string $academic_regime
+ * @property string $modality
+ * @property string $academic_day
+ * @property string $educative_level
+ * @property string $typology
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ * @property-read \App\Models\Zone $zone
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereAcademicDay($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereAcademicRegime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereArea($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereEducationType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereEducativeLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereFinancingType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereModality($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereTypology($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereZoneCode($value)
+ *
+ * @mixin \Eloquent
  */
 final class EducationalInstitution extends Model
 {
@@ -53,21 +80,29 @@ final class EducationalInstitution extends Model
 
     protected $casts = [
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'name',
-        'type',
+        'education_type',
+        'financing_type',
+        'address',
+        'area',
+        'academic_regime',
         'ideology',
-        'city_code',
+        'modality',
+        'academic_day',
+        'zone_code',
+        'educative_level',
+        'typology',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
-    public function city()
+    public function zone()
     {
-        return $this->belongsTo(City::class, 'city_code');
+        return $this->belongsTo(Zone::class, 'zone_code');
     }
 
     public function educational_records()

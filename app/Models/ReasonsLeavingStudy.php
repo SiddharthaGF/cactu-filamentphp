@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property Child $child
  * @property User $user
- * @package App\Models
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|ReasonsLeavingStudy newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ReasonsLeavingStudy newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ReasonsLeavingStudy query()
@@ -33,27 +33,34 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|ReasonsLeavingStudy whereReason($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ReasonsLeavingStudy whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ReasonsLeavingStudy whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperReasonsLeavingStudy
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class ReasonsLeavingStudy extends Model
 {
     use UserStamps;
 
     public $incrementing = false;
+
     protected $table = 'reasons_leaving_study';
+
     protected $primaryKey = 'child_id';
 
     protected $casts = [
         'child_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'reason',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function child()

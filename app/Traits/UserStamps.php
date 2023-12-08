@@ -1,24 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Traits;
 
 use App\Models\User;
 
 trait UserStamps
 {
-    public static function bootUserStamps()
+    public static function bootUserStamps(): void
     {
-        static::creating(function ($model) {
-            if (!$model->isDirty('created_by')) {
-                $model->created_by = auth()->user()->id;
+        static::creating(function ($model): void {
+            if ( ! $model->isDirty('created_by')) {
+                $model->created_by = auth()->user()->id ?? 1;
             }
-            if (!$model->isDirty('updated_by')) {
-                $model->updated_by = auth()->user()->id;
+            if ( ! $model->isDirty('updated_by')) {
+                $model->updated_by = auth()->user()->id ?? 1;
             }
         });
 
-        static::updating(function ($model) {
-            if (!$model->isDirty('updated_by')) {
+        static::updating(function ($model): void {
+            if ( ! $model->isDirty('updated_by')) {
                 $model->updated_by = auth()->user()->id;
             }
         });

@@ -57,7 +57,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Collection|FamilyNucleus[] $family_nuclei
  * @property Collection|HealthStatusRecord[] $health_status_records
  * @property Collection|House[] $houses
- * @property Collection|Letter[] $letters
+ * @property Collection|Mail[] $letters
  * @property Collection|LocalPartner[] $local_partners
  * @property Collection|Mailbox[] $mailboxes
  * @property Collection|PreschoolEducationalRecord[] $preschool_educational_records
@@ -66,7 +66,6 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Collection|Ticket[] $tickets
  * @property Collection|User[] $users
  * @property Collection|Zone[] $zones
- * @package App\Models
  * @property-read int|null $alliances_count
  * @property-read int|null $banking_informations_count
  * @property-read int|null $children_count
@@ -97,6 +96,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read int|null $tokens_count
  * @property-read int|null $users_count
  * @property-read int|null $zones_count
+ *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
@@ -120,17 +120,28 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereVigency($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperUser
+ *
+ * @property string|null $signature
+ * @property-read User|null $creator
+ * @property-read \App\Models\State|null $state
+ * @property-read User|null $updater
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereSignature($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User withoutPermission($permissions)
+ * @method static \Illuminate\Database\Eloquent\Builder|User withoutRole($roles, $guard = null)
+ *
+ * @mixin \Eloquent
  */
 final class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens;
     use HasFactory;
+    use HasPanelShield;
+    use HasRoles;
     use Notifiable;
     use UserStamps;
-    use HasRoles;
-    use HasPanelShield;
 
     protected $table = 'users';
 
@@ -144,7 +155,7 @@ final class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'two_factor_secret',
-        'remember_token'
+        'remember_token',
     ];
 
     protected $fillable = [
@@ -157,21 +168,11 @@ final class User extends Authenticatable implements FilamentUser
         'two_factor_recovery_codes',
         'remember_token',
         'profile_photo_path',
-        'signature_photo_path',
-        'md5_signature_photo',
+        'signature',
         'vigency',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
-
-
-    protected function vigency(): Attribute
-    {
-        return Attribute::make(
-            get: fn (string $value) => $value == 'active' ? true : false,
-            set: fn (bool $value) => $value ? 'active' : 'inactive',
-        );
-    }
 
     public function users()
     {
@@ -255,7 +256,7 @@ final class User extends Authenticatable implements FilamentUser
 
     public function letters()
     {
-        return $this->hasMany(Letter::class, 'updated_by');
+        return $this->hasMany(Mail::class, 'updated_by');
     }
 
     public function local_partners()
@@ -302,5 +303,13 @@ final class User extends Authenticatable implements FilamentUser
     {
         return true;
         //return str_ends_with($this->email, env('MAIL_DOMAIN'));
+    }
+
+    protected function vigency(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => 'active' === $value ? true : false,
+            set: fn (bool $value) => $value ? 'active' : 'inactive',
+        );
     }
 }

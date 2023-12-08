@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\FamilyMemberResource\Pages;
-use App\Filament\Resources\FamilyMemberResource\RelationManagers;
 use App\Models\FamilyMember;
 use Carbon\Carbon;
-use Closure;
-use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -16,10 +15,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class FamilyMemberResource extends Resource
+final class FamilyMemberResource extends Resource
 {
     protected static ?string $model = FamilyMember::class;
 
@@ -41,7 +38,7 @@ class FamilyMemberResource extends Resource
                 Select::make('gender')
                     ->options([
                         'MALE' => 'Male',
-                        'FEMALE' => 'Female'
+                        'FEMALE' => 'Female',
                     ])
                     ->native(false)
                     ->required(),
@@ -92,10 +89,10 @@ class FamilyMemberResource extends Resource
                 TextColumn::make('birthdate')
                     ->formatStateUsing(fn ($state) => Carbon::parse($state)->age)
                     ->badge()
-                    ->label('Age')
+                    ->label('Age'),
             ])
             ->filters([
-                //
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -113,7 +110,7 @@ class FamilyMemberResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+
         ];
     }
 

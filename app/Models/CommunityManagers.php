@@ -25,8 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property Community $community
  * @property User $user
- * @package App\Models
  * @property-read \App\Models\User $manager
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|CommunityManager newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CommunityManager newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CommunityManager query()
@@ -37,14 +37,20 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|CommunityManager whereManagerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CommunityManager whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|CommunityManager whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperCommunityManager
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @method static \Database\Factories\CommunityManagersFactory factory($count = null, $state = [])
+ *
+ * @mixin \Eloquent
  */
 final class CommunityManagers extends Model
 {
-
-    use UserStamps;
     use HasFactory;
+    use UserStamps;
 
     protected $table = 'community_managers';
 
@@ -52,14 +58,14 @@ final class CommunityManagers extends Model
         'manager_id' => 'int',
         'community_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'manager_id',
         'community_id',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function community()

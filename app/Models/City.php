@@ -27,9 +27,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property State $state
  * @property Collection|EducationalInstitution[] $educational_institutions
  * @property Collection|Zone[] $zones
- * @package App\Models
  * @property-read int|null $educational_institutions_count
  * @property-read int|null $zones_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|City newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|City newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|City query()
@@ -40,21 +40,27 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|City whereStateCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|City whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|City whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperCity
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class City extends Model
 {
-
     use UserStamps;
 
     public $incrementing = false;
+
     protected $table = 'cities';
+
     protected $primaryKey = 'code';
 
     protected $casts = [
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -62,7 +68,7 @@ final class City extends Model
         'state_code',
         'name',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function state()

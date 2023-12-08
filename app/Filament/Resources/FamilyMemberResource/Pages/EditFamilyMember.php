@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\FamilyMemberResource\Pages;
 
 use App\Filament\Resources\FamilyMemberResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditFamilyMember extends EditRecord
+final class EditFamilyMember extends EditRecord
 {
     protected static string $resource = FamilyMemberResource::class;
 

@@ -8,10 +8,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\RisksTutor;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * Class FamilyNucleus
@@ -30,11 +33,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|Child[] $children
  * @property Collection|FamilyMember[] $family_members
  * @property Collection|House[] $houses
- * @package App\Models
  * @property-read int|null $banking_informations_count
  * @property-read int|null $children_count
  * @property-read int|null $family_members_count
  * @property-read int|null $houses_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyNucleus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyNucleus newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyNucleus query()
@@ -46,8 +49,18 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyNucleus whereTutor2Id($value)
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyNucleus whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|FamilyNucleus whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperFamilyNucleus
+ *
+ * @property-read \App\Models\BankingInformation|null $banking_information
+ * @property-read \App\Models\User|null $creator
+ * @property-read string $name
+ * @property-read \App\Models\House|null $house
+ * @property-read \App\Models\Tutor|null $tutor_1
+ * @property-read \App\Models\Tutor|null $tutor_2
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class FamilyNucleus extends Model
 {
@@ -56,34 +69,26 @@ final class FamilyNucleus extends Model
     protected $table = 'family_nuclei';
 
     protected $casts = [
-        'tutor1_id' => 'int',
-        'tutor2_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
+        'risk_factors' => 'json',
     ];
 
     protected $fillable = [
-        'tutor1_id',
-        'tutor2_id',
         'conventional_phone',
+        'risk_factors',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
-    public function tutor1()
+    public function tutors(): HasMany
     {
-        return $this->belongsTo(Tutor::class, 'tutor1_id');
+        return $this->hasMany(Tutor::class);
     }
 
-    public function tutor2()
+    public function banking_information(): MorphOne
     {
-        return $this->belongsTo(Tutor::class, 'tutor2_id');
-    }
-
-
-    public function banking_informations()
-    {
-        return $this->hasMany(BankingInformation::class);
+        return $this->morphOne(BankingInformation::class, 'banking_informationable');
     }
 
     public function children()
@@ -96,8 +101,8 @@ final class FamilyNucleus extends Model
         return $this->hasMany(FamilyMember::class);
     }
 
-    public function houses()
+    public function house()
     {
-        return $this->hasMany(House::class);
+        return $this->hasOne(House::class);
     }
 }

@@ -27,8 +27,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property User $user
  * @property Zone $zone
  * @property Collection|CommunityManager[] $community_managers
- * @package App\Models
  * @property-read int|null $community_managers_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Community newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Community newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Community query()
@@ -40,19 +40,23 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Community whereUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Community whereVigency($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Community whereZoneCode($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperCommunity
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class Community extends Model
 {
-
     use UserStamps;
 
     protected $table = 'communities';
 
     protected $casts = [
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -60,7 +64,7 @@ final class Community extends Model
         'zone_code',
         'created_by',
         'updated_by',
-        'vigency'
+        'vigency',
     ];
 
     public function zone()

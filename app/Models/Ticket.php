@@ -25,8 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property User $user
- * @property Letter $letter
- * @package App\Models
+ * @property Mail $letter
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket query()
@@ -39,8 +39,18 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereTicketPhotoPath($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperTicket
+ *
+ * @property string $date_due
+ * @property string $photo_path
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket whereDateDue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Ticket wherePhotoPath($value)
+ *
+ * @mixin \Eloquent
  */
 final class Ticket extends Model
 {
@@ -53,7 +63,7 @@ final class Ticket extends Model
         'date_request' => 'datetime',
         'due_date' => 'datetime',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -62,11 +72,11 @@ final class Ticket extends Model
         'due_date',
         'ticket_photo_path',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function letter()
     {
-        return $this->belongsTo(Letter::class);
+        return $this->belongsTo(Mail::class);
     }
 }

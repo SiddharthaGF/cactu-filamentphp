@@ -26,8 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Alliance $alliance
  * @property User $user
  * @property Collection|Child[] $children
- * @package App\Models
  * @property-read int|null $children_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Contact newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Contact newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Contact query()
@@ -38,28 +38,33 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Contact whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contact whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Contact whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperContact
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class Contact extends Model
 {
-
     use UserStamps;
 
     public $incrementing = false;
+
     protected $table = 'contacts';
 
     protected $casts = [
         'alliance_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'alliance_id',
         'name',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function alliance()

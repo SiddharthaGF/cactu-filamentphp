@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\LetterResource\Pages;
 
-use App\Filament\Resources\LetterResource;
+use App\Filament\Resources\MailResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditLetter extends EditRecord
+final class EditMail extends EditRecord
 {
-    protected static string $resource = LetterResource::class;
+    protected static string $resource = MailResource::class;
 
     protected function getHeaderActions(): array
     {

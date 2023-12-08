@@ -26,8 +26,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property User|null $user
  * @property Collection|User[] $users
- * @package App\Models
  * @property-read int|null $users_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|LocalPartner newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LocalPartner newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LocalPartner query()
@@ -39,8 +39,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|LocalPartner whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LocalPartner whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LocalPartner whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperLocalPartner
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class LocalPartner extends Model
 {
@@ -50,7 +55,7 @@ final class LocalPartner extends Model
 
     protected $casts = [
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -58,7 +63,7 @@ final class LocalPartner extends Model
         'alias',
         'description',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function users()

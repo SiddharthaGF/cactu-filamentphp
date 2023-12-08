@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommunityResource\Pages;
@@ -13,7 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class CommunityResource extends Resource
+final class CommunityResource extends Resource
 {
     protected static ?string $model = Community::class;
 
@@ -28,7 +30,7 @@ class CommunityResource extends Resource
                 Checkbox::make('vigency')
                     ->dehydrateStateUsing(fn ($state) => $state ? 'active' : 'inactive')
                     ->formatStateUsing(
-                        fn (string $state)  => $state == 'active'
+                        fn (string $state) => 'active' === $state
                     ),
                 Select::make('zone_code')
                     ->relationship(
@@ -56,7 +58,7 @@ class CommunityResource extends Resource
                     ->badge(),
             ])
             ->filters([
-                //
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -76,7 +78,7 @@ class CommunityResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+
         ];
     }
 

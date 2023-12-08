@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\ZoneResource\RelationManagers;
 
 use Filament\Forms;
@@ -10,10 +12,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class CommunitiesRelationManager extends RelationManager
+final class CommunitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'communities';
 
@@ -29,7 +29,7 @@ class CommunitiesRelationManager extends RelationManager
                 Checkbox::make('vigency')
                     ->dehydrateStateUsing(fn ($state) => $state ? 'active' : 'inactive')
                     ->formatStateUsing(
-                        fn (string $state)  => $state == 'active'
+                        fn (string $state) => 'active' === $state
                     ),
             ]);
     }
@@ -47,7 +47,7 @@ class CommunitiesRelationManager extends RelationManager
                     ->badge(),
             ])
             ->filters([
-                //
+
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),

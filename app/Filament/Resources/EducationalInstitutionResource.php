@@ -1,22 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EducationalInstitutionResource\Pages;
-use App\Filament\Resources\EducationalInstitutionResource\RelationManagers;
 use App\Models\EducationalInstitution;
+use Cheesegrits\FilamentGoogleMaps\Fields\Geocomplete;
+use Cheesegrits\FilamentGoogleMaps\Fields\Map;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class EducationalInstitutionResource extends Resource
+final class EducationalInstitutionResource extends Resource
 {
     protected static ?string $model = EducationalInstitution::class;
 
@@ -26,34 +25,64 @@ class EducationalInstitutionResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
+                Forms\Components\TextInput::make('zone_code')
+                    ->required()
+                    ->maxLength(6),
+                Geocomplete::make('search')
+                    ->label('Search for a center educational')
+                    ->prefixIcon('heroicon-o-magnifying-glass')
+                    ->geolocate()
+                    ->placeField('name')
+                    ->geolocateIcon('heroicon-o-map')
+                    ->placeholder('Search for a center educational')
+                    ->types(['primary_school', 'secondary_school', 'school', 'university'])
+                    ->reactive()
+                    ->required()
+                    ->reverseGeocodeUsing(function (callable $set, array $results): void {
+                        $set('address', $results['formatted_address']);
+                        $set('view_map', [
+                            'lat' => (float) ($results['geometry']['location']['lat']),
+                            'lng' => (float) ($results['geometry']['location']['lng']),
+                        ]);
+                    })
+                    ->countries(['ec']),
+                TextInput::make('address')
+                    ->label('School address'),
+                Map::make('view_map')
+                    ->defaultZoom(17)
+                    ->reactive()
+                    ->reverseGeocodeUsing(function ($results, callable $get, callable $set): void {
+                        $set('address', dd($results['formatted_address']));
+                    })
+                    ->draggable(false)
+                    ->defaultLocation([env('GOOGLE_MAPS_DEFAULT_LAT'), env('GOOGLE_MAPS_DEFAULT_LNG')]),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(200),
+                Forms\Components\TextInput::make('education_type')
+                    ->required()
+                    ->maxLength(20),
+                Forms\Components\TextInput::make('financing_type')
+                    ->required()
+                    ->maxLength(20),
+                Forms\Components\TextInput::make('area')
+                    ->required()
+                    ->maxLength(10),
+                Forms\Components\TextInput::make('academic_regime')
+                    ->required()
+                    ->maxLength(20),
+                Forms\Components\TextInput::make('modality')
+                    ->required()
+                    ->maxLength(120),
+                Forms\Components\TextInput::make('academic_day')
+                    ->required()
+                    ->maxLength(50),
+                Forms\Components\TextInput::make('educative_level')
+                    ->required()
+                    ->maxLength(40),
+                Forms\Components\TextInput::make('typology')
                     ->required()
                     ->maxLength(100),
-                Select::make('type')
-                    ->options([
-                        'public' => 'Public',
-                        'private' => 'Private',
-                        'fiscomisional' => 'Fiscomisional',
-                        'municipal' => 'Municipal',
-                    ])
-                    ->native(false)
-                    ->required(),
-                Select::make('ideology')
-                    ->options([
-                        'secular' => 'Secular',
-                        'religious' => 'Religious',
-                    ])
-                    ->native(false)
-                    ->required(),
-                Select::make('city_code')
-                    ->relationship(
-                        'city',
-                        'name'
-                    )
-                    ->searchable()
-                    ->preload()
-                    ->reactive()
-                    ->label('City'),
             ]);
     }
 
@@ -61,24 +90,45 @@ class EducationalInstitutionResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('zone_code')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('education_type')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('financing_type')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_by')
+                    ->numeric()
                     ->sortable(),
-                TextColumn::make('type')
-                    ->searchable()
-                    ->sortable()
-                    ->badge(),
-                TextColumn::make('ideology')
-                    ->searchable()
-                    ->sortable()
-                    ->badge(),
-                textColumn::make('city.name')
-                    ->searchable()
+                Tables\Columns\TextColumn::make('updated_by')
+                    ->numeric()
                     ->sortable(),
-
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('address')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('area')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('academic_regime')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('modality')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('academic_day')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('educative_level')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('typology')
+                    ->searchable(),
             ])
             ->filters([
-                //
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -87,16 +137,13 @@ class EducationalInstitutionResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])
-            ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+
         ];
     }
 

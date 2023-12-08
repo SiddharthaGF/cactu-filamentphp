@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property Child $child
  * @property User $user
- * @package App\Models
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord query()
@@ -39,8 +39,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereUpdatedBy($value)
- * @mixin \Eloquent
+ *
  * @mixin IdeHelperHealthStatusRecord
+ *
+ * @property-read \App\Models\User|null $creator
+ * @property-read \App\Models\User|null $updater
+ *
+ * @mixin \Eloquent
  */
 final class HealthStatusRecord extends Model
 {
@@ -53,20 +58,25 @@ final class HealthStatusRecord extends Model
         'health_problem_specification' => 'json',
         'disabilities' => 'json',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'child_id',
         'health_status',
-        'health_problem_specification',
-        'disabilities',
+        'especific_health_problems',
+        'treatment',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function child()
     {
         return $this->belongsTo(Child::class);
+    }
+
+    public function disabilities()
+    {
+        return $this->hasMany(Disability::class, 'health_status_record_id');
     }
 }
