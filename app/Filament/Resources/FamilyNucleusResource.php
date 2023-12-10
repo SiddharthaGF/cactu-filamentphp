@@ -34,7 +34,6 @@ final class FamilyNucleusResource extends Resource
     {
         return $table
             ->columns([
-
                 TextColumn::make('conventional_phone')
                     ->searchable(),
                 TextColumn::make('created_at')
