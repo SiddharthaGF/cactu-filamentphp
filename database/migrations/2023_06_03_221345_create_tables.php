@@ -7,7 +7,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -49,7 +50,7 @@ return new class () extends Migration {
             $table->foreignUlid('zone_code', 6)->constrained('zones', 'code');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
-            $table->enum('vigency', StatusVigency::getAll())->default('Inactive');
+            $table->unsignedBigInteger('vigency')->default(StatusVigency::Active);
             $table->timestamps();
             $table->unique(['name', 'zone_code']);
         });
@@ -300,7 +301,6 @@ return new class () extends Migration {
             $table->foreignId('updated_by');
             $table->timestamps();
         });
-
     }
 
     /**

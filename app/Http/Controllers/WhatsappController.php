@@ -3,78 +3,199 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ElementLetter;
-use Illuminate\Http\Request;
+use App\Models\Answers;
+use App\Models\Child;
+use App\Models\Mail;
+use App\Models\Mailbox;
+use App\Models\MobileNumber;
+use App\Models\Tutor;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
+use Netflie\WhatsAppCloudApi\Message\ButtonReply\ButtonAction;
+use Netflie\WhatsAppCloudApi\Message\OptionsList\Action;
+use Netflie\WhatsAppCloudApi\Message\OptionsList\Section;
+use Netflie\WhatsAppCloudApi\WebHook;
+use Netflie\WhatsAppCloudApi\WhatsAppCloudApi;
+
+define('STDOUT', fopen('php://stdout', 'w'));
 
 class WhatsappController extends Controller
 {
-    public function send($number_phone, Request $request): void
+
+    private static function getWhatsAppInstance()
     {
-        $text = $request->input('text');
-        $token = env('WHATSAPP_API_TOKEN');
-        $header = [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $token,
-        ];
-        $message = '
-            {
-                "messaging_product": "whatsapp",
-                "to": "' . $number_phone . '",
-                "type": "text",
-                "text": {
-                    "body": "' . $text . '"
-                }
-            }
-        ';
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, env('WHATSAPP_API_URL'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $message);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = json_decode(curl_exec($ch), true);
-        $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        return new WhatsAppCloudApi([
+            'from_phone_number_id' => env('WHATSAPP_API_PHONE_NUMBER_ID'),
+            'access_token' => env('WHATSAPP_API_TOKEN'),
+        ]);
     }
+
+    public static function sendTextMessage($number_phone, $message)
+    {
+        self::getWhatsAppInstance()->sendTextMessage($number_phone, $message);
+    }
+
+    public static function sendButtonReplyMessage($number_phone, $message, $buttons)
+    {
+        $action = new ButtonAction($buttons);
+        self::getWhatsAppInstance()->sendButton(
+            $number_phone,
+            $message,
+            $action
+        );
+    }
+
+    public static function sendList($number_phone, $title, $message, $footer, $rows)
+    {
+        $sections = [new Section('Stars', $rows)];
+        $action = new Action('Submit', $sections);
+        self::getWhatsAppInstance()->sendList(
+            $number_phone,
+            $title,
+            $message,
+            $footer,
+            $action
+        );
+    }
+
 
     public function webhook(): void
     {
-        $token = env('WHATSAPP_API_TOKEN_VERIFICATION');
-        $hub_challenge = $_GET['hub_challenge'] ?? '';
-        $hub_verify_token = $_GET['hub_verify_token'] ?? '';
-        if ($hub_verify_token === $token) {
-            echo $hub_challenge;
-            exit;
-        }
+        $webhock = new WebHook();
+        $webhock->verify($_GET, env('WHATSAPP_API_TOKEN_VERIFICATION'));
     }
+
+
+
 
     public function receive(): void
     {
-        $response = file_get_contents('php://input');
-        $response = json_decode($response, true);
-        if (!isset($response["entry"][0]["changes"][0]["value"]["messages"][0])) exit;
-        $response = $response["entry"][0]["changes"][0]["value"]["messages"][0];
-        $sender = $response["from"];
-        $message = $response["text"]["body"];
-        $separator = strpos($message, ":");
-        $prompt = Str::slug(substr($message, 0, $separator), "-");
-        if (!in_array($prompt, ElementLetter::forMigration())) {
-            $this->send($sender, "No se reconoce el comando: " . $prompt);
+        $payload = file_get_contents('php://input');
+        $message = $this->getMessage($payload);
+        if (!$message) exit;
+        $type = $message["type"];
+        $from = $message["from"];
+        $timestamp = $message["timestamp"];
+
+        switch ($type) {
+            case 'text':
+                $text = $message["text"]["body"];
+                $action = $this->extractAction($text);
+                if (!$this->validateAction($action)) {
+                    self::sendTextMessage($from, "No se reconoce el comando: " . $action);
+                    exit;
+                }
+                $this->executeCommand($from, $action);
+                break;
+            case 'interactive':
+                $action = $message["interactive"]["button_reply"]["id"];
+                $this->executeCommand($from, $action);
+                //self::sendTextMessage($from, "Este es un mensaje interactivo, ejecuta el comando $action");
+            case 'image':
+                break;
+        }
+        $this->saveContent($from, json_decode($payload, true));
+        exit;
+
+
+
+        /*  $content = $this->extractContent(file_get_contents('php://input'));
+
+        $type = $content["type"];
+
+        $from = $content["from"];
+        $text = $content["text"]["body"];
+
+        $action = $this->extractAction($text);
+        if (!$this->validateAction($action)) {
+            self::sendTextMessage($from, "No se reconoce el comando: " . $action);
             exit;
         }
-        $message = substr($message, $separator + 1);
-        $timestamp = $response["timestamp"];
-        $type = $response["type"];
-        $file_name = "whatsapp-temp/" . $sender . ".json";
+        $timestamp = $content["timestamp"];
+
         $new_data = [
-            $prompt => [
+            $action => [
                 "type" => $type,
-                "message" => $message,
+                "message" => $text,
                 "timestamp" => $timestamp,
             ]
-        ];
+        ];*/
+        $this->saveContent($from, $payload);
+    }
+
+    private function executeCommand($from, $command)
+    {
+        $id = $this->extractIdfromCommand($command);
+        $command = $this->cleanCommand($command);
+        try {
+            switch ($command) {
+                case ElementLetter::ViewLetter->value:
+                    $answer = Answers::findOrFail($id);
+                    self::sendTextMessage($from, $answer->content);
+                    break;
+                case ElementLetter::ViewNow->value:
+                    $mobile_number = MobileNumber::whereNumber("+" . $from)->firstOrFail();
+                    $class = get_class($mobile_number->mobile_numerable);
+                    switch ($class) {
+                        case Child::class:
+                            $mail = Mail::latest()->first();
+                            foreach ($mail->answers as $answer) {
+                                $rows[] =  new Button("ver-carta $answer->id", $answer->id);
+                            }
+                            self::sendButtonReplyMessage(
+                                $from,
+                                "Selecciona una carta para leerla",
+                                $rows
+                            );
+                            break;
+                        case Tutor::class:
+                            self::sendTextMessage($from, "el numero pertence a un padre");
+                            break;
+                    }
+                    break;
+            }
+        } catch (\Throwable $th) {
+            self::sendTextMessage($from, $th->getMessage());
+        }
+    }
+
+    private function cleanCommand($command): string
+    {
+        return trim(preg_replace('/[0-9]+/', '', $command), " ");
+    }
+
+    public function extractIdfromCommand($command): int
+    {
+        return (int)preg_replace('/[^0-9]+/', '', $command);
+    }
+
+    private function extractAction($text)
+    {
+        return  Str::slug(Str::of($text)->trim());
+    }
+
+    private function getTypeMessage($message)
+    {
+        return $message["type"] ?? null;
+    }
+
+    private function validateAction($action)
+    {
+        return in_array($action, ElementLetter::forMigration());
+    }
+
+    private function getMessage($payload)
+    {
+        $data = json_decode($payload, true);
+        return $data["entry"][0]["changes"][0]["value"]["messages"][0] ?? null;
+    }
+
+    public function saveContent($from, $data)
+    {
+        $file_name = "whatsapp-temp/" . $from . ".json";
         if (Storage::exists($file_name)) $current_data = json_decode(Storage::get($file_name), true);
-        $data = isset($current_data) ? array_merge($current_data, $new_data) : $new_data;
+        $data = isset($current_data) ? array_merge($current_data, $data) : $data;
         Storage::put($file_name, json_encode($data));
     }
 }

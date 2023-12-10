@@ -32,11 +32,9 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Zone newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Zone newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Zone query()
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereCityCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Zone whereNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Zone whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Zone whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Zone whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Zone whereUpdatedBy($value)
  *

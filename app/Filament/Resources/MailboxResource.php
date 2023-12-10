@@ -65,7 +65,6 @@ final class MailboxResource extends Resource
                                 ),
                         ]
                     ),
-
             ]);
     }
 
@@ -83,15 +82,11 @@ final class MailboxResource extends Resource
                     ->openUrlInNewTab()
                     ->icon('heroicon-m-arrow-top-right-on-square'),
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 //Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-
-            ])
+            ->bulkActions([])
             ->emptyStateActions([
                 //Tables\Actions\CreateAction::make(),
             ]);

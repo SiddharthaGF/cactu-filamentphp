@@ -10,5 +10,6 @@ enum ElementLetter: string
     case Question = 'question';
     case Answer = 'answer';
     case Farewell = 'farewell';
-
+    case ViewNow = 'ver-ahora';
+    case ViewLetter = 'ver-carta';
 }
