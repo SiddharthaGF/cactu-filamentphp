@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
-use App\Enums\EducationalLevel;
-use App\Enums\FamilyRelationship;
-use App\Enums\Gender;
 use App\Enums\RisksTutor;
 use App\Filament\Resources\FamilyNucleusResource\Pages;
 use App\Filament\Resources\FamilyNucleusResource\RelationManagers;
 use App\Models\FamilyNucleus;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -28,7 +22,12 @@ final class FamilyNucleusResource extends Resource
 {
     protected static ?string $model = FamilyNucleus::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+
+    public static function getLabel(): ?string
+    {
+        return __("Family");
+    }
 
     public static function table(Table $table): Table
     {
@@ -87,25 +86,21 @@ final class FamilyNucleusResource extends Resource
     {
         return $form
             ->schema([
-                Section::make('House')
-                    ->relationship('house')
-                    ->collapsible()
-                    ->collapsed()
-                    ->schema(HouseResource::getSchema()),
-                Section::make('Family Banking information')
-                    ->collapsible()
-                    ->collapsed()
-                    ->columns(2)
-                    ->schema([BankingInformationResource::getSchema()]),
-                Section::make('Tutors')
-                    ->collapsed()
+                Section::make(__('Tutors'))
+                    ->description(__('This section is about the tutors of the family'))
+                    ->aside()
+                    ->columns(1)
+                    ->columnSpanFull()
                     ->schema([
                         Repeater::make('Tutor')
                             ->relationship('tutors')
                             ->deleteAction(
                                 fn(Action $action) => $action->requiresConfirmation(),
                             )
-                            ->grid(2)
+                            ->grid([
+                                'lg' => 1,
+                                'xl' => 2,
+                            ])
                             ->schema(TutorResource::getSchemaForm())
                             ->columnSpanFull()
                             ->defaultItems(1)
@@ -114,6 +109,24 @@ final class FamilyNucleusResource extends Resource
                         CheckboxList::make('risk_factors')
                             ->options(RisksTutor::class)
                             ->columns(4),
+                    ]),
+                Section::make(__('House'))
+                    ->description(__('This section is about the house where the family lives'))
+                    ->aside()
+                    ->relationship('house')
+                    ->collapsible()
+                    ->schema(HouseResource::getSchema())
+                    ->columns([
+                        'sm' => 1,
+                        'md' => 2,
+                    ]),
+                Section::make(__('Family Banking information'))
+                    ->description(__('This section is about the banking information of the family'))
+                    ->aside()
+                    ->collapsible()
+                    ->collapsed()
+                    ->columns(2)
+                    ->schema([BankingInformationResource::getSchema()
                     ]),
             ]);
     }

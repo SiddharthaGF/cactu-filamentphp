@@ -7,6 +7,7 @@ namespace App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Colors\Color;
 
 final class EditUser extends EditRecord
 {
@@ -15,6 +16,15 @@ final class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('Disable 2FA')
+                ->label('Disable 2FA')
+                ->icon('heroicon-m-lock-open')
+                ->translateLabel()
+                ->color(Color::Emerald)
+                ->visible(fn() => $this->record->hasEnabledTwoFactor())
+                ->action(fn() => $this->record->disableTwoFactorAuthentication())
+                ->requiresConfirmation(),
+            Actions\ViewAction::make(),
             Actions\DeleteAction::make(),
         ];
     }

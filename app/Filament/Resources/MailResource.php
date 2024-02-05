@@ -19,8 +19,18 @@ use Filament\Tables\Table;
 final class MailResource extends Resource
 {
     protected static ?string $model = Mail::class;
-
+    protected static bool $shouldRegisterNavigation = false;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getLabel(): ?string
+    {
+        return __("Mail");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Mails");
+    }
 
     public static function form(Form $form): Form
     {
@@ -45,16 +55,16 @@ final class MailResource extends Resource
                                 ->inlineLabel()
                                 ->icon('heroicon-o-identification')
                                 ->label('Replies to letter')
-                                ->url(fn (Mail $record) => route('filament.admin.resources.mails.view', $record->answer_to ?? ''))
+                                ->url(fn(Mail $record) => route('filament.admin.resources.mails.view', $record->answer_to ?? ''))
                                 ->color('info'),
                             TextEntry::make('mailbox.child.name')
                                 ->color('info')
                                 ->inlineLabel()
                                 ->icon('heroicon-o-inbox-stack')
-                                ->url(fn (Mail $record) => route('filament.admin.resources.mailboxes.edit', $record->mailbox)),
+                                ->url(fn(Mail $record) => route('filament.admin.resources.mailboxes.edit', $record->mailbox)),
                             TextEntry::make('letter_type')
                                 ->badge()
-                                ->color(fn (string $state): string => match ($state) {
+                                ->color(fn(string $state): string => match ($state) {
                                     'initial' => 'gray',
                                     'response' => 'info',
                                     'thanks' => 'success',
@@ -67,7 +77,7 @@ final class MailResource extends Resource
                                 ->falseIcon('heroicon-o-x-mark')
                                 ->inlineLabel(),
                             TextEntry::make('status')
-                                ->color(fn (string $state): string => match ($state) {
+                                ->color(fn(string $state): string => match ($state) {
                                     'create' => 'gray',
                                     'sent' => 'info',
                                     'replied' => 'success',

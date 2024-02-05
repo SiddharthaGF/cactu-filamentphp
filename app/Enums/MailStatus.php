@@ -6,7 +6,6 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
-use Illuminate\Support\Str;
 
 enum MailStatus: int implements HasLabel, HasColor
 {

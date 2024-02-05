@@ -88,7 +88,7 @@ class EducationalInstitutionPolicy
      */
     public function forceDelete(User $user, EducationalInstitution $educationalInstitution): bool
     {
-        return $user->can('force_delete_educational::institution');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -99,7 +99,7 @@ class EducationalInstitutionPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_educational::institution');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -111,7 +111,7 @@ class EducationalInstitutionPolicy
      */
     public function restore(User $user, EducationalInstitution $educationalInstitution): bool
     {
-        return $user->can('restore_educational::institution');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -122,7 +122,7 @@ class EducationalInstitutionPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_educational::institution');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -134,7 +134,7 @@ class EducationalInstitutionPolicy
      */
     public function replicate(User $user, EducationalInstitution $educationalInstitution): bool
     {
-        return $user->can('replicate_educational::institution');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -145,7 +145,7 @@ class EducationalInstitutionPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_educational::institution');
+        return $user->can('{{ Reorder }}');
     }
 
 }

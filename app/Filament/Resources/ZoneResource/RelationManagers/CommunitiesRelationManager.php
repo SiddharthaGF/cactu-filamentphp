@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\ZoneResource\RelationManagers;
 
-use Filament\Forms;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -21,7 +20,7 @@ final class CommunitiesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('zone_code')
+                TextInput::make('zone_code')
                     ->required()
                     ->maxLength(255),
                 TextInput::make('name')
@@ -39,8 +38,8 @@ final class CommunitiesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('zone_code')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('community_managers_count')
+                TextColumn::make('name'),
+                TextColumn::make('community_managers_count')
                     ->counts('community_managers')
                     ->badge(),
                 TextColumn::make('vigency')

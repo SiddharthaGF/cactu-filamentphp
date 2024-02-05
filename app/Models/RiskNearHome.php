@@ -42,8 +42,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereUpdatedBy($value)
  *
  *
- * @property-read \App\Models\User|null $creator
- * @property-read \App\Models\User|null $updater
+ * @property-read User|null $creator
+ * @property-read User|null $updater
  *
  * @mixin \Eloquent
  */

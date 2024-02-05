@@ -20,6 +20,8 @@ final class FamilyMemberResource extends Resource
 {
     protected static ?string $model = FamilyMember::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -87,7 +89,7 @@ final class FamilyMemberResource extends Resource
                     ->searchable()
                     ->badge(),
                 TextColumn::make('birthdate')
-                    ->formatStateUsing(fn ($state) => Carbon::parse($state)->age)
+                    ->formatStateUsing(fn($state) => Carbon::parse($state)->age)
                     ->badge()
                     ->label('Age'),
             ])

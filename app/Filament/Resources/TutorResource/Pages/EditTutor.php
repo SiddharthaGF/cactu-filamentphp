@@ -19,7 +19,8 @@ final class EditTutor extends EditRecord
         ];
     }
 
-    protected function beforeSave() : void {
+    protected function beforeSave(): void
+    {
         if ($this->record->is_present) {
             $this->record->reason_not_present = null;
             $this->record->specific_reason = null;

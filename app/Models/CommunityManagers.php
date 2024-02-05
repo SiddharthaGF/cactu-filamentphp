@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property Community $community
  * @property User $user
- * @property-read \App\Models\User $manager
+ * @property-read User $manager
  *
  * @method static \Illuminate\Database\Eloquent\Builder|CommunityManager newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|CommunityManager newQuery()
@@ -40,8 +40,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin IdeHelperCommunityManager
  *
- * @property-read \App\Models\User|null $creator
- * @property-read \App\Models\User|null $updater
+ * @property-read User|null $creator
+ * @property-read User|null $updater
  *
  * @method static \Database\Factories\CommunityManagersFactory factory($count = null, $state = [])
  *

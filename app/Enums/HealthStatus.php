@@ -18,10 +18,10 @@ enum HealthStatus: int implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::NotSpecific => 'Not specific',
-            self::Good => 'Good',
-            self::Excellent => 'Excellent',
-            self::HasProblems => 'Has problems',
+            self::NotSpecific => __('Not specific'),
+            self::Good => __('Good'),
+            self::Excellent => __('Excellent'),
+            self::HasProblems => __('Has problems'),
         };
     }
 }

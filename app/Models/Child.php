@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
 use App\Enums\AffiliationStatus;
@@ -19,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
@@ -216,5 +213,10 @@ final class Child extends Model
     public function mobile_number(): MorphOne
     {
         return $this->morphOne(MobileNumber::class, 'mobile_numerable');
+    }
+
+    public function disabilities(): HasMany
+    {
+        return $this->hasMany(Disability::class, 'child_id');
     }
 }

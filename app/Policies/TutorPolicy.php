@@ -88,7 +88,7 @@ class TutorPolicy
      */
     public function forceDelete(User $user, Tutor $tutor): bool
     {
-        return $user->can('force_delete_tutor');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -99,7 +99,7 @@ class TutorPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_tutor');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -111,7 +111,7 @@ class TutorPolicy
      */
     public function restore(User $user, Tutor $tutor): bool
     {
-        return $user->can('restore_tutor');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -122,7 +122,7 @@ class TutorPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_tutor');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -134,7 +134,7 @@ class TutorPolicy
      */
     public function replicate(User $user, Tutor $tutor): bool
     {
-        return $user->can('replicate_tutor');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -145,7 +145,7 @@ class TutorPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_tutor');
+        return $user->can('{{ Reorder }}');
     }
 
 }

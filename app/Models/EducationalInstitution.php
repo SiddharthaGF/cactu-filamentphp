@@ -55,9 +55,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $academic_day
  * @property string $educative_level
  * @property string $typology
- * @property-read \App\Models\User|null $creator
- * @property-read \App\Models\User|null $updater
- * @property-read \App\Models\Zone $zone
+ * @property-read User|null $creator
+ * @property-read User|null $updater
+ * @property-read Zone $zone
  *
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereAcademicDay($value)
  * @method static \Illuminate\Database\Eloquent\Builder|EducationalInstitution whereAcademicRegime($value)

@@ -88,7 +88,7 @@ class StatePolicy
      */
     public function forceDelete(User $user, State $state): bool
     {
-        return $user->can('force_delete_state');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -99,7 +99,7 @@ class StatePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_state');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -111,7 +111,7 @@ class StatePolicy
      */
     public function restore(User $user, State $state): bool
     {
-        return $user->can('restore_state');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -122,7 +122,7 @@ class StatePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_state');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -134,7 +134,7 @@ class StatePolicy
      */
     public function replicate(User $user, State $state): bool
     {
-        return $user->can('replicate_state');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -145,7 +145,7 @@ class StatePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_state');
+        return $user->can('{{ Reorder }}');
     }
 
 }

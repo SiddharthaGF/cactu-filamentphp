@@ -23,7 +23,7 @@ Route::controller(WhatsappController::class)
     ->name('whatsapp.')
     ->prefix('whatsapp')
     ->group(
-        function () {
+        function (): void {
             Route::get('/send/{number_phone}', 'send')->name('send');
             Route::get('/webhook', 'webhook')->name('webhook');
             Route::post('/webhook', 'receive')->name('receive');

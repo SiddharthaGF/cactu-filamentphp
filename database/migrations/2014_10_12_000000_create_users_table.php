@@ -27,11 +27,9 @@ return new class () extends Migration {
             $table->string('name');
             $table->string('email')->unique();
             $table->foreignId('local_partner_id')->nullable()->constrained();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->string('profile_photo_path', 2048)->nullable();
-            $table->unsignedTinyInteger('vigency')->default(1);
             $table->text('signature')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');

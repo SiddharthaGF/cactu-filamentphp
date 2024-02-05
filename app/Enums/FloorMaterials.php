@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
-use Illuminate\Support\Str;
 
 enum FloorMaterials: int implements HasLabel
 {
-
     use BaseEnum;
 
     case Dirt = 1;
@@ -20,10 +18,10 @@ enum FloorMaterials: int implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::Dirt => 'Dirt',
-            self::Cement => 'Cement',
-            self::Wood => 'Wood',
-            self::Other => 'Other',
+            self::Dirt => __('Dirt'),
+            self::Cement => __('Cement'),
+            self::Wood => __('Wood'),
+            self::Other => __('Other'),
         };
     }
 }

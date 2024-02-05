@@ -88,7 +88,7 @@ class BankingInformationPolicy
      */
     public function forceDelete(User $user, BankingInformation $bankingInformation): bool
     {
-        return $user->can('force_delete_banking::information');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -99,7 +99,7 @@ class BankingInformationPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_banking::information');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -111,7 +111,7 @@ class BankingInformationPolicy
      */
     public function restore(User $user, BankingInformation $bankingInformation): bool
     {
-        return $user->can('restore_banking::information');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -122,7 +122,7 @@ class BankingInformationPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_banking::information');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -134,7 +134,7 @@ class BankingInformationPolicy
      */
     public function replicate(User $user, BankingInformation $bankingInformation): bool
     {
-        return $user->can('replicate_banking::information');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -145,7 +145,7 @@ class BankingInformationPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_banking::information');
+        return $user->can('{{ Reorder }}');
     }
 
 }

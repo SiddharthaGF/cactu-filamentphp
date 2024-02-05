@@ -49,7 +49,7 @@ final class FamilyMembersRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                TextColumn::make('name'),
                 TextColumn::make('gender')
                     ->badge(),
                 TextColumn::make('relationship')

@@ -29,7 +29,9 @@ final class EditChild extends EditRecord
     {
         $updated_user = $this->record;
         $current_user = $this->record->getOriginal();
-        if ($updated_user->affiliation_status != $current_user['affiliation_status']) return;
+        if ($updated_user->affiliation_status !== $current_user['affiliation_status']) {
+            return;
+        }
         $affiliation_status = $updated_user->affiliation_status;
         switch ($affiliation_status) {
             case AffiliationStatus::Affiliated:

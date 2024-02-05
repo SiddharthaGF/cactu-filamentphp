@@ -26,6 +26,7 @@ use Carbon\Carbon;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
@@ -52,140 +53,359 @@ final class ChildResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
+    public static function getLabel(): ?string
+    {
+        return __("Child");
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Wizard::make(
                     [
-                        Step::make('General information')
+                        Step::make(__('General information'))
                             ->icon('heroicon-o-user')
                             ->schema([
-                                Section::make('Sponsor Information')
+                                Section::make(__('Sponsor Information'))
+                                    ->description(__('This information is provided by ChildFund.'))
+                                    ->icon('heroicon-o-exclamation-triangle')
+                                    ->aside()
                                     ->compact()
-                                    ->collapsed()
-                                    ->columns(2)
+                                    ->columns(3)
                                     ->schema([
                                         TextInput::make('children_number')
+                                            ->translateLabel()
+                                            ->minValue(0)
                                             ->numeric(),
                                         TextInput::make('case_number')
+                                            ->translateLabel()
+                                            ->minValue(0)
                                             ->numeric(),
                                         Select::make('affiliation_status')
+                                            ->translateLabel()
                                             ->options(AffiliationStatus::class)
                                             ->default(AffiliationStatus::Pending)
                                             ->native(false)
                                             ->required(),
+                                        FileUpload::make('child_photo_path')
+                                            ->label('Child photo')
+                                            ->translateLabel()
+                                            ->imageEditor()
+                                            ->circleCropper()
+                                            ->imageCropAspectRatio("1:1")
+                                            ->image()
                                     ]),
-                                Section::make('Personal Information.')
+                                Section::make(__('Personal Information'))
+                                    ->description(__('Fill out the information of the child.'))
+                                    ->icon('heroicon-o-exclamation-triangle')
+                                    ->aside()
                                     ->compact()
-                                    ->columns(3)
                                     ->schema([
                                         TextInput::make('name')
+                                            ->translateLabel()
                                             ->prefixIcon('heroicon-o-user')
-                                            ->placeholder('Name and last name')
                                             ->required(),
                                         TextInput::make('dni')
+                                            ->translateLabel()
                                             ->required()
-                                            ->placeholder('DNI')
                                             ->prefixIcon('heroicon-o-identification')
                                             ->disabledOn('edit'),
                                         TextInput::make('pseudonym')
-                                            ->placeholder('Pseudonym')
+                                            ->translateLabel()
                                             ->prefixIcon('heroicon-o-bug-ant')
                                             ->required(),
                                         DatePicker::make('birthdate')
+                                            ->translateLabel()
                                             ->required()
-                                            ->placeholder('Birthdate')
+                                            ->reactive()
                                             ->prefixIcon('heroicon-o-calendar')
                                             ->native(false)
                                             ->closeOnDateSelection()
                                             ->maxDate(Carbon::now()),
                                         Select::make('gender')
+                                            ->translateLabel()
                                             ->options(Gender::class)
                                             ->native(false)
                                             ->required()
                                             ->prefixIcon('heroicon-o-sparkles'),
                                         Select::make('sexual_identity')
+                                            ->translateLabel()
                                             ->options(SexualIdentity::class)
                                             ->native(false)
                                             ->prefixIcon('heroicon-o-heart')
                                             ->required(),
                                     ]),
-                                Section::make('General information about the child and family.')
-                                    ->columns(2)
-                                    ->compact()
+                            ]),
+                        Step::make(__('Educational Information'))
+                            ->icon('heroicon-o-academic-cap')
+                            ->schema([
+                                Select::make('literacy')
+                                    ->columnSpanFull()
+                                    ->label(__('Literacy (It was detected that the child is older than 5 years)'))
+                                    ->selectablePlaceholder(false)
+                                    ->options(Literacy::class)
+                                    ->default(Literacy::None)
+                                    ->native(false)
+                                    ->hidden(fn (Get $get) => Carbon::parse($get('birthdate'))->age <= 5)
+                                    ->required(),
+                                Group::make()
                                     ->schema([
-                                        Section::make()
-                                            ->columns(2)
+                                        Repeater::make('educational_record')
+                                            ->translateLabel()
+                                            ->relationship('educational_record')
                                             ->schema([
-                                                Select::make('language')
-                                                    ->options(Language::class)
-                                                    ->default(Language::Spanish)
-                                                    ->reactive()
-                                                    ->native(false)
-                                                    ->prefixIcon('heroicon-o-language')
+                                                Radio::make('status')
+                                                    ->translateLabel()
+                                                    ->options(EducationalStatus::class)
+                                                    ->columnSpanFull()
+                                                    ->disableOptionWhen(fn (string $value): bool => 'published' === $value)
                                                     ->required(),
-                                                TextInput::make('specific_language')
-                                                    ->hidden(
-                                                        fn(Get $get) => Language::Other !== $get('language')
+                                                Select::make('educational_institution_id')
+                                                    ->label('Educational Institution')
+                                                    ->translateLabel()
+                                                    ->options(
+                                                        fn () => EducationalInstitution::select([
+                                                            'id',
+                                                            DB::raw("CONCAT(educational_Institutions.name, ' (', zone_city.name, ')') AS full_name"),
+                                                        ])
+                                                            ->leftJoin(DB::raw('(select zones.code, cities.name from zones INNER join cities on zones.city_code = cities.code) as zone_city'), 'zone_city.code', '=', 'educational_institutions.zone_code')
+                                                            ->distinct()
+                                                            ->pluck('full_name', 'id')->toArray()
                                                     )
-                                                    ->required(),
-                                            ]),
-                                        Section::make()
-                                            ->columns(2)
-                                            ->schema([
-                                                Select::make('nationality')
-                                                    ->options(Nationality::class)
-                                                    ->default(Nationality::Ecuadorian)
-                                                    ->native(false)
                                                     ->required()
-                                                    ->prefixIcon('heroicon-o-flag')
-                                                    ->live(),
-                                                TextInput::make('specific_nationality')
-                                                    ->hidden(
-                                                        fn(Get $get) => Nationality::Other !== $get('nationality')
-                                                    )
-                                                    ->required(),
-                                            ]),
-                                        Section::make()
-                                            ->columns(2)
-                                            ->schema([
-                                                Select::make('ethnic_group')
-                                                    ->options(EthnicGroup::class)
+                                                    ->columnSpanFull()
                                                     ->native(false)
-                                                    ->required()
-                                                    ->prefixIcon('heroicon-o-user-group')
-                                                    ->live(),
-                                                TextInput::make('specific_ethnic_group')
-                                                    ->hidden(
-                                                        fn(Get $get) => EthnicGroup::Other !== $get('ethnic_group')
-                                                    )
+                                                    ->searchable(),
+                                                TextInput::make('level')
+                                                    ->translateLabel()
+                                                    ->datalist(SchoolLevel::cases())
                                                     ->required(),
-                                            ]),
-                                        TextInput::make('religious')
-                                            ->datalist([
-                                                'Catholic',
-                                                'Evangelical',
-                                                'Jehovah\'s Witness',
-                                                'Agnostic',
-                                                'Atheist',
+                                                TextInput::make('fovorite_subject')
+                                                    ->translateLabel()
+                                                    ->required()
+                                                    ->datalist(SchoolSuject::cases())
+                                                    ->prefixIcon('heroicon-o-star')
+                                                    ->suffixAction(
+                                                        Action::make('Clean field')
+                                                            ->icon('heroicon-o-x-circle')
+                                                            ->action(fn (Set $set) => $set('fovorite_subject', '')),
+                                                    ),
+
                                             ])
-                                            ->placeholder('Religious')
-                                            ->prefixIcon('heroicon-o-star')
-                                            ->suffixAction(
-                                                Action::make('Clean field')
-                                                    ->icon('heroicon-o-x-circle')
-                                                    ->action(fn(Set $set) => $set('religious', '')),
-                                            ),
-                                        Select::make('migratory_status')
-                                            ->options(MigratoryStatus::class)
-                                            ->default(MigratoryStatus::None)
+                                            ->hidden(fn (Get $get, $state) => count($get('reasons_leaving_study')) > 0)
+                                            ->maxItems(1)
+                                            ->columns()
+                                            ->defaultItems(0),
+                                        Repeater::make('reasons_leaving_study')
+                                            ->translateLabel()
+                                            ->relationship('reasons_leaving_study')
+                                            ->schema([
+                                                TextInput::make('reason')
+                                                    ->translateLabel()
+                                                    ->columnSpanFull()
+                                                    ->required(),
+                                            ])
+                                            ->hidden(fn (Get $get, $state) => count($get('educational_record')) > 0)
+                                            ->maxItems(1)
+                                            ->defaultItems(0),
+                                    ])
+                            ]),
+                        Step::make('Health Information')
+                            ->translateLabel()
+                            ->icon('heroicon-o-heart')
+                            ->schema([
+                                Radio::make('health_status')
+                                    ->translateLabel()
+                                    ->options(HealthStatus::class)
+                                    ->required()
+                                    ->reactive()
+                                    ->default(HealthStatus::Excellent)
+                                    ->columns([
+                                        'sm' => 2,
+                                        'md' => 4,
+                                    ])
+                                    ->columnSpanFull(),
+                                Group::make()
+                                    ->relationship('health_status_record')
+                                    ->schema([
+                                        TextInput::make('especific_health_problems')
+                                            ->label('Mention in case the child has health problems')
+                                            ->translateLabel()
+                                            ->columnSpanFull()
+                                            ->required(),
+                                        TextInput::make('treatment')
+                                            ->label('Is the child following any treatment? (specify)')
+                                            ->translateLabel()
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->hidden(
+                                        fn (Get $get, $state) => $state = HealthStatus::HasProblems !== $get('health_status')
+                                    ),
+                                Repeater::make('disabilities')
+                                    ->translateLabel()
+                                    ->relationship('disabilities')
+                                    ->schema([
+                                        Select::make('type')
+                                            ->translateLabel()
+                                            ->options(Disability::class)
+                                            ->required()
+                                            ->native(false),
+                                        TextInput::make('percent')
+                                            ->numeric()
+                                            ->translateLabel()
+                                            ->required(),
+                                    ])
+                                    ->defaultItems(0)
+                                    ->columns(2),
+
+                            ]),
+                        Step::make('Baking Information')
+                            ->translateLabel()
+                            ->icon('heroicon-o-currency-dollar')
+                            ->schema([
+                                Section::make(__('Baking Information'))
+                                    ->schema([
+                                        BankingInformationResource::getSchema(),
+                                        Repeater::make('mobile_number')
+                                            ->relationship('mobile_number')
+                                            ->translateLabel()
+                                            ->defaultItems(0)
+                                            ->maxItems(1)
+                                            ->schema([
+                                                PhoneInput::make('number')
+                                                    ->required()
+                                                    ->translateLabel()
+                                                    ->unique(ignorable: fn ($record) => $record)
+                                                    ->columnSpanFull(),
+                                            ]),
+                                    ])
+                                    ->description(__('Fill out if and only if the child has his or her own bank account and is over 18, or has consent from the parent or representative.'))
+                                    ->icon('heroicon-o-exclamation-triangle')
+                                    ->iconColor('danger'),
+
+                            ]),
+                        Step::make('Home information')
+                            ->translateLabel()
+                            ->icon('heroicon-o-home')
+                            ->schema([
+                                Select::make('family_nucleus_id')
+                                    ->label('Family')
+                                    ->translateLabel()
+                                    ->helperText(__('This information is shared by all affiliated children belonging to the same family.'))
+                                    ->relationship(
+                                        'family_nucleus',
+                                        'family_nuclei.id',
+                                        fn ($query) => $query->with('tutors')->select(
+                                            'family_nuclei.id',
+                                            DB::raw("GROUP_CONCAT(CONCAT(tutors.dni, ' - ', tutors.name) SEPARATOR ' : ') as full_name")
+                                        )
+                                            ->join('tutors', 'family_nuclei.id', '=', 'tutors.family_nucleus_id')
+                                            ->groupBy('family_nuclei.id')
+                                    )
+                                    ->getOptionLabelFromRecordUsing(
+                                        fn ($record) => $record->full_name
+                                    )
+                                    ->searchable(['family_nuclei.id', 'tutors.name'])
+                                    ->columnSpanFull()
+                                    ->required()
+                                    ->native(false)
+                                    ->editOptionForm(fn (Form $form) => FamilyNucleusResource::form($form))
+                                    ->createOptionForm(fn (Form $form) => FamilyNucleusResource::form($form))
+                                    ->createOptionAction(
+                                        fn (Action $action) => $action->modalWidth('5xl')
+                                            ->slideOver()
+                                    ),
+                                CheckboxList::make('expected_benefits')
+                                    ->translateLabel()
+                                    ->columns([
+                                        'sm' => 2,
+                                        'md' => 5,
+                                    ])
+                                    ->options(RisksChild::class),
+                                Group::make()
+                                    ->columns(2)
+                                    ->schema([
+                                        Select::make('language')
+                                            ->translateLabel()
+                                            ->options(Language::class)
+                                            ->default(Language::Spanish)
+                                            ->reactive()
+                                            ->native(false)
+                                            ->prefixIcon('heroicon-o-language')
+                                            ->required(),
+                                        TextInput::make('specific_language')
+                                            ->translateLabel()
+                                            ->hidden(
+                                                fn (Get $get) => Language::Other !== $get('language')
+                                            )
+                                            ->required(),
+                                    ]),
+                                Group::make()
+                                    ->columns(2)
+                                    ->schema([
+                                        Select::make('ethnic_group')
+                                            ->translateLabel()
+                                            ->options(EthnicGroup::class)
+                                            ->native(false)
+                                            ->required()
+                                            ->prefixIcon('heroicon-o-user-group')
+                                            ->live(),
+                                        TextInput::make('specific_ethnic_group')
+                                            ->translateLabel()
+                                            ->hidden(
+                                                fn (Get $get) => EthnicGroup::Other !== $get('ethnic_group')
+                                            )
+                                            ->required(),
+                                    ]),
+                                Group::make()
+                                    ->columns(2)
+                                    ->schema([
+                                        Select::make('nationality')
+                                            ->translateLabel()
+                                            ->reactive()
+                                            ->options(Nationality::class)
+                                            ->default(Nationality::Ecuadorian)
                                             ->native(false)
                                             ->prefixIcon('heroicon-o-globe-americas')
                                             ->required(),
+                                        TextInput::make('specific_nationality')
+                                            ->translateLabel()
+                                            ->hidden(
+                                                fn (Get $get) => Nationality::Other !== $get('nationality')
+                                            )
+                                            ->required(),
+                                    ]),
+                                TextInput::make('religious')
+                                    ->translateLabel()
+                                    ->datalist([
+                                        'Catholic',
+                                        'Evangelical',
+                                        'Jehovah\'s Witness',
+                                        'Agnostic',
+                                        'Atheist',
                                     ])
-                                    ->columns(2),
+                                    ->placeholder('Religious')
+                                    ->prefixIcon('heroicon-o-star')
+                                    ->suffixAction(
+                                        Action::make('Clean field')
+                                            ->icon('heroicon-o-x-circle')
+                                            ->action(fn (Set $set) => $set('religious', '')),
+                                    ),
+                                Select::make('migratory_status')
+                                    ->translateLabel()
+                                    ->options(MigratoryStatus::class)
+                                    ->default(MigratoryStatus::None)
+                                    ->native(false)
+                                    ->prefixIcon('heroicon-o-globe-americas')
+                                    ->required(),
+
                                 CheckboxList::make('activities_for_family_support')
+                                    ->translateLabel()
+                                    ->columns([
+                                        'sm' => 2,
+                                        'md' => 5,
+                                    ])
                                     ->options([
                                         'washes' => 'Washes',
                                         'brings firewood' => 'Brings firewood',
@@ -201,9 +421,15 @@ final class ChildResource extends Resource
                                     ])
                                     ->columns(5)
                                     ->columnSpanFull(),
-                                TextArea::make('specific_activities_for_family_support')
+                                Textarea::make('specific_activities_for_family_support')
+                                    ->translateLabel()
                                     ->columnSpanFull(),
                                 CheckboxList::make('recreation_activities')
+                                    ->translateLabel()
+                                    ->columns([
+                                        'sm' => 2,
+                                        'md' => 5,
+                                    ])
                                     ->options([
                                         'plays with dolls' => 'Plays with dolls',
                                         'jumps rope' => 'Jumps rope',
@@ -221,168 +447,16 @@ final class ChildResource extends Resource
                                     ])
                                     ->columns(5)
                                     ->columnSpanFull(),
-                                TextArea::make('specific_recreation_activities')
+                                Textarea::make('specific_recreation_activities')
+                                    ->translateLabel()
                                     ->columnSpanFull(),
                                 Textarea::make('additional_information'),
-                            ]),
-                        Step::make('Educational Information')
-                            ->icon('heroicon-o-academic-cap')
-                            ->schema([
-                                Select::make('literacy')
-                                    ->columnSpanFull()
-                                    ->label('Literacy (It was detected that the child is older than 5 years)')
-                                    ->selectablePlaceholder(false)
-                                    ->options(Literacy::class)
-                                    ->default(Literacy::Both)
-                                    ->native(false)
-                                    ->required(),
-                                Group::make()
-                                    ->schema([
-                                        Repeater::make('educational_record')
-                                            ->relationship('educational_record')
-                                            ->schema([
-                                                Radio::make('status')
-                                                    ->options(EducationalStatus::class)
-                                                    ->columnSpanFull()
-                                                    ->required(),
-                                                Select::make('educational_institution_id')
-                                                    ->options(
-                                                        fn() => EducationalInstitution::select([
-                                                            'id',
-                                                            DB::raw("CONCAT(educational_Institutions.name, ' (', zone_city.name, ')') AS full_name"),
-                                                        ])
-                                                            ->leftJoin(DB::raw('(select zones.code, cities.name from zones INNER join cities on zones.city_code = cities.code) as zone_city'), 'zone_city.code', '=', 'educational_institutions.zone_code')
-                                                            ->distinct()
-                                                            ->pluck('full_name', 'id')->toArray()
-                                                    )
-                                                    ->required()
-                                                    ->columnSpanFull()
-                                                    ->native(false)
-                                                    ->searchable(),
-                                                TextInput::make('level')
-                                                    ->datalist(SchoolLevel::cases())
-                                                    ->required(),
-                                                TextInput::make('fovorite_subject')
-                                                    ->required()
-                                                    ->datalist(SchoolSuject::cases())
-                                                    ->prefixIcon('heroicon-o-star')
-                                                    ->suffixAction(
-                                                        Action::make('Clean field')
-                                                            ->icon('heroicon-o-x-circle')
-                                                            ->action(fn(Set $set) => $set('fovorite_subject', '')),
-                                                    ),
-
-                                            ])
-                                            ->hidden(fn(Get $get, $state) => count($get('reasons_leaving_study')) > 0)
-                                            ->maxItems(1)
-                                            ->defaultItems(0)
-                                            ->columns(2),
-                                        Repeater::make('reasons_leaving_study')
-                                            ->relationship('reasons_leaving_study')
-                                            ->schema([
-                                                TextInput::make('reason')
-                                                    ->columnSpanFull()
-                                                    ->required(),
-                                            ])
-                                            ->hidden(fn(Get $get, $state) => count($get('educational_record')) > 0)
-                                            ->maxItems(1)
-                                            ->defaultItems(0),
-                                    ]),
-                            ]),
-                        Step::make('Health Information')
-                            ->icon('heroicon-o-heart')
-                            ->schema([
-                                Radio::make('health_status')
-                                    ->options(HealthStatus::class)
-                                    ->required()
-                                    ->live()
-                                    ->default(HealthStatus::Excellent)
-                                    ->columnSpanFull(),
-                                Section::make('Estado de salud del niño')
-                                    ->relationship('health_status_record')
-                                    ->schema([
-                                        Group::make()
-                                            ->schema([
-                                                TextInput::make('especific_health_problems')
-                                                    ->label('Mention in case the child has health problems')
-                                                    ->columnSpanFull()
-                                                    ->required(),
-                                                TextInput::make('treatment')
-                                                    ->label('Is the child following any treatment? (specify)')
-                                                    ->columnSpanFull(),
-                                            ])
-                                            ->hidden(
-                                                fn(Get $get, $state) => $state = HealthStatus::HasProblems !== $get('health_status')
-                                            ),
-                                        Repeater::make('discapacidad')
-                                            ->relationship('disabilities')
-                                            ->schema([
-                                                Select::make('type')
-                                                    ->options(Disability::class)
-                                                    ->required()
-                                                    ->native(false),
-                                                TextInput::make('percent')
-                                                    ->numeric()
-                                                    ->required(),
-                                            ])
-                                            ->defaultItems(0)
-                                            ->columns(2),
-                                    ]),
-                            ]),
-                        Step::make('Baking Information')
-                            ->icon('heroicon-o-currency-dollar')
-                            ->schema([
-                                Section::make('Baking Information')
-                                    ->schema([
-                                        BankingInformationResource::getSchema(),
-                                        Repeater::make('mobile_number')
-                                            ->relationship('mobile_number')
-                                            ->defaultItems(0)
-                                            ->maxItems(1)
-                                            ->schema([
-                                                PhoneInput::make('number')
-                                                    ->required()
-                                                    ->unique(ignorable: fn ($record) => $record)
-                                                    ->columnSpanFull(),
-                                            ]),
-                                    ])
-                                    ->description('Fill out if and only if the child has his or her own bank account and is over 18, or has consent from the parent or representative.')
-                                    ->icon('heroicon-o-exclamation-triangle')
-                                    ->iconColor('danger'),
-
-                            ]),
-                        Step::make('Home information')
-                            ->icon('heroicon-o-home')
-                            ->schema([
-                                Select::make('family_nucleus_id')
-                                    ->helperText('This information is shared by all affiliated children belonging to the same family nucleus.')
-                                    ->relationship(
-                                        'family_nucleus',
-                                        'family_nuclei.id',
-                                        fn($query) => $query->with('tutors')->select(
-                                            'family_nuclei.id',
-                                            DB::raw("GROUP_CONCAT(CONCAT(tutors.dni, ' - ', tutors.name) SEPARATOR ' : ') as full_name")
-                                        )
-                                            ->join('tutors', 'family_nuclei.id', '=', 'tutors.family_nucleus_id')
-                                            ->groupBy('family_nuclei.id')
-                                    )
-                                    ->getOptionLabelFromRecordUsing(
-                                        fn($record) => $record->full_name
-                                    )
-                                    ->searchable(['family_nuclei.id', 'tutors.name'])
-                                    ->columnSpanFull()
-                                    ->required()
-                                    ->native(false)
-                                    ->editOptionForm(fn(Form $form) => FamilyNucleusResource::form($form))
-                                    ->createOptionForm(fn(Form $form) => FamilyNucleusResource::form($form)),
-                                CheckboxList::make('expected_benefits')
-                                    ->options(RisksChild::class),
 
                             ]),
                     ]
                 )
-                    ->startOnStep(fn($context) => 'create' === $context ? 1 : 2)
-                    ->skippable(fn($context) => 'reate' !== $context)
+                    ->startOnStep(fn ($context) => 'create' === $context ? 1 : 2)
+                    ->skippable(fn ($context) => 'ceate' !== $context)
                     ->persistStepInQueryString()
                     ->columnSpanFull(),
             ]);
@@ -410,7 +484,7 @@ final class ChildResource extends Resource
                     ->badge(),
                 TextColumn::make('birthdate')
                     ->formatStateUsing(
-                        fn($state) => Carbon::parse($state)->age
+                        fn ($state) => Carbon::parse($state)->age
                     )
                     ->badge()
                     ->label('Age'),
@@ -431,7 +505,7 @@ final class ChildResource extends Resource
                 Tables\Actions\Action::make('Family')
                     ->icon('heroicon-o-user-group')
                     ->color('gray')
-                    ->url(fn(Child $record) => route('filament.admin.resources.family-nuclei.edit', $record->family_nucleus_id)),
+                    ->url(fn (Child $record) => route('filament.admin.resources.family-nuclei.edit', $record->family_nucleus_id)),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -443,7 +517,7 @@ final class ChildResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ])
             ->modifyQueryUsing(
-                fn(Builder $query) => RecordBuilder::correspondingRecords($query)
+                fn (Builder $query) => RecordBuilder::correspondingRecords($query)
             );
     }
 

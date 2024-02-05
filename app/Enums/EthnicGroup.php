@@ -18,10 +18,10 @@ enum EthnicGroup: int implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::AfroEcuadorian => 'Afro-ecuadorian',
-            self::Indigenous => 'Indigenous',
-            self::Mestizo => 'Mestizo',
-            self::Other => 'Other',
+            self::AfroEcuadorian => __('Afro-ecuadorian'),
+            self::Indigenous => __('Indigenous'),
+            self::Mestizo => __('Mestizo'),
+            self::Other => __('Other'),
         };
     }
 }

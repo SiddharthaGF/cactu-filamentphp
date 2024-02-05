@@ -36,8 +36,8 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @mixin IdeHelperReasonsLeavingStudy
  *
- * @property-read \App\Models\User|null $creator
- * @property-read \App\Models\User|null $updater
+ * @property-read User|null $creator
+ * @property-read User|null $updater
  *
  * @mixin \Eloquent
  */

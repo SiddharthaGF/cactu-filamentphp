@@ -6,7 +6,6 @@ namespace App\Constants;
 
 use App\Enums\BaseEnum;
 use Filament\Support\Contracts\HasLabel;
-use Illuminate\Support\Str;
 
 enum BasicServices: int implements HasLabel
 {
@@ -23,19 +22,19 @@ enum BasicServices: int implements HasLabel
     case Electricity = 9;
     case Shower = 10;
 
-    public function getLabel():? string
+    public function getLabel(): ?string
     {
-       return match ($this) {
-            self::DrinkingWater => 'Drinking Water',
-            self::TubingWater => 'Tubing Water',
-            self::WellWater => 'Well Water',
-            self::Internet => 'Internet',
-            self::Sewerage => 'Sewerage',
-            self::Toilet => 'Toilet',
-            self::Latrine => 'Latrine',
-            self::SepticTank => 'Septic Tank',
-            self::Electricity => 'Electricity',
-            self::Shower => 'Shower',
+        return match ($this) {
+            self::DrinkingWater => __('Drinking Water'),
+            self::TubingWater => __('Tubing Water'),
+            self::WellWater => __('Well Water'),
+            self::Internet => __('Internet'),
+            self::Sewerage => __('Sewerage'),
+            self::Toilet => __('Toilet'),
+            self::Latrine => __('Latrine'),
+            self::SepticTank => __('Septic Tank'),
+            self::Electricity => __('Electricity'),
+            self::Shower => __('Shower'),
         };
     }
 }

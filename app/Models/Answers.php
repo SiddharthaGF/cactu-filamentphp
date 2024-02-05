@@ -52,10 +52,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $awswer_to
  * @property int $has_ticket
  * @property string $photo_path
- * @property-read \App\Models\User|null $creator
+ * @property-read User|null $creator
  * @property-read Mail|null $from
  * @property-read Mail|null $to
- * @property-read \App\Models\User|null $updater
+ * @property-read User|null $updater
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Mail whereAwswerTo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Mail whereHasTicket($value)

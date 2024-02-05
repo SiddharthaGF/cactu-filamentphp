@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
-use Illuminate\Support\Str;
 
 enum RoofMaterials: int implements HasLabel
 {
@@ -20,11 +19,11 @@ enum RoofMaterials: int implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::Thatched => 'Thatched',
-            self::Shingle => 'Shingle',
-            self::Asbestos => 'Asbestos',
-            self::TileZinc => 'Tile/Zinc',
-            self::Other => 'Other',
+            self::Thatched => __('Thatched'),
+            self::Shingle => __('Shingle'),
+            self::Asbestos => __('Asbestos'),
+            self::TileZinc => __('Tile/Zinc'),
+            self::Other => __('Other'),
         };
     }
 }

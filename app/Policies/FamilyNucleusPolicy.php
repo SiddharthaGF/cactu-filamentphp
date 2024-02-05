@@ -88,7 +88,7 @@ class FamilyNucleusPolicy
      */
     public function forceDelete(User $user, FamilyNucleus $familyNucleus): bool
     {
-        return $user->can('force_delete_family::nucleus');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -99,7 +99,7 @@ class FamilyNucleusPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_family::nucleus');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -111,7 +111,7 @@ class FamilyNucleusPolicy
      */
     public function restore(User $user, FamilyNucleus $familyNucleus): bool
     {
-        return $user->can('restore_family::nucleus');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -122,7 +122,7 @@ class FamilyNucleusPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_family::nucleus');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -134,7 +134,7 @@ class FamilyNucleusPolicy
      */
     public function replicate(User $user, FamilyNucleus $familyNucleus): bool
     {
-        return $user->can('replicate_family::nucleus');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -145,7 +145,7 @@ class FamilyNucleusPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_family::nucleus');
+        return $user->can('{{ Reorder }}');
     }
 
 }

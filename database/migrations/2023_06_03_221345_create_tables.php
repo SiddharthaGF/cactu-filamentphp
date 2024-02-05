@@ -7,8 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class() extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -73,7 +72,7 @@ return new class() extends Migration
             $table->timestamps();
         });
 
-        schema::create('tutors', function (Blueprint $table): void {
+        Schema::create('tutors', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('family_nucleus_id')->constrained()
                 ->cascadeOnDelete();
@@ -127,7 +126,8 @@ return new class() extends Migration
             $table->tinyInteger('affiliation_status');
             $table->string('pseudonym', 100);
             $table->tinyInteger('sexual_identity');
-            $table->tinyInteger('literacy');
+            $table->tinyInteger('literacy')
+                ->default(0);
             $table->tinyInteger('language');
             $table->string('specific_language', 50)->nullable();
             $table->string('religious')->nullable();
@@ -267,7 +267,7 @@ return new class() extends Migration
 
         Schema::create('disabilities', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('health_status_record_id')->constrained('health_status_record')->cascadeOnDelete();
+            $table->foreignId('child_id')->constrained('children')->cascadeOnDelete();
             $table->unsignedTinyInteger('type');
             $table->unsignedTinyInteger('percent');
             $table->unsignedBigInteger('created_by');
@@ -284,7 +284,6 @@ return new class() extends Migration
             $table->unsignedTinyInteger('walls');
             $table->unsignedTinyInteger('floor');
             $table->json('basic_services');
-            $table->json('extras');
             $table->double('latitude');
             $table->double('longitude');
             $table->string('neighborhood');

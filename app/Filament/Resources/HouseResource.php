@@ -13,7 +13,6 @@ use App\Enums\WallMaterials;
 use App\Filament\Resources\HouseResource\Pages;
 use App\Models\FamilyNucleus;
 use App\Models\House;
-use App\Models\Tutor;
 use Cheesegrits\FilamentGoogleMaps\Fields\Map;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Repeater;
@@ -29,6 +28,8 @@ use Illuminate\Support\Facades\DB;
 final class HouseResource extends Resource
 {
     protected static ?string $model = House::class;
+
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -48,7 +49,7 @@ final class HouseResource extends Resource
         return Select::make('family_nucleus_id')
             ->helperText('This information is shared by all affiliated children belonging to the same family nucleus.')
             ->options(
-                fn() => FamilyNucleus::select(
+                fn () => FamilyNucleus::select(
                     'family_nuclei.id as id',
                     DB::raw("GROUP_CONCAT(CONCAT(tutors.dni, ' - ', tutors.name) SEPARATOR ' : ') as full_name")
                 )
@@ -61,50 +62,66 @@ final class HouseResource extends Resource
             ->required()
             ->native(false)
             //->editOptionForm(fn(Form $form) => FamilyNucleusResource::form($form))
-            ->createOptionForm(fn(Form $form) => FamilyNucleusResource::form($form));
+            ->createOptionForm(fn (Form $form) => FamilyNucleusResource::form($form));
     }
 
     public static function getSchema(): array
     {
         return [
             Select::make('property')
+                ->translateLabel()
                 ->options(HousePropertyTypes::class)
                 ->required()
                 ->native(false),
             Select::make('home_space')
+                ->translateLabel()
                 ->options(HomeSpaceSituations::class)
                 ->required()
                 ->native(false),
             Select::make('roof')
+                ->translateLabel()
                 ->options(RoofMaterials::class)
                 ->required()
                 ->native(false),
             Select::make('walls')
+                ->translateLabel()
                 ->options(WallMaterials::class)
                 ->required()
                 ->native(false),
             Select::make('floor')
+                ->translateLabel()
                 ->options(FloorMaterials::class)
                 ->required()
                 ->native(false),
             CheckboxList::make('basic_services')
+                ->translateLabel()
                 ->options(BasicServices::class)
-                ->columns(5)
+                ->columns([
+                    'sm' => 2,
+                    'md' => 2,
+                    'lg' => 3,
+                    'xl' => 4,
+                ])
+                ->bulkToggleable()
                 ->columnSpanFull()
                 ->gridDirection('row'),
-            TextInput::make('extras')
-                ->required(),
             Map::make('location')
+                ->translateLabel()
                 ->defaultZoom(17)
                 ->columnSpanFull()
                 ->defaultLocation([env('GOOGLE_MAPS_DEFAULT_LAT', 0), env('GOOGLE_MAPS_DEFAULT_LNG', 0)]),
             TextInput::make('neighborhood')
+                ->translateLabel()
                 ->required(),
             Repeater::make('dangerous_places_nearby')
+                ->translateLabel()
+                ->columnSpanFull()
                 ->relationship('risks_near_home')
                 ->defaultItems(0)
                 ->simple(
                     TextInput::make('description')
+                        ->columnSpanFull()
+                        ->translateLabel()
                         ->required(),
                 ),
         ];
@@ -119,7 +136,7 @@ final class HouseResource extends Resource
                     ->searchable(),
                 TextColumn::make('family_nucleus.id')
                     ->formatStateUsing(
-                        fn(int $state, House $record) => $state = $record->family_nucleus->children->count() + $record->family_nucleus->family_members->count()
+                        fn (int $state, House $record) => $state = $record->family_nucleus->children->count() + $record->family_nucleus->family_members->count()
                     )
                     ->badge()
                     ->sortable(),

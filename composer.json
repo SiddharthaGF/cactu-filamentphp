@@ -14,20 +14,25 @@
         "baraja-core/php-pdf-to-image": "^2.0",
         "bezhansalleh/filament-shield": "^3.0",
         "cheesegrits/filament-google-maps": "^3.0",
-        "filament/filament": "3.1.1",
+        "filament/filament": "3.2.0",
+        "filament/spatie-laravel-media-library-plugin": "3.2",
         "guzzlehttp/guzzle": "^7.2",
         "jeffgreco13/filament-breezy": "^2.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.0",
+        "monolog/monolog": "^3.5",
         "netflie/whatsapp-cloud-api": "^2.2",
         "njxqlus/filament-progressbar": "^1.0",
         "psr/simple-cache": "2.0",
         "pxlrbt/filament-environment-indicator": "^2.0",
         "pxlrbt/filament-excel": "^2.1",
+        "rupadana/filament-api-service": "^3.0",
         "saade/filament-autograph": "^3.0",
+        "silviolleite/laravelpwa": "^2.0",
         "stechstudio/filament-impersonate": "^3.5",
+        "swisnl/filament-backgrounds": "^1.1",
         "ysfkaya/filament-phone-input": "^2.1"
     },
     "require-dev": {
@@ -39,6 +44,7 @@
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^7.0",
         "phpunit/phpunit": "^10.1",
+        "reliese/laravel": "^1.2",
         "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
@@ -86,7 +92,8 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
-        }
+        },
+        "platform-check": false
     },
     "minimum-stability": "stable",
     "prefer-stable": true

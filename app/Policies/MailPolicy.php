@@ -88,7 +88,7 @@ class MailPolicy
      */
     public function forceDelete(User $user, Mail $mail): bool
     {
-        return $user->can('force_delete_mail');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -99,7 +99,7 @@ class MailPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_mail');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -111,7 +111,7 @@ class MailPolicy
      */
     public function restore(User $user, Mail $mail): bool
     {
-        return $user->can('restore_mail');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -122,7 +122,7 @@ class MailPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_mail');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -134,7 +134,7 @@ class MailPolicy
      */
     public function replicate(User $user, Mail $mail): bool
     {
-        return $user->can('replicate_mail');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -145,7 +145,7 @@ class MailPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_mail');
+        return $user->can('{{ Reorder }}');
     }
 
 }

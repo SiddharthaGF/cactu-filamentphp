@@ -88,7 +88,7 @@ class HousePolicy
      */
     public function forceDelete(User $user, House $house): bool
     {
-        return $user->can('force_delete_house');
+        return $user->can('{{ ForceDelete }}');
     }
 
     /**
@@ -99,7 +99,7 @@ class HousePolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_house');
+        return $user->can('{{ ForceDeleteAny }}');
     }
 
     /**
@@ -111,7 +111,7 @@ class HousePolicy
      */
     public function restore(User $user, House $house): bool
     {
-        return $user->can('restore_house');
+        return $user->can('{{ Restore }}');
     }
 
     /**
@@ -122,7 +122,7 @@ class HousePolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_house');
+        return $user->can('{{ RestoreAny }}');
     }
 
     /**
@@ -134,7 +134,7 @@ class HousePolicy
      */
     public function replicate(User $user, House $house): bool
     {
-        return $user->can('replicate_house');
+        return $user->can('{{ Replicate }}');
     }
 
     /**
@@ -145,7 +145,7 @@ class HousePolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_house');
+        return $user->can('{{ Reorder }}');
     }
 
 }

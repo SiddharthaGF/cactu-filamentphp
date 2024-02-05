@@ -53,9 +53,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array $basic_services
  * @property float $latitude
  * @property float $longitude
- * @property-read \App\Models\User|null $creator
+ * @property-read User|null $creator
  * @property array $location
- * @property-read \App\Models\User|null $updater
+ * @property-read User|null $updater
  *
  * @method static \Illuminate\Database\Eloquent\Builder|House whereLatitude($value)
  * @method static \Illuminate\Database\Eloquent\Builder|House whereLongitude($value)

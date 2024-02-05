@@ -23,12 +23,16 @@ use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Http;
 use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
 
 final class MailRelationManager extends RelationManager
 {
     protected static string $relationship = 'mails';
+
+    protected static function getPluralModelLabel(): ?string
+    {
+        return __("Mails");
+    }
 
     public function form(Form $form): Form
     {
@@ -72,16 +76,16 @@ final class MailRelationManager extends RelationManager
                                 ->inlineLabel()
                                 ->icon('heroicon-o-identification')
                                 ->label('Replies to letter')
-                                ->url(fn (Mail $record) => route('filament.admin.resources.mails.view', $record->answer_to ?? ''))
+                                ->url(fn(Mail $record) => route('filament.admin.resources.mails.view', $record->answer_to ?? ''))
                                 ->color('info'),
                             TextEntry::make('mailbox.child.name')
                                 ->color('info')
                                 ->inlineLabel()
                                 ->icon('heroicon-o-inbox-stack')
-                                ->url(fn (Mail $record) => route('filament.admin.resources.mailboxes.edit', $record->mailbox)),
+                                ->url(fn(Mail $record) => route('filament.admin.resources.mailboxes.edit', $record->mailbox)),
                             TextEntry::make('letter_type')
                                 ->badge()
-                                ->color(fn (string $state): string => match ($state) {
+                                ->color(fn(string $state): string => match ($state) {
                                     'initial' => 'gray',
                                     'response' => 'info',
                                     'thanks' => 'success',
@@ -94,7 +98,7 @@ final class MailRelationManager extends RelationManager
                                 ->falseIcon('heroicon-o-x-mark')
                                 ->inlineLabel(),
                             TextEntry::make('status')
-                                ->color(fn (string $state): string => match ($state) {
+                                ->color(fn(string $state): string => match ($state) {
                                     'create' => 'gray',
                                     'sent' => 'info',
                                     'replied' => 'success',
@@ -173,11 +177,11 @@ final class MailRelationManager extends RelationManager
                     ->name('Notify')
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
                     ->action(
-                        function (Mail $record) {
+                        function (Mail $record): void {
                             $mobile_number = $record->mailbox->child->mobile_number->number;
                             $pseudonym = $record->mailbox->child->pseudonym;
                             $text = "
-                                Hola $pseudonym, te saludamos desde Cactu! 🌵😊
+                                Hola {$pseudonym}, te saludamos desde Cactu! 🌵😊
                                 \nTe contamos que tienes una nueva carta de parte de tu auspiciente.
                             ";
                             WhatsappController::sendTextMessage($mobile_number, $text);
@@ -200,7 +204,7 @@ final class MailRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->modifyQueryUsing(
-                fn (Builder $query) => $query->orderBy('id', 'desc')
+                fn(Builder $query) => $query->orderBy('id', 'desc')
             );
     }
 }

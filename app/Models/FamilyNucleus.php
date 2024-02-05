@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\RisksTutor;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -52,13 +51,13 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  *
  * @mixin IdeHelperFamilyNucleus
  *
- * @property-read \App\Models\BankingInformation|null $banking_information
- * @property-read \App\Models\User|null $creator
+ * @property-read BankingInformation|null $banking_information
+ * @property-read User|null $creator
  * @property-read string $name
- * @property-read \App\Models\House|null $house
- * @property-read \App\Models\Tutor|null $tutor_1
- * @property-read \App\Models\Tutor|null $tutor_2
- * @property-read \App\Models\User|null $updater
+ * @property-read House|null $house
+ * @property-read Tutor|null $tutor_1
+ * @property-read Tutor|null $tutor_2
+ * @property-read User|null $updater
  *
  * @mixin \Eloquent
  */

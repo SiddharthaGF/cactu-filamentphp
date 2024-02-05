@@ -13,7 +13,6 @@ use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -76,6 +75,11 @@ final class Mailbox extends Model
 
     private static $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+    public static function generateToken(int $length = 15): string
+    {
+        return mb_substr(str_shuffle(self::$characters), 0, $length);
+    }
+
     public function child()
     {
         return $this->belongsTo(Child::class, 'id');
@@ -89,10 +93,5 @@ final class Mailbox extends Model
     public function answers()
     {
         return $this->hasMany(Answers::class);
-    }
-
-    public static function  generateToken(int $length = 15): string
-    {
-        return mb_substr(str_shuffle(self::$characters), 0, $length);
     }
 }

@@ -10,6 +10,8 @@ namespace App\Models;
 
 use App\Traits\UserStamps;
 use Carbon\Carbon;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -27,25 +29,25 @@ use Illuminate\Database\Eloquent\Model;
  * @property Child $child
  * @property User $user
  *
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord query()
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereChildId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereDisabilities($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereHealthProblemSpecification($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereHealthStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HealthStatusRecord whereUpdatedBy($value)
+ * @method static Builder|HealthStatusRecord newModelQuery()
+ * @method static Builder|HealthStatusRecord newQuery()
+ * @method static Builder|HealthStatusRecord query()
+ * @method static Builder|HealthStatusRecord whereChildId($value)
+ * @method static Builder|HealthStatusRecord whereCreatedAt($value)
+ * @method static Builder|HealthStatusRecord whereCreatedBy($value)
+ * @method static Builder|HealthStatusRecord whereDisabilities($value)
+ * @method static Builder|HealthStatusRecord whereHealthProblemSpecification($value)
+ * @method static Builder|HealthStatusRecord whereHealthStatus($value)
+ * @method static Builder|HealthStatusRecord whereId($value)
+ * @method static Builder|HealthStatusRecord whereUpdatedAt($value)
+ * @method static Builder|HealthStatusRecord whereUpdatedBy($value)
  *
  * @mixin IdeHelperHealthStatusRecord
  *
- * @property-read \App\Models\User|null $creator
- * @property-read \App\Models\User|null $updater
+ * @property-read User|null $creator
+ * @property-read User|null $updater
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 final class HealthStatusRecord extends Model
 {
@@ -73,10 +75,5 @@ final class HealthStatusRecord extends Model
     public function child()
     {
         return $this->belongsTo(Child::class);
-    }
-
-    public function disabilities()
-    {
-        return $this->hasMany(Disability::class, 'health_status_record_id');
     }
 }

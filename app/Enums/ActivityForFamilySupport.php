@@ -7,7 +7,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum AffiliationStatus: int implements HasColor, HasLabel
+enum ActivityForFamilySupport: int implements HasColor, HasLabel
 {
     use BaseEnum;
 

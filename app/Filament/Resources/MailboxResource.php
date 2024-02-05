@@ -14,7 +14,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -22,7 +21,17 @@ final class MailboxResource extends Resource
 {
     protected static ?string $model = Mailbox::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-envelope';
+
+    public static function getLabel(): ?string
+    {
+        return __("Mailbox");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Mailboxes");
+    }
 
     public static function form(Form $form): Form
     {
@@ -46,7 +55,7 @@ final class MailboxResource extends Resource
                     ->prefixAction(
                         Action::make('Visit mailbox')
                             ->icon('heroicon-m-arrow-top-right-on-square')
-                            ->url(fn (Mailbox $record) => route('chat', $record->token ?? ''))
+                            ->url(fn(Mailbox $record) => route('chat', $record->token ?? ''))
                             ->openUrlInNewTab(),
                     )
                     ->suffixActions(
@@ -78,7 +87,7 @@ final class MailboxResource extends Resource
                 TextColumn::make('vigency')
                     ->badge(),
                 TextColumn::make('token')
-                    ->url(fn (Mailbox $record) => route('chat', $record->token ?? ''))
+                    ->url(fn(Mailbox $record) => route('chat', $record->token ?? ''))
                     ->openUrlInNewTab()
                     ->icon('heroicon-m-arrow-top-right-on-square'),
             ])

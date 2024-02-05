@@ -11,10 +11,10 @@ enum BankAccountType: string implements HasLabel
     use BaseEnum;
 
     case Savings = 'Savings';
-    case Current = 'Current';
+    case Checking = 'Checking';
 
     public function getLabel(): ?string
     {
-        return $this->name;
+        return __($this->name);
     }
 }

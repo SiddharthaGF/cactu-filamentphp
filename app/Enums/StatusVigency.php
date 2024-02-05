@@ -28,4 +28,3 @@ enum StatusVigency: int implements HasLabel, HasColor
     }
 
 }
-

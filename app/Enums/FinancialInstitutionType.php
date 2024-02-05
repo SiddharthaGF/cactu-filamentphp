@@ -12,10 +12,10 @@ enum FinancialInstitutionType: string implements HasLabel
 
     case Bank = 'Bank';
     case Cooperative = 'Cooperative';
-    case Mutualist = 'Mutualist';
+    case Mutuality = 'Mutuality';
 
     public function getLabel(): ?string
     {
-        return $this->name;
+        return __($this->name);
     }
 }

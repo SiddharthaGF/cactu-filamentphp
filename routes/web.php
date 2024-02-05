@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\WhatsappController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -17,4 +16,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/chat/{id}', fn() => User::all())->name('chat');
+Route::get('/chat/{id}', fn () => User::all())->name('chat');

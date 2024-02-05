@@ -18,10 +18,10 @@ enum EducationalStatus: int implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::Kindergarten => 'Kindergarten (CHN, CDI another type of children\'s center)',
-            self::InitialEducation => 'Initial education (sub-level: initial 1, initial 2)',
-            self::BasicGeneralEducation => 'Basic general education (1-10)',
-            self::UnifiedGeneralBaccalaureate => 'Unified General Baccalaureate (1-3)',
+            self::Kindergarten => __('Kindergarten (CHN, CDI or another type of children\'s center)'),
+            self::InitialEducation => __('Initial education (sub-level: initial 1, initial 2)'),
+            self::BasicGeneralEducation => __('Basic general education (1-10)'),
+            self::UnifiedGeneralBaccalaureate => __('Unified General Baccalaureate (1-3)'),
         };
     }
 }

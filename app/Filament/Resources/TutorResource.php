@@ -13,7 +13,6 @@ use App\Models\Tutor;
 use Auth;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Group;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -38,6 +37,8 @@ final class TutorResource extends Resource
 {
     protected static ?string $model = Tutor::class;
 
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -55,12 +56,13 @@ final class TutorResource extends Resource
             TextInput::make('dni')
                 ->prefixIcon('heroicon-o-identification')
                 ->numeric()
-                ->unique(ignoreRecord: true)
+                ->unique(ignorable: fn($record) => $record)
                 ->required(),
             Group::make()
                 ->relationship('mobile_number')
                 ->schema([
                     PhoneInput::make('number')
+                        ->unique(ignorable: fn($record) => $record)
                         ->required(),
                 ]),
             DatePicker::make('birthdate')
@@ -97,7 +99,7 @@ final class TutorResource extends Resource
                     Textarea::make('specific_reason')
                         ->required()
                         ->visible(
-                            fn(Get $get, $state) => $state = ReasonsIsNotPresent::Other->value == $get('reason_not_present')
+                            fn(Get $get, $state) => $state = ReasonsIsNotPresent::Other->value === $get('reason_not_present')
                         ),
                     DatePicker::make('deathdate')
                         ->prefixIcon('heroicon-o-calendar')
@@ -105,7 +107,7 @@ final class TutorResource extends Resource
                         ->native(false)
                         ->maxDate(now())
                         ->visible(
-                            fn(Get $get, $state) => $state = ReasonsIsNotPresent::Dead->value == $get('reason_not_present')
+                            fn(Get $get, $state) => $state = ReasonsIsNotPresent::Dead->value === $get('reason_not_present')
                         ),
                 ]),
             Section::make()

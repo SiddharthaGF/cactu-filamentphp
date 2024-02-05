@@ -25,6 +25,9 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Njxqlus\FilamentProgressbar\FilamentProgressbarPlugin;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
+use Rupadana\ApiService\ApiServicePlugin;
+use Swis\Filament\Backgrounds\FilamentBackgroundsPlugin;
+use Swis\Filament\Backgrounds\ImageProviders\MyImages;
 
 final class AdminPanelProvider extends PanelProvider
 {
@@ -37,27 +40,31 @@ final class AdminPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Cyan,
             ])
             ->plugins([
+                ApiServicePlugin::make(),
                 FilamentShieldPlugin::make('Roles'),
                 FilamentProgressbarPlugin::make()->color('primary'),
                 BreezyCore::make()
                     ->myProfile(
-                        shouldRegisterUserMenu: true,
-                        shouldRegisterNavigation: false,
-                        hasAvatars: false,
-                        slug: 'profile'
+                        hasAvatars: true,
+                        slug: 'profile',
                     )
                     ->passwordUpdateRules(
                         rules: [Password::default()
                             ->uncompromised(3)],
-                        requiresCurrentPassword: true,
                     )
                     ->myProfileComponents([
                         SignatureComponent::class,
-                    ]),
+                    ])
+                    ->enableTwoFactorAuthentication(),
                 EnvironmentIndicatorPlugin::make(),
+                FilamentBackgroundsPlugin::make()
+                    ->imageProvider(
+                        MyImages::make()
+                            ->directory('images/backgrounds')
+                    ),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -81,8 +88,8 @@ final class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-
             ])
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->resources([
                 //config('filament-logger.activity_resource')
             ]);

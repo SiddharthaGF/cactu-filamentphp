@@ -28,7 +28,7 @@ enum ActivityForFamilySupport: int implements HasColor, HasLabel
         return match ($this) {
             self::Washes => __('Washes'),
             self::BringsFirewood => __('Brings firewood'),
-            self::BringsWater =>__('Brings water'),
+            self::BringsWater => __('Brings water'),
             self::TakesCareOfAnimals => __('Takes care of animals'),
             self::Cooks => __('Cooks'),
             self::HasDeBed => __('Has de bed'),

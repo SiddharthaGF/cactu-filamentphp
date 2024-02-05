@@ -8,7 +8,6 @@ use App\Filament\Resources\EducationalInstitutionResource\Pages;
 use App\Models\EducationalInstitution;
 use Cheesegrits\FilamentGoogleMaps\Fields\Geocomplete;
 use Cheesegrits\FilamentGoogleMaps\Fields\Map;
-use Filament\Forms;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -25,7 +24,7 @@ final class EducationalInstitutionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('zone_code')
+                TextInput::make('zone_code')
                     ->required()
                     ->maxLength(6),
                 Geocomplete::make('search')
@@ -41,8 +40,8 @@ final class EducationalInstitutionResource extends Resource
                     ->reverseGeocodeUsing(function (callable $set, array $results): void {
                         $set('address', $results['formatted_address']);
                         $set('view_map', [
-                            'lat' => (float) ($results['geometry']['location']['lat']),
-                            'lng' => (float) ($results['geometry']['location']['lng']),
+                            'lat' => (float)($results['geometry']['location']['lat']),
+                            'lng' => (float)($results['geometry']['location']['lng']),
                         ]);
                     })
                     ->countries(['ec']),
@@ -52,35 +51,35 @@ final class EducationalInstitutionResource extends Resource
                     ->defaultZoom(17)
                     ->reactive()
                     ->reverseGeocodeUsing(function ($results, callable $get, callable $set): void {
-                        $set('address', dd($results['formatted_address']));
+                        $set('address', $results['formatted_address']);
                     })
                     ->draggable(false)
                     ->defaultLocation([env('GOOGLE_MAPS_DEFAULT_LAT'), env('GOOGLE_MAPS_DEFAULT_LNG')]),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(200),
-                Forms\Components\TextInput::make('education_type')
+                TextInput::make('education_type')
                     ->required()
                     ->maxLength(20),
-                Forms\Components\TextInput::make('financing_type')
+                TextInput::make('financing_type')
                     ->required()
                     ->maxLength(20),
-                Forms\Components\TextInput::make('area')
+                TextInput::make('area')
                     ->required()
                     ->maxLength(10),
-                Forms\Components\TextInput::make('academic_regime')
+                TextInput::make('academic_regime')
                     ->required()
                     ->maxLength(20),
-                Forms\Components\TextInput::make('modality')
+                TextInput::make('modality')
                     ->required()
                     ->maxLength(120),
-                Forms\Components\TextInput::make('academic_day')
+                TextInput::make('academic_day')
                     ->required()
                     ->maxLength(50),
-                Forms\Components\TextInput::make('educative_level')
+                TextInput::make('educative_level')
                     ->required()
                     ->maxLength(40),
-                Forms\Components\TextInput::make('typology')
+                TextInput::make('typology')
                     ->required()
                     ->maxLength(100),
             ]);
