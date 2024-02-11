@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Enums\ElementLetter;
+use App\Enums\MailStatus;
+use App\Enums\WhatsappCommands;
 use App\Models\Answers;
 use App\Models\Child;
 use App\Models\Mail;
 use App\Models\MobileNumber;
-use App\Models\Tutor;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use JetBrains\PhpStorm\NoReturn;
 use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
 use Netflie\WhatsAppCloudApi\Message\ButtonReply\ButtonAction;
 use Netflie\WhatsAppCloudApi\Message\OptionsList\Action;
 use Netflie\WhatsAppCloudApi\Message\OptionsList\Section;
+use Netflie\WhatsAppCloudApi\Response\ResponseException;
 use Netflie\WhatsAppCloudApi\WebHook;
 use Netflie\WhatsAppCloudApi\WhatsAppCloudApi;
 use Throwable;
@@ -35,13 +37,21 @@ final class WhatsappController extends Controller
         );
     }
 
-    public function webhook(): void
+    private static function getWhatsAppInstance(): WhatsAppCloudApi
     {
-        $webhock = new WebHook();
-        $webhock->verify($_GET, env('WHATSAPP_API_TOKEN_VERIFICATION'));
+        return new WhatsAppCloudApi([
+            'from_phone_number_id' => env('WHATSAPP_API_PHONE_NUMBER_ID'),
+            'access_token' => env('WHATSAPP_API_TOKEN'),
+        ]);
     }
 
-    public function receive(): void
+    public function webhook(): void
+    {
+        $webhook = new WebHook();
+        echo $webhook->verify($_GET, env('WHATSAPP_API_TOKEN_VERIFICATION'));
+    }
+
+    #[NoReturn] public function receive(): void
     {
         $payload = file_get_contents('php://input');
         $message = $this->getMessage($payload);
@@ -49,7 +59,7 @@ final class WhatsappController extends Controller
             exit;
         }
         $type = $message["type"];
-        $from = $message["from"];
+        $number_phone = $message["from"];
         $timestamp = $message["timestamp"];
 
         switch ($type) {
@@ -57,20 +67,19 @@ final class WhatsappController extends Controller
                 $text = $message["text"]["body"];
                 $action = $this->extractAction($text);
                 if (!$this->validateAction($action)) {
-                    self::sendTextMessage($from, "No se reconoce el comando: " . $action);
+                    self::sendTextMessage($number_phone, "No se reconoce el comando: " . $action);
                     exit;
                 }
-                $this->executeCommand($from, $action);
+                $this->executeCommand($number_phone, $action);
                 break;
             case 'interactive':
                 $action = $message["interactive"]["button_reply"]["id"];
-                $this->executeCommand($from, $action);
-            //self::sendTextMessage($from, "Este es un mensaje interactivo, ejecuta el comando $action");
-            // no break
+                $this->executeCommand($number_phone, $action);
+                break;
             case 'image':
                 break;
         }
-        $this->saveContent($from, json_decode($payload, true));
+        $this->saveContent($number_phone, json_decode($payload, true));
         exit;
 
 
@@ -95,7 +104,7 @@ final class WhatsappController extends Controller
                 "timestamp" => $timestamp,
             ]
         ];*/
-        $this->saveContent($from, $payload);
+        $this->saveContent($number_phone, $payload);
     }
 
     private function getMessage($payload)
@@ -104,16 +113,19 @@ final class WhatsappController extends Controller
         return $data["entry"][0]["changes"][0]["value"]["messages"][0] ?? null;
     }
 
-    private function extractAction($text)
+    private function extractAction($text): string
     {
         return Str::slug(Str::of($text)->trim());
     }
 
-    private function validateAction($action)
+    private function validateAction($action): bool
     {
-        return in_array($action, ElementLetter::forMigration());
+        return in_array($action, WhatsappCommands::forMigration());
     }
 
+    /**
+     * @throws ResponseException
+     */
     public static function sendTextMessage($number_phone, $message): void
     {
         self::getWhatsAppInstance()->sendTextMessage($number_phone, $message);
@@ -121,33 +133,26 @@ final class WhatsappController extends Controller
 
     private function executeCommand($from, $command): void
     {
-        $id = $this->extractIdfromCommand($command);
+        $id = $this->extractIdFromCommand($command);
         $command = $this->cleanCommand($command);
         try {
             switch ($command) {
-                case ElementLetter::ViewLetter->value:
+                case WhatsappCommands::ViewLetter->value:
                     $answer = Answers::findOrFail($id);
-                    self::sendTextMessage($from, $answer->content);
+                    self::sendButtonReplyMessage(
+                        $from,
+                        $answer->content,
+                        [new Button(WhatsappCommands::ReplyNow->value, WhatsappCommands::ReplyNow->getLabel())]
+                    );
                     break;
-                case ElementLetter::ViewNow->value:
+                case WhatsappCommands::ViewNow->value:
                     $mobile_number = MobileNumber::whereNumber("+" . $from)->firstOrFail();
-                    $class = get_class($mobile_number->mobile_numerable);
-                    switch ($class) {
-                        case Child::class:
-                            $mail = Mail::latest()->first();
-                            foreach ($mail->answers as $answer) {
-                                $rows[] = new Button("ver-carta {$answer->id}", $answer->id);
-                            }
-                            self::sendButtonReplyMessage(
-                                $from,
-                                "Selecciona una carta para leerla",
-                                $rows
-                            );
-                            break;
-                        case Tutor::class:
-                            self::sendTextMessage($from, "el numero pertence a un padre");
-                            break;
-                    }
+                    $rows = Mail::findOrFail($id)->answers->map(function ($answer) use ($mobile_number) {
+                        $buttonId = Child::class === get_class($mobile_number->mobile_numerable) ? $answer->id : (string)$answer->id;
+                        return new Button(WhatsappCommands::ViewLetter->value . ' ' . $answer->id, $buttonId);
+                    });
+                    self::sendButtonReplyMessage($from, "Selecciona una carta para leerla", $rows->toArray());
+                    Mail::whereId($id)->update(["status" => MailStatus::Due]);
                     break;
             }
         } catch (Throwable $th) {
@@ -155,7 +160,7 @@ final class WhatsappController extends Controller
         }
     }
 
-    public function extractIdfromCommand($command): int
+    public function extractIdFromCommand($command): int
     {
         return (int)preg_replace('/[^0-9]+/', '', $command);
     }
@@ -173,14 +178,6 @@ final class WhatsappController extends Controller
             $message,
             $action
         );
-    }
-
-    private static function getWhatsAppInstance()
-    {
-        return new WhatsAppCloudApi([
-            'from_phone_number_id' => env('WHATSAPP_API_PHONE_NUMBER_ID'),
-            'access_token' => env('WHATSAPP_API_TOKEN'),
-        ]);
     }
 
     public function saveContent($from, $data): void

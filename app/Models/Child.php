@@ -7,6 +7,9 @@ namespace App\Models;
 use App\Enums\AffiliationStatus;
 use App\Enums\Gender;
 use App\Enums\HealthStatus;
+use App\Enums\Message;
+use App\Enums\WhatsappCommands;
+use App\Http\Controllers\WhatsappController;
 use App\Traits\HasRecords;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
@@ -18,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
 
 /**
  * Class Child
@@ -210,13 +214,51 @@ final class Child extends Model
         return $this->hasOne(ReasonsLeavingStudy::class);
     }
 
+    public function disabilities(): HasMany
+    {
+        return $this->hasMany(Disability::class, 'child_id');
+    }
+
+    public function NotifyMails(int $id): void
+    {
+        $mobile_number = $this->getMobileNumber();
+        $pseudonym = $this->pseudonym;
+        if ($this->hasMobileNumber()) {
+            $text = str_replace("%pseudonym%", $pseudonym, Message::HelloForChild->value);
+        } else {
+            $tutor_name = $this->family_nucleus->tutors()->first()->name;
+            $text = str_replace('%tutor%', $tutor_name, str_replace("%pseudonym%", $pseudonym, Message::HelloForTutor->value));
+        }
+        WhatsappController::sendButtonReplyMessage($mobile_number, $text, [new Button(WhatsappCommands::ViewNow->value . ' ' . $id, WhatsappCommands::ViewNow->getLabel())]);
+    }
+
+    public function getMobileNumber(): ?string
+    {
+        return $this->mobile_number->number ?? $this->family_nucleus->tutors()->with('mobile_number')->first()->mobile_number->number ?? null;
+    }
+
+    public function hasMobileNumber(): bool
+    {
+        return $this->mobile_number()->exists();
+    }
+
     public function mobile_number(): MorphOne
     {
         return $this->morphOne(MobileNumber::class, 'mobile_numerable');
     }
 
-    public function disabilities(): HasMany
+    public function scopeFindByPhone(string $phone)
     {
-        return $this->hasMany(Disability::class, 'child_id');
+        return $this->newQuery()->whereHas('mobile_number', function (Builder $query) use ($phone): void {
+            $query->where('number', $phone);
+        })->orWhereHas('family_nucleus.tutors.mobile_number', function (Builder $query) use ($phone): void {
+            $query->where('number', $phone);
+        })->first();
     }
+
+    public function isOnlyAffiliated(): bool
+    {
+        return 1 === $this->family_nucleus->children()->count();
+    }
+
 }

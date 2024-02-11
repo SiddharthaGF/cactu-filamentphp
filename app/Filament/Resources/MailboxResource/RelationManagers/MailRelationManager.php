@@ -6,7 +6,6 @@ namespace App\Filament\Resources\MailBoxResource\RelationManagers;
 
 use App\Enums\MailStatus;
 use App\Enums\MailsTypes;
-use App\Http\Controllers\WhatsappController;
 use App\Models\Mail;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -23,7 +22,6 @@ use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
 
 final class MailRelationManager extends RelationManager
 {
@@ -176,24 +174,10 @@ final class MailRelationManager extends RelationManager
                 Tables\Actions\Action::make()
                     ->name('Notify')
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
-                    ->action(
-                        function (Mail $record): void {
-                            $mobile_number = $record->mailbox->child->mobile_number->number;
-                            $pseudonym = $record->mailbox->child->pseudonym;
-                            $text = "
-                                Hola {$pseudonym}, te saludamos desde Cactu! 🌵😊
-                                \nTe contamos que tienes una nueva carta de parte de tu auspiciente.
-                            ";
-                            WhatsappController::sendTextMessage($mobile_number, $text);
-                            WhatsappController::sendButtonReplyMessage(
-                                $mobile_number,
-                                "¿Quieres leerla ahora?",
-                                [
-                                    new Button('ver-ahora', 'Ver ahora'),
-                                ]
-                            );
-                        }
-                    )
+                    ->action(function (Mail $record) {
+                        $record->mailbox->child->NotifyMails($record->id);
+                        $record->update(["status" => MailStatus::Sent]);
+                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
