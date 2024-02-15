@@ -18,8 +18,6 @@ use Netflie\WhatsAppCloudApi\Message\ButtonReply\ButtonAction;
 use Netflie\WhatsAppCloudApi\Message\OptionsList\Action;
 use Netflie\WhatsAppCloudApi\Message\OptionsList\Section;
 use Netflie\WhatsAppCloudApi\Response\ResponseException;
-use Netflie\WhatsAppCloudApi\WebHook;
-use Netflie\WhatsAppCloudApi\WhatsAppCloudApi;
 use Throwable;
 
 final class WhatsappController extends Controller
@@ -28,7 +26,7 @@ final class WhatsappController extends Controller
     {
         $sections = [new Section('Stars', $rows)];
         $action = new Action('Submit', $sections);
-        self::getWhatsAppInstance()->sendList(
+        whatsapp()->sendList(
             $number_phone,
             $title,
             $message,
@@ -37,20 +35,14 @@ final class WhatsappController extends Controller
         );
     }
 
-    private static function getWhatsAppInstance(): WhatsAppCloudApi
-    {
-        return new WhatsAppCloudApi([
-            'from_phone_number_id' => env('WHATSAPP_API_PHONE_NUMBER_ID'),
-            'access_token' => env('WHATSAPP_API_TOKEN'),
-        ]);
-    }
-
     public function webhook(): void
     {
-        $webhook = new WebHook();
-        echo $webhook->verify($_GET, env('WHATSAPP_API_TOKEN_VERIFICATION'));
+        echo webhook();
     }
 
+    /**
+     * @throws ResponseException
+     */
     #[NoReturn] public function receive(): void
     {
         $payload = file_get_contents('php://input');
@@ -128,7 +120,7 @@ final class WhatsappController extends Controller
      */
     public static function sendTextMessage($number_phone, $message): void
     {
-        self::getWhatsAppInstance()->sendTextMessage($number_phone, $message);
+        whatsapp()->sendTextMessage($number_phone, $message);
     }
 
     private function executeCommand($from, $command): void
@@ -152,7 +144,8 @@ final class WhatsappController extends Controller
                         return new Button(WhatsappCommands::ViewLetter->value . ' ' . $answer->id, $buttonId);
                     });
                     self::sendButtonReplyMessage($from, "Selecciona una carta para leerla", $rows->toArray());
-                    Mail::whereId($id)->update(["status" => MailStatus::Due]);
+                    Mail::whereId($id)->update(["status" => MailStatus::View]);
+                    whatsapp()->sendTextMessage($from, "{$status}");
                     break;
             }
         } catch (Throwable $th) {
@@ -173,7 +166,7 @@ final class WhatsappController extends Controller
     public static function sendButtonReplyMessage($number_phone, $message, $buttons): void
     {
         $action = new ButtonAction($buttons);
-        self::getWhatsAppInstance()->sendButton(
+        whatsapp()->sendButton(
             $number_phone,
             $message,
             $action

@@ -8,9 +8,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\MailStatus;
+use App\Observers\MailChangeStatusObserver;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Eloquent;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $mailbox_id
  * @property string $letter_type
- * @property string $status
+ * @property MailStatus $status
  * @property string $letter_photo_1_path
  * @property string|null $letter_photo_2_path
  * @property string|null $answer
@@ -66,6 +69,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @mixin Eloquent
  */
+#[ObservedBy([MailChangeStatusObserver::class])]
 final class Mail extends Model
 {
     use UserStamps;
@@ -76,6 +80,7 @@ final class Mail extends Model
         'mailbox_id' => 'int',
         'created_by' => 'int',
         'updated_by' => 'int',
+        'status' => MailStatus::class,
     ];
 
     protected $fillable = [

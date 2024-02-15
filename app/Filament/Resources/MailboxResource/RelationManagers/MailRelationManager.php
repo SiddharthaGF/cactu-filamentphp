@@ -7,6 +7,7 @@ namespace App\Filament\Resources\MailBoxResource\RelationManagers;
 use App\Enums\MailStatus;
 use App\Enums\MailsTypes;
 use App\Models\Mail;
+use Exception;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -17,7 +18,9 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -26,11 +29,6 @@ use Illuminate\Database\Eloquent\Builder;
 final class MailRelationManager extends RelationManager
 {
     protected static string $relationship = 'mails';
-
-    protected static function getPluralModelLabel(): ?string
-    {
-        return __("Mails");
-    }
 
     public function form(Form $form): Form
     {
@@ -74,16 +72,16 @@ final class MailRelationManager extends RelationManager
                                 ->inlineLabel()
                                 ->icon('heroicon-o-identification')
                                 ->label('Replies to letter')
-                                ->url(fn(Mail $record) => route('filament.admin.resources.mails.view', $record->answer_to ?? ''))
+                                ->url(fn (Mail $record) => route('filament.admin.resources.mails.view', $record->answer_to ?? ''))
                                 ->color('info'),
                             TextEntry::make('mailbox.child.name')
                                 ->color('info')
                                 ->inlineLabel()
                                 ->icon('heroicon-o-inbox-stack')
-                                ->url(fn(Mail $record) => route('filament.admin.resources.mailboxes.edit', $record->mailbox)),
+                                ->url(fn (Mail $record) => route('filament.admin.resources.mailboxes.edit', $record->mailbox)),
                             TextEntry::make('letter_type')
                                 ->badge()
-                                ->color(fn(string $state): string => match ($state) {
+                                ->color(fn (string $state): string => match ($state) {
                                     'initial' => 'gray',
                                     'response' => 'info',
                                     'thanks' => 'success',
@@ -96,7 +94,7 @@ final class MailRelationManager extends RelationManager
                                 ->falseIcon('heroicon-o-x-mark')
                                 ->inlineLabel(),
                             TextEntry::make('status')
-                                ->color(fn(string $state): string => match ($state) {
+                                ->color(fn (string $state): string => match ($state) {
                                     'create' => 'gray',
                                     'sent' => 'info',
                                     'replied' => 'success',
@@ -173,10 +171,23 @@ final class MailRelationManager extends RelationManager
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\Action::make()
                     ->name('Notify')
+                    ->color(Color::Green)
+                    ->translateLabel()
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
-                    ->action(function (Mail $record) {
-                        $record->mailbox->child->NotifyMails($record->id);
-                        $record->update(["status" => MailStatus::Sent]);
+                    ->action(function (Mail $record): void {
+                        try {
+                            $record->mailbox->child->NotifyMails($record->id);
+                            Notification::make()
+                                ->title(__("Sent to whatsapp successfully"))
+                                ->success()
+                                ->send();
+                            $record->update(["status" => MailStatus::Sent]);
+                        } catch (Exception $e) {
+                            Notification::make()
+                                ->title(__("Error sending to whatsapp"))
+                                ->danger()
+                                ->send();
+                        }
                     })
             ])
             ->bulkActions([
@@ -188,7 +199,12 @@ final class MailRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->modifyQueryUsing(
-                fn(Builder $query) => $query->orderBy('id', 'desc')
+                fn (Builder $query) => $query->orderBy('id', 'desc')
             );
+    }
+
+    protected static function getPluralModelLabel(): ?string
+    {
+        return __("Mails");
     }
 }
