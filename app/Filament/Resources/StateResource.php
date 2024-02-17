@@ -26,16 +26,19 @@ final class StateResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('code')
+                    ->translateLabel()
+                    ->unique(ignorable: fn ($record) => $record)
                     ->required()
-                    ->unique()
                     ->maxLength(2)
                     ->minLength(2)
                     ->disabledOn('edit'),
                 Forms\Components\TextInput::make('name')
+                    ->translateLabel()
                     ->required()
-                    ->maxLength(100)
-                    ->unique(),
-                Forms\Components\Select::make('coordinator')
+                    ->unique(ignorable: fn ($record) => $record)
+                    ->maxLength(100),
+                Forms\Components\Select::make('coordinator_id')
+                    ->translateLabel()
                     ->relationship('coordinator', 'name')
                     ->native(false)
                     ->label('Coordinator'),

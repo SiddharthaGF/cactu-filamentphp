@@ -127,7 +127,6 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         'two_factor_secret',
         'two_factor_recovery_codes',
         'remember_token',
-        'profile_photo_path',
         'avatar_url',
         'signature',
         'created_by',
@@ -274,7 +273,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
     protected function vigency(): Attribute
     {
         return Attribute::make(
-            get: fn(): bool => $this->hasRole('panel_user'),
+            get: fn (): bool => $this->hasRole('panel_user'),
         );
     }
 }

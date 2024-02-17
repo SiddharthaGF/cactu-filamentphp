@@ -18,7 +18,7 @@ enum AffiliationStatus: int implements HasColor, HasLabel
 
     public function getLabel(): ?string
     {
-        return $this->name;
+        return __($this->name);
     }
 
     public function getColor(): string|array|null

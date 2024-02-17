@@ -16,16 +16,11 @@ final class ZonesRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-
-        $state_code = '';
-        dd($state_code);
-
         return $form
             ->schema([
                 Forms\Components\TextInput::make('code')
                     ->required()
-                    ->maxLength(255)
-                    ->prefix($state_code),
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),

@@ -28,20 +28,20 @@ enum Occupation: int implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::PrivateEmployee => 'Private Employee',
-            self::Artisan => 'Artisan',
-            self::Farmer => 'Farmer',
-            self::AnimalKeeper => 'Animal Keeper',
-            self::Cook => 'Cook',
-            self::Carpenter => 'Carpenter',
-            self::Builder => 'Builder',
-            self::DayLaborer => 'Day Laborer',
-            self::Mechanic => 'Mechanic',
-            self::Salesman => 'Salesman',
-            self::PaidHouseholdWork => 'Paid Household Work',
-            self::UnpaidHouseholdWork => 'Unpaid Household Work',
-            self::Unknown => 'Unknown',
-            self::Other => 'Other',
+            self::PrivateEmployee => __('Private Employee'),
+            self::Artisan => __('Artisan'),
+            self::Farmer => __('Farmer'),
+            self::AnimalKeeper => __('Animal Keeper'),
+            self::Cook => __('Cook'),
+            self::Carpenter => __('Carpenter'),
+            self::Builder => __('Builder'),
+            self::DayLaborer => __('Day Laborer'),
+            self::Mechanic => __('Mechanic'),
+            self::Salesman => __('Salesman'),
+            self::PaidHouseholdWork => __('Paid Household Work'),
+            self::UnpaidHouseholdWork => __('Unpaid Household Work'),
+            self::Unknown => __('Unknown'),
+            self::Other => __('Other'),
         };
     }
 }

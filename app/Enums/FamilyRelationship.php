@@ -22,14 +22,14 @@ enum FamilyRelationship: int implements HasLabel
     public function getLabel(): string
     {
         return match ($this) {
-            self::FatherMother => 'Father/Mother',
-            self::GrandfatherGrandmother => 'Grandfather/Grandmother',
-            self::BrotherSister => 'Brother/Sister',
-            self::UncleAunt => 'Uncle/Aunt',
-            self::Cousin => 'Cousin',
-            self::StepfatherStepmother => 'Stepfather/Stepmother',
-            self::StepbrotherStepsister => 'Stepbrother/Stepsister',
-            self::Other => 'Other',
+            self::FatherMother => __('Father/Mother'),
+            self::GrandfatherGrandmother => __('Grandfather/Grandmother'),
+            self::BrotherSister => __('Brother/Sister'),
+            self::UncleAunt => __('Uncle/Aunt'),
+            self::Cousin => __('Cousin'),
+            self::StepfatherStepmother => __('Stepfather/Stepmother'),
+            self::StepbrotherStepsister => __('Stepbrother/Stepsister'),
+            self::Other => __('Other'),
         };
     }
 }

@@ -9,11 +9,12 @@ use App\Enums\Gender;
 use App\Enums\HealthStatus;
 use App\Enums\Message;
 use App\Enums\WhatsappCommands;
-use App\Http\Controllers\WhatsappController;
+use App\Jobs\WhatsappJob;
 use App\Traits\HasRecords;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Eloquent;
+use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
+use Storage;
 
 /**
  * Class Child
@@ -118,7 +120,7 @@ use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
  *
  * @mixin Eloquent
  */
-final class Child extends Model
+final class Child extends Model implements HasAvatar
 {
     use HasRecords;
     use UserStamps;
@@ -171,8 +173,15 @@ final class Child extends Model
         'created_by',
         'updated_by',
         'disaffiliated_at',
-        'health_status'
+        'health_status',
+        'child_photo_path',
     ];
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        $url = $this->child_photo_path ? Storage::disk('public')->url($this->child_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        return $url;
+    }
 
     public function contact(): BelongsTo
     {
@@ -229,7 +238,7 @@ final class Child extends Model
             $tutor_name = $this->family_nucleus->tutors()->first()->name;
             $text = str_replace('%tutor%', $tutor_name, str_replace("%pseudonym%", $pseudonym, Message::HelloForTutor->value));
         }
-        WhatsappController::sendButtonReplyMessage($mobile_number, $text, [new Button(WhatsappCommands::ViewNow->value . ' ' . $id, WhatsappCommands::ViewNow->getLabel())]);
+        WhatsappJob::sendButtonReplyMessage($mobile_number, $text, [new Button(WhatsappCommands::ViewNow->value . ' ' . $id, WhatsappCommands::ViewNow->getLabel())]);
     }
 
     public function getMobileNumber(): ?string

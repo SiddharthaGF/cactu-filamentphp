@@ -40,11 +40,15 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 final class ChildResource extends Resource
@@ -53,9 +57,42 @@ final class ChildResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static int $globalSearchResultsLimit = 3;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'dni', 'children_number', 'case_number'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('Dni') => $record->dni,
+            __('Affiliation status') => $record->affiliation_status->getLabel(),
+            __('Children number') => $record->children_number,
+            __('Case number') => $record->case_number,
+        ];
+    }
+
     public static function getLabel(): ?string
     {
         return __("Child");
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return ChildResource::getUrl('edit', ['record' => $record]);
+    }
+
+    public static function getGlobalSearchResultActions(Model $record): array
+    {
+        return [
+            \Filament\GlobalSearch\Actions\Action::make('edit')
+                ->icon('heroicon-o-pencil-square')
+                ->url(static::getUrl('edit', ['record' => $record])),
+        ];
     }
 
     public static function form(Form $form): Form
@@ -147,7 +184,7 @@ final class ChildResource extends Resource
                                     ->options(Literacy::class)
                                     ->default(Literacy::None)
                                     ->native(false)
-                                    ->hidden(fn (Get $get) => Carbon::parse($get('birthdate'))->age <= 5)
+                                    ->hidden(fn(Get $get) => Carbon::parse($get('birthdate'))->age <= 5)
                                     ->required(),
                                 Group::make()
                                     ->schema([
@@ -159,13 +196,13 @@ final class ChildResource extends Resource
                                                     ->translateLabel()
                                                     ->options(EducationalStatus::class)
                                                     ->columnSpanFull()
-                                                    ->disableOptionWhen(fn (string $value): bool => 'published' === $value)
+                                                    ->disableOptionWhen(fn(string $value): bool => 'published' === $value)
                                                     ->required(),
                                                 Select::make('educational_institution_id')
                                                     ->label('Educational Institution')
                                                     ->translateLabel()
                                                     ->options(
-                                                        fn () => EducationalInstitution::select([
+                                                        fn() => EducationalInstitution::select([
                                                             'id',
                                                             DB::raw("CONCAT(educational_Institutions.name, ' (', zone_city.name, ')') AS full_name"),
                                                         ])
@@ -189,11 +226,11 @@ final class ChildResource extends Resource
                                                     ->suffixAction(
                                                         Action::make('Clean field')
                                                             ->icon('heroicon-o-x-circle')
-                                                            ->action(fn (Set $set) => $set('fovorite_subject', '')),
+                                                            ->action(fn(Set $set) => $set('fovorite_subject', '')),
                                                     ),
 
                                             ])
-                                            ->hidden(fn (Get $get, $state) => count($get('reasons_leaving_study')) > 0)
+                                            ->hidden(fn(Get $get, $state) => count($get('reasons_leaving_study')) > 0)
                                             ->maxItems(1)
                                             ->columns()
                                             ->defaultItems(0),
@@ -206,7 +243,7 @@ final class ChildResource extends Resource
                                                     ->columnSpanFull()
                                                     ->required(),
                                             ])
-                                            ->hidden(fn (Get $get, $state) => count($get('educational_record')) > 0)
+                                            ->hidden(fn(Get $get, $state) => count($get('educational_record')) > 0)
                                             ->maxItems(1)
                                             ->defaultItems(0),
                                     ])
@@ -240,7 +277,7 @@ final class ChildResource extends Resource
                                             ->columnSpanFull(),
                                     ])
                                     ->hidden(
-                                        fn (Get $get, $state) => $state = HealthStatus::HasProblems !== $get('health_status')
+                                        fn(Get $get, $state) => $state = HealthStatus::HasProblems !== $get('health_status')
                                     ),
                                 Repeater::make('disabilities')
                                     ->translateLabel()
@@ -276,7 +313,7 @@ final class ChildResource extends Resource
                                                 PhoneInput::make('number')
                                                     ->required()
                                                     ->translateLabel()
-                                                    ->unique(ignorable: fn ($record) => $record)
+                                                    ->unique(ignorable: fn($record) => $record)
                                                     ->columnSpanFull(),
                                             ]),
                                     ])
@@ -296,7 +333,7 @@ final class ChildResource extends Resource
                                     ->relationship(
                                         'family_nucleus',
                                         'family_nuclei.id',
-                                        fn ($query) => $query->with('tutors')->select(
+                                        fn($query) => RecordBuilder::correspondingRecords($query)->with('tutors')->select(
                                             'family_nuclei.id',
                                             DB::raw("GROUP_CONCAT(CONCAT(tutors.dni, ' - ', tutors.name) SEPARATOR ' : ') as full_name")
                                         )
@@ -304,16 +341,16 @@ final class ChildResource extends Resource
                                             ->groupBy('family_nuclei.id')
                                     )
                                     ->getOptionLabelFromRecordUsing(
-                                        fn ($record) => $record->full_name
+                                        fn($record) => $record->full_name
                                     )
                                     ->searchable(['family_nuclei.id', 'tutors.name'])
                                     ->columnSpanFull()
                                     ->required()
                                     ->native(false)
-                                    ->editOptionForm(fn (Form $form) => FamilyNucleusResource::form($form))
-                                    ->createOptionForm(fn (Form $form) => FamilyNucleusResource::form($form))
+                                    ->editOptionForm(fn(Form $form) => FamilyNucleusResource::form($form))
+                                    ->createOptionForm(fn(Form $form) => FamilyNucleusResource::form($form))
                                     ->createOptionAction(
-                                        fn (Action $action) => $action->modalWidth('5xl')
+                                        fn(Action $action) => $action->modalWidth('5xl')
                                             ->slideOver()
                                     ),
                                 CheckboxList::make('expected_benefits')
@@ -337,7 +374,7 @@ final class ChildResource extends Resource
                                         TextInput::make('specific_language')
                                             ->translateLabel()
                                             ->hidden(
-                                                fn (Get $get) => Language::Other !== $get('language')
+                                                fn(Get $get) => Language::Other !== $get('language')
                                             )
                                             ->required(),
                                     ]),
@@ -354,7 +391,7 @@ final class ChildResource extends Resource
                                         TextInput::make('specific_ethnic_group')
                                             ->translateLabel()
                                             ->hidden(
-                                                fn (Get $get) => EthnicGroup::Other !== $get('ethnic_group')
+                                                fn(Get $get) => EthnicGroup::Other !== $get('ethnic_group')
                                             )
                                             ->required(),
                                     ]),
@@ -372,7 +409,7 @@ final class ChildResource extends Resource
                                         TextInput::make('specific_nationality')
                                             ->translateLabel()
                                             ->hidden(
-                                                fn (Get $get) => Nationality::Other !== $get('nationality')
+                                                fn(Get $get) => Nationality::Other !== $get('nationality')
                                             )
                                             ->required(),
                                     ]),
@@ -390,7 +427,7 @@ final class ChildResource extends Resource
                                     ->suffixAction(
                                         Action::make('Clean field')
                                             ->icon('heroicon-o-x-circle')
-                                            ->action(fn (Set $set) => $set('religious', '')),
+                                            ->action(fn(Set $set) => $set('religious', '')),
                                     ),
                                 Select::make('migratory_status')
                                     ->translateLabel()
@@ -455,8 +492,8 @@ final class ChildResource extends Resource
                             ]),
                     ]
                 )
-                    ->startOnStep(fn ($context) => 'create' === $context ? 1 : 2)
-                    ->skippable(fn ($context) => 'ceate' !== $context)
+                    ->startOnStep(fn($context) => 'create' === $context ? 1 : 2)
+                    ->skippable(fn($context) => 'ceate' !== $context)
                     ->persistStepInQueryString()
                     ->columnSpanFull(),
             ]);
@@ -466,58 +503,86 @@ final class ChildResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('dni')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('children_number')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('case_number')
-                    ->searchable()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('gender')
-                    ->badge(),
-                TextColumn::make('birthdate')
-                    ->formatStateUsing(
-                        fn ($state) => Carbon::parse($state)->age
-                    )
-                    ->badge()
-                    ->label('Age'),
-                TextColumn::make('affiliation_status')
-                    ->badge(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\ImageColumn::make('child_photo_path')
+                        ->defaultImageUrl(fn(Model $record) => $record->getFilamentAvatarUrl())
+                        ->circular()
+                        ->grow(false)
+                        ->alignEnd()
+                        ->visibleFrom('md'),
+                    Tables\Columns\Layout\Stack::make([
+                        TextColumn::make('dni')
+                            ->translateLabel()
+                            ->searchable()
+                            ->sortable(),
+                        TextColumn::make('name')
+                            ->translateLabel()
+                            ->searchable()
+                            ->sortable(),
+                        TextColumn::make('children_number')
+                            ->translateLabel()
+                            ->searchable()
+                            ->sortable()
+                            ->toggleable(isToggledHiddenByDefault: true),
+                        TextColumn::make('case_number')
+                            ->translateLabel()
+                            ->searchable()
+                            ->sortable()
+                            ->toggleable(isToggledHiddenByDefault: true),
+                        Tables\Columns\Layout\Split::make([
+                            TextColumn::make('gender')
+                                ->translateLabel()
+                                ->badge(),
+                            TextColumn::make('birthdate')
+                                ->translateLabel()
+                                ->formatStateUsing(
+                                    fn($state) => Carbon::parse($state)->age . ' ' . __('years')
+                                )
+                                ->badge()
+                                ->label('Age'),
+                            TextColumn::make('affiliation_status')
+                                ->translateLabel()
+                                ->badge(),
+                        ]),
+                    ])
+                ]),
+            ])
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
             ])
             ->filters([
 
             ])
             ->actions([
                 Tables\Actions\Action::make('Family')
+                    ->translateLabel()
                     ->icon('heroicon-o-user-group')
-                    ->color('gray')
-                    ->url(fn (Child $record) => route('filament.admin.resources.family-nuclei.edit', $record->family_nucleus_id)),
-                Tables\Actions\EditAction::make(),
+                    ->color(Color::Amber)
+                    ->url(fn(Child $record) => FamilyNucleusResource::getUrl('edit', [$record->family_nucleus_id])),
+                Tables\Actions\Action::make('Mailbox')
+                    ->translateLabel()
+                    ->icon('heroicon-o-envelope')
+                    ->color('success')
+                    ->url(fn(Child $record) => MailboxResource::getUrl('edit', [$record->id])),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                ]),
+                ExportBulkAction::make()->exports([
+                    ExcelExport::make('All the information')->fromModel(),
                 ]),
             ])
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ])
             ->modifyQueryUsing(
-                fn (Builder $query) => RecordBuilder::correspondingRecords($query)
+                fn(Builder $query) => RecordBuilder::correspondingRecords($query)
             );
     }
 

@@ -10,7 +10,10 @@ namespace App\Models;
 
 use App\Traits\UserStamps;
 use Carbon\Carbon;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\HigherOrderBuilderProxy;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -28,23 +31,23 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|Community[] $communities
  * @property-read int|null $communities_count
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Zone newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Zone newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Zone query()
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereCityCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Zone whereUpdatedBy($value)
+ * @method static Builder|Zone newModelQuery()
+ * @method static Builder|Zone newQuery()
+ * @method static Builder|Zone query()
+ * @method static Builder|Zone whereCityCode($value)
+ * @method static Builder|Zone whereCode($value)
+ * @method static Builder|Zone whereCreatedAt($value)
+ * @method static Builder|Zone whereCreatedBy($value)
+ * @method static Builder|Zone whereName($value)
+ * @method static Builder|Zone whereUpdatedAt($value)
+ * @method static Builder|Zone whereUpdatedBy($value)
  *
  * @mixin IdeHelperZone
  *
  * @property-read User|null $creator
  * @property-read User|null $updater
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 final class Zone extends Model
 {
@@ -53,6 +56,10 @@ final class Zone extends Model
     public $incrementing = false;
 
     public $primaryKey = 'code';
+    /**
+     * @var HigherOrderBuilderProxy|mixed
+     */
+    public mixed $mobile_numerable;
 
     protected $table = 'zones';
 

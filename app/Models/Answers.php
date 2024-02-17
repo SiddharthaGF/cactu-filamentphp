@@ -10,6 +10,8 @@ namespace App\Models;
 
 use App\Traits\UserStamps;
 use Carbon\Carbon;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -31,38 +33,39 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Mailbox $mailbox
  * @property Ticket $ticket
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Mail newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Mail newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Mail query()
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereAnswer($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereLetterPhoto1Path($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereLetterPhoto2Path($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereLetterType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereMailboxId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereUpdatedBy($value)
+ * @method static Builder|Mail newModelQuery()
+ * @method static Builder|Mail newQuery()
+ * @method static Builder|Mail query()
+ * @method static Builder|Mail whereAnswer($value)
+ * @method static Builder|Mail whereCreatedAt($value)
+ * @method static Builder|Mail whereCreatedBy($value)
+ * @method static Builder|Mail whereId($value)
+ * @method static Builder|Mail whereLetterPhoto1Path($value)
+ * @method static Builder|Mail whereLetterPhoto2Path($value)
+ * @method static Builder|Mail whereLetterType($value)
+ * @method static Builder|Mail whereMailboxId($value)
+ * @method static Builder|Mail whereStatus($value)
+ * @method static Builder|Mail whereUpdatedAt($value)
+ * @method static Builder|Mail whereUpdatedBy($value)
  *
  * @mixin IdeHelperLetter
  *
  * @property string $type
- * @property int $awswer_to
+ * @property int $answer_to
  * @property int $has_ticket
  * @property string $photo_path
+ * @property string $content
  * @property-read User|null $creator
  * @property-read Mail|null $from
  * @property-read Mail|null $to
  * @property-read User|null $updater
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereAwswerTo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereHasTicket($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail wherePhotoPath($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Mail whereType($value)
+ * @method static Builder|Mail whereAwswerTo($value)
+ * @method static Builder|Mail whereHasTicket($value)
+ * @method static Builder|Mail wherePhotoPath($value)
+ * @method static Builder|Mail whereType($value)
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 final class Answers extends Model
 {

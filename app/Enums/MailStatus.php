@@ -16,10 +16,18 @@ enum MailStatus: int implements HasLabel, HasColor
     case View = 3;
     case Replied = 4;
     case Expired = 5;
+    case IsResponse = 6;
 
     public function getLabel(): ?string
     {
-        return __($this->name);
+        return match ($this) {
+            self::Created => 'Creado',
+            self::Sent => 'Enviado',
+            self::View => 'Visto',
+            self::Replied => 'Respondido',
+            self::Expired => 'Expirado',
+            self::IsResponse => 'Es Respuesta',
+        };
     }
 
     public function getColor(): ?string
@@ -30,6 +38,7 @@ enum MailStatus: int implements HasLabel, HasColor
             self::View => 'info',
             self::Replied => 'warning',
             self::Expired => 'gray',
+            self::IsResponse => 'primary',
         };
     }
 }

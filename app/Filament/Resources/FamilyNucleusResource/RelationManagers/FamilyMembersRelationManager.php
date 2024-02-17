@@ -16,10 +16,16 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 final class FamilyMembersRelationManager extends RelationManager
 {
     protected static string $relationship = 'family_members';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('Family Members');
+    }
 
     public function form(Form $form): Form
     {
@@ -78,5 +84,10 @@ final class FamilyMembersRelationManager extends RelationManager
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ]);
+    }
+
+    protected static function getModelLabel(): ?string
+    {
+        return __('Family Member');
     }
 }

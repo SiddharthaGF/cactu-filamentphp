@@ -17,6 +17,6 @@ enum RisksTutor: string implements HasLabel
 
     public function getLabel(): ?string
     {
-        return $this->value;
+        return __($this->value);
     }
 }

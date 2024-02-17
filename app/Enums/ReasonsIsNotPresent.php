@@ -19,11 +19,11 @@ enum ReasonsIsNotPresent: int implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::Divorced => 'Divorced',
-            self::Separated => 'Separated',
-            self::LivesElsewhere => 'Lives Elsewhere',
-            self::Dead => 'Dead',
-            self::Other => 'Other',
+            self::Divorced => __('Divorced'),
+            self::Separated => __('Separated'),
+            self::LivesElsewhere => __('Lives Elsewhere'),
+            self::Dead => __('Dead'),
+            self::Other => __('Other'),
         };
     }
 }

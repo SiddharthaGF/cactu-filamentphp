@@ -10,6 +10,7 @@ namespace App\Models;
 
 use App\Enums\FamilyRelationship;
 use App\Enums\Gender;
+use App\Enums\ReasonsIsNotPresent;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Eloquent;
@@ -88,6 +89,7 @@ final class Tutor extends Model
         'deathdate' => 'datetime',
         'salary' => 'float',
         'gender' => Gender::class,
+        'reason_not_present' => ReasonsIsNotPresent::class,
     ];
 
     protected $fillable = [

@@ -16,7 +16,7 @@ enum StatusVigency: int implements HasLabel, HasColor
 
     public function getLabel(): ?string
     {
-        return $this->name;
+        return __($this->name);
     }
 
     public function getColor(): ?string

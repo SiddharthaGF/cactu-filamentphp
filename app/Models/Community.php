@@ -10,8 +10,12 @@ namespace App\Models;
 
 use App\Traits\UserStamps;
 use Carbon\Carbon;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Community
@@ -29,24 +33,24 @@ use Illuminate\Database\Eloquent\Model;
  * @property Collection|CommunityManager[] $community_managers
  * @property-read int|null $community_managers_count
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Community newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Community newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Community query()
- * @method static \Illuminate\Database\Eloquent\Builder|Community whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Community whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Community whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Community whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Community whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Community whereUpdatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Community whereVigency($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Community whereZoneCode($value)
+ * @method static Builder|Community newModelQuery()
+ * @method static Builder|Community newQuery()
+ * @method static Builder|Community query()
+ * @method static Builder|Community whereCreatedAt($value)
+ * @method static Builder|Community whereCreatedBy($value)
+ * @method static Builder|Community whereId($value)
+ * @method static Builder|Community whereName($value)
+ * @method static Builder|Community whereUpdatedAt($value)
+ * @method static Builder|Community whereUpdatedBy($value)
+ * @method static Builder|Community whereVigency($value)
+ * @method static Builder|Community whereZoneCode($value)
  *
  * @mixin IdeHelperCommunity
  *
  * @property-read User|null $creator
  * @property-read User|null $updater
  *
- * @mixin \Eloquent
+ * @mixin Eloquent
  */
 final class Community extends Model
 {
@@ -67,13 +71,18 @@ final class Community extends Model
         'vigency',
     ];
 
-    public function zone()
+    public function zone(): BelongsTo
     {
         return $this->belongsTo(Zone::class, 'zone_code', 'code');
     }
 
-    public function community_managers()
+    public function community_managers(): HasMany
     {
         return $this->hasMany(CommunityManagers::class);
+    }
+
+    public function managers()
+    {
+        return $this->belongsToMany(User::class, 'community_managers', 'community_id', 'manager_id', 'manager_id', 'id');
     }
 }

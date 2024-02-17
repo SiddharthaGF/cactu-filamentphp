@@ -28,10 +28,7 @@ final class CommunityResource extends Resource
                 TextInput::make('name')
                     ->required(),
                 Checkbox::make('vigency')
-                    ->dehydrateStateUsing(fn ($state) => $state ? 'active' : 'inactive')
-                    ->formatStateUsing(
-                        fn (string $state) => 'active' === $state
-                    ),
+                ,
                 Select::make('zone_code')
                     ->relationship(
                         'zone',
@@ -41,6 +38,13 @@ final class CommunityResource extends Resource
                     ->preload()
                     ->reactive()
                     ->label('Zone'),
+                Select::make('manager_id')
+                    ->relationship('managers')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->reactive()
+                    ->label('Manager'),
             ]);
     }
 
@@ -71,8 +75,7 @@ final class CommunityResource extends Resource
             ])
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
-            ])
-            ->paginated([10, 25, 50, 100, 'all']);
+            ]);
     }
 
     public static function getRelations(): array

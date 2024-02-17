@@ -9,14 +9,15 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\MailStatus;
-use App\Observers\MailChangeStatusObserver;
+use App\Enums\MailsTypes;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Eloquent;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * Class Mail
@@ -33,8 +34,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property User $user
+ * @property Answers $answers
  * @property Mailbox $mailbox
- * @property Ticket $ticket
  *
  * @method static Builder|Mail newModelQuery()
  * @method static Builder|Mail newQuery()
@@ -69,7 +70,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @mixin Eloquent
  */
-#[ObservedBy([MailChangeStatusObserver::class])]
+//#[ObservedBy([MailChangeStatusObserver::class])]
 final class Mail extends Model
 {
     use UserStamps;
@@ -81,6 +82,7 @@ final class Mail extends Model
         'created_by' => 'int',
         'updated_by' => 'int',
         'status' => MailStatus::class,
+        'type' => MailsTypes::class,
     ];
 
     protected $fillable = [
@@ -92,24 +94,19 @@ final class Mail extends Model
         'updated_by',
     ];
 
-    public function from()
+    public function from(): BelongsTo
     {
         return $this->belongsTo(Mail::class);
     }
 
-    public function to()
+    public function to(): HasOne
     {
         return $this->hasOne(Mail::class, 'answer_to');
     }
 
-    public function mailbox()
+    public function mailbox(): BelongsTo
     {
         return $this->belongsTo(Mailbox::class);
-    }
-
-    public function ticket()
-    {
-        return $this->hasOne(Ticket::class);
     }
 
     public function answers(): HasMany
