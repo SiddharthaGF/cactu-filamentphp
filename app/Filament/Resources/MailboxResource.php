@@ -23,6 +23,7 @@ final class MailboxResource extends Resource
     protected static ?string $model = Mailbox::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-envelope';
+
     protected static int $globalSearchResultsLimit = 3;
 
     public static function getGlobalSearchResultTitle(Model $record): string

@@ -8,6 +8,7 @@ use App\Filament\Resources\EducationalInstitutionResource\Pages;
 use App\Models\EducationalInstitution;
 use Cheesegrits\FilamentGoogleMaps\Fields\Geocomplete;
 use Cheesegrits\FilamentGoogleMaps\Fields\Map;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,17 +19,29 @@ final class EducationalInstitutionResource extends Resource
 {
     protected static ?string $model = EducationalInstitution::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
-    protected static bool $shouldRegisterNavigation = false;
+    public static function getLabel(): ?string
+    {
+        return __("Educational Institution");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Educational Institutions");
+    }
+
+
+    protected static bool $shouldRegisterNavigation = true;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                TextInput::make('zone_code')
-                    ->required()
-                    ->maxLength(6),
+                Select::make('zone_code')
+                    ->relationship('zone', 'name')
+                    ->native(false)
+                    ->required(),
                 Geocomplete::make('search')
                     ->label('Search for a center educational')
                     ->prefixIcon('heroicon-o-magnifying-glass')
@@ -61,28 +74,20 @@ final class EducationalInstitutionResource extends Resource
                     ->required()
                     ->maxLength(200),
                 TextInput::make('education_type')
-                    ->required()
                     ->maxLength(20),
                 TextInput::make('financing_type')
-                    ->required()
                     ->maxLength(20),
                 TextInput::make('area')
-                    ->required()
                     ->maxLength(10),
                 TextInput::make('academic_regime')
-                    ->required()
                     ->maxLength(20),
                 TextInput::make('modality')
-                    ->required()
                     ->maxLength(120),
                 TextInput::make('academic_day')
-                    ->required()
                     ->maxLength(50),
                 TextInput::make('educative_level')
-                    ->required()
                     ->maxLength(40),
                 TextInput::make('typology')
-                    ->required()
                     ->maxLength(100),
             ]);
     }
@@ -128,9 +133,7 @@ final class EducationalInstitutionResource extends Resource
                 Tables\Columns\TextColumn::make('typology')
                     ->searchable(),
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -143,9 +146,7 @@ final class EducationalInstitutionResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     public static function getPages(): array

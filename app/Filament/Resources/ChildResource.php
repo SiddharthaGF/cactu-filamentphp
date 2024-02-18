@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Resources;
 
 use App\Builder\RecordBuilder;
+use App\Enums\ActivityForFamilySupport;
+use App\Enums\ActivityForRecreation;
 use App\Enums\AffiliationStatus;
 use App\Enums\Disability;
 use App\Enums\EducationalStatus;
@@ -23,6 +25,7 @@ use App\Filament\Resources\ChildResource\Pages;
 use App\Models\Child;
 use App\Models\EducationalInstitution;
 use Carbon\Carbon;
+use Faker\Provider\ar_EG\Text;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
@@ -32,8 +35,8 @@ use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
@@ -47,9 +50,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 final class ChildResource extends Resource
 {
@@ -129,8 +133,7 @@ final class ChildResource extends Resource
                                             ->label('Child photo')
                                             ->translateLabel()
                                             ->imageEditor()
-                                            ->circleCropper()
-                                            ->imageCropAspectRatio("1:1")
+                                            ->imageCropAspectRatio("3:4")
                                             ->image()
                                     ]),
                                 Section::make(__('Personal Information'))
@@ -157,7 +160,6 @@ final class ChildResource extends Resource
                                             ->required()
                                             ->reactive()
                                             ->prefixIcon('heroicon-o-calendar')
-                                            ->native(false)
                                             ->closeOnDateSelection()
                                             ->maxDate(Carbon::now()),
                                         Select::make('gender')
@@ -184,7 +186,7 @@ final class ChildResource extends Resource
                                     ->options(Literacy::class)
                                     ->default(Literacy::None)
                                     ->native(false)
-                                    ->hidden(fn(Get $get) => Carbon::parse($get('birthdate'))->age <= 5)
+                                    ->hidden(fn (Get $get) => Carbon::parse($get('birthdate'))->age <= 5)
                                     ->required(),
                                 Group::make()
                                     ->schema([
@@ -196,13 +198,14 @@ final class ChildResource extends Resource
                                                     ->translateLabel()
                                                     ->options(EducationalStatus::class)
                                                     ->columnSpanFull()
-                                                    ->disableOptionWhen(fn(string $value): bool => 'published' === $value)
+                                                    ->disableOptionWhen(fn (string $value): bool => 'published' === $value)
                                                     ->required(),
                                                 Select::make('educational_institution_id')
+                                                    ->prefixIcon('heroicon-o-academic-cap')
                                                     ->label('Educational Institution')
                                                     ->translateLabel()
                                                     ->options(
-                                                        fn() => EducationalInstitution::select([
+                                                        fn () => EducationalInstitution::select([
                                                             'id',
                                                             DB::raw("CONCAT(educational_Institutions.name, ' (', zone_city.name, ')') AS full_name"),
                                                         ])
@@ -215,22 +218,23 @@ final class ChildResource extends Resource
                                                     ->native(false)
                                                     ->searchable(),
                                                 TextInput::make('level')
+                                                    ->prefixIcon('heroicon-o-hashtag')
                                                     ->translateLabel()
-                                                    ->datalist(SchoolLevel::cases())
+                                                    ->datalist(SchoolLevel::getTranslatedLevels())
                                                     ->required(),
                                                 TextInput::make('fovorite_subject')
                                                     ->translateLabel()
                                                     ->required()
-                                                    ->datalist(SchoolSuject::cases())
+                                                    ->datalist(SchoolSuject::getTranslatedLevels())
                                                     ->prefixIcon('heroicon-o-star')
                                                     ->suffixAction(
                                                         Action::make('Clean field')
                                                             ->icon('heroicon-o-x-circle')
-                                                            ->action(fn(Set $set) => $set('fovorite_subject', '')),
+                                                            ->action(fn (Set $set) => $set('fovorite_subject', '')),
                                                     ),
 
                                             ])
-                                            ->hidden(fn(Get $get, $state) => count($get('reasons_leaving_study')) > 0)
+                                            ->hidden(fn (Get $get, $state) => count($get('reasons_leaving_study')) > 0)
                                             ->maxItems(1)
                                             ->columns()
                                             ->defaultItems(0),
@@ -243,7 +247,7 @@ final class ChildResource extends Resource
                                                     ->columnSpanFull()
                                                     ->required(),
                                             ])
-                                            ->hidden(fn(Get $get, $state) => count($get('educational_record')) > 0)
+                                            ->hidden(fn (Get $get, $state) => count($get('educational_record')) > 0)
                                             ->maxItems(1)
                                             ->defaultItems(0),
                                     ])
@@ -277,7 +281,7 @@ final class ChildResource extends Resource
                                             ->columnSpanFull(),
                                     ])
                                     ->hidden(
-                                        fn(Get $get, $state) => $state = HealthStatus::HasProblems !== $get('health_status')
+                                        fn (Get $get, $state) => $state = HealthStatus::HasProblems !== $get('health_status')
                                     ),
                                 Repeater::make('disabilities')
                                     ->translateLabel()
@@ -313,7 +317,7 @@ final class ChildResource extends Resource
                                                 PhoneInput::make('number')
                                                     ->required()
                                                     ->translateLabel()
-                                                    ->unique(ignorable: fn($record) => $record)
+                                                    ->unique(ignorable: fn ($record) => $record)
                                                     ->columnSpanFull(),
                                             ]),
                                     ])
@@ -333,7 +337,7 @@ final class ChildResource extends Resource
                                     ->relationship(
                                         'family_nucleus',
                                         'family_nuclei.id',
-                                        fn($query) => RecordBuilder::correspondingRecords($query)->with('tutors')->select(
+                                        fn ($query) => RecordBuilder::correspondingRecords($query)->with('tutors')->select(
                                             'family_nuclei.id',
                                             DB::raw("GROUP_CONCAT(CONCAT(tutors.dni, ' - ', tutors.name) SEPARATOR ' : ') as full_name")
                                         )
@@ -341,24 +345,26 @@ final class ChildResource extends Resource
                                             ->groupBy('family_nuclei.id')
                                     )
                                     ->getOptionLabelFromRecordUsing(
-                                        fn($record) => $record->full_name
+                                        fn ($record) => $record->full_name
                                     )
                                     ->searchable(['family_nuclei.id', 'tutors.name'])
                                     ->columnSpanFull()
                                     ->required()
                                     ->native(false)
-                                    ->editOptionForm(fn(Form $form) => FamilyNucleusResource::form($form))
-                                    ->createOptionForm(fn(Form $form) => FamilyNucleusResource::form($form))
+                                    ->editOptionForm(fn (Form $form) => FamilyNucleusResource::form($form))
+                                    ->createOptionForm(fn (Form $form) => FamilyNucleusResource::form($form))
                                     ->createOptionAction(
-                                        fn(Action $action) => $action->modalWidth('5xl')
+                                        fn (Action $action) => $action->modalWidth('5xl')
                                             ->slideOver()
                                     ),
-                                CheckboxList::make('expected_benefits')
+                                CheckboxList::make('risks_child')
+                                    ->label('¿What are the main reasons why the boy or girl will benefit from being enrolled in ChildFund? (under 15 years old)')
                                     ->translateLabel()
                                     ->columns([
                                         'sm' => 2,
                                         'md' => 5,
                                     ])
+                                    ->bulkToggleable()
                                     ->options(RisksChild::class),
                                 Group::make()
                                     ->columns(2)
@@ -374,7 +380,7 @@ final class ChildResource extends Resource
                                         TextInput::make('specific_language')
                                             ->translateLabel()
                                             ->hidden(
-                                                fn(Get $get) => Language::Other !== $get('language')
+                                                fn (Get $get) => Language::Other !== $get('language')
                                             )
                                             ->required(),
                                     ]),
@@ -391,7 +397,7 @@ final class ChildResource extends Resource
                                         TextInput::make('specific_ethnic_group')
                                             ->translateLabel()
                                             ->hidden(
-                                                fn(Get $get) => EthnicGroup::Other !== $get('ethnic_group')
+                                                fn (Get $get) => EthnicGroup::Other !== $get('ethnic_group')
                                             )
                                             ->required(),
                                     ]),
@@ -409,7 +415,7 @@ final class ChildResource extends Resource
                                         TextInput::make('specific_nationality')
                                             ->translateLabel()
                                             ->hidden(
-                                                fn(Get $get) => Nationality::Other !== $get('nationality')
+                                                fn (Get $get) => Nationality::Other !== $get('nationality')
                                             )
                                             ->required(),
                                     ]),
@@ -427,7 +433,7 @@ final class ChildResource extends Resource
                                     ->suffixAction(
                                         Action::make('Clean field')
                                             ->icon('heroicon-o-x-circle')
-                                            ->action(fn(Set $set) => $set('religious', '')),
+                                            ->action(fn (Set $set) => $set('religious', '')),
                                     ),
                                 Select::make('migratory_status')
                                     ->translateLabel()
@@ -436,29 +442,17 @@ final class ChildResource extends Resource
                                     ->native(false)
                                     ->prefixIcon('heroicon-o-globe-americas')
                                     ->required(),
-
                                 CheckboxList::make('activities_for_family_support')
                                     ->translateLabel()
                                     ->columns([
                                         'sm' => 2,
                                         'md' => 5,
                                     ])
-                                    ->options([
-                                        'washes' => 'Washes',
-                                        'brings firewood' => 'Brings firewood',
-                                        'brings water' => 'Brings water',
-                                        'takes care of animals' => 'Takes care of animals',
-                                        'cooks' => 'Cooks',
-                                        'has de bed' => 'Has de bed',
-                                        'does the shopping' => 'Does the shopping',
-                                        'cares of brothers/sisters' => 'cares of brothers/sisters',
-                                        'cleans the house' => 'Cleans the house',
-                                        'runs errands' => 'Runs errands',
-                                        'gathers grass for animals' => 'Gathers grass for animals',
-                                    ])
+                                    ->bulkToggleable()
+                                    ->options(ActivityForFamilySupport::class)
                                     ->columns(5)
                                     ->columnSpanFull(),
-                                Textarea::make('specific_activities_for_family_support')
+                                TextInput::make('specific_activities_for_family_support')
                                     ->translateLabel()
                                     ->columnSpanFull(),
                                 CheckboxList::make('recreation_activities')
@@ -467,33 +461,72 @@ final class ChildResource extends Resource
                                         'sm' => 2,
                                         'md' => 5,
                                     ])
-                                    ->options([
-                                        'plays with dolls' => 'Plays with dolls',
-                                        'jumps rope' => 'Jumps rope',
-                                        'plays ball' => 'Plays ball',
-                                        'plays marbles' => 'Plays marbles',
-                                        'plays house' => 'Plays house',
-                                        'plays with carts' => 'Plays with carts',
-                                        'plays hopscotch' => 'Plays hopscotch',
-                                        'runs' => 'Runs',
-                                        'plays with rattles' => 'Plays with rattles',
-                                        'plays hide and seek' => 'Plays hide and seek',
-                                        'plays with friends' => 'Plays with friends',
-                                        'plays hula hoops' => 'Plays hula hoops',
-                                        'rides a bicycle' => 'Rides a bicycle',
-                                    ])
+                                    ->bulkToggleable()
+                                    ->options(ActivityForRecreation::class)
                                     ->columns(5)
                                     ->columnSpanFull(),
-                                Textarea::make('specific_recreation_activities')
+                                TextInput::make('specific_recreation_activities')
                                     ->translateLabel()
                                     ->columnSpanFull(),
-                                Textarea::make('additional_information'),
-
+                                Group::make()
+                                    ->schema([
+                                        Textarea::make('physical_description')
+                                            ->translateLabel()
+                                            ->rows(3)
+                                            ->columnSpanFull()
+                                            ->required(),
+                                        Textarea::make('aspirations')
+                                            ->required()
+                                            ->columnSpanFull()
+                                            ->label("What are your future aspirations? (in the case of children under 3 years old, what are the family's aspirations)")->translateLabel()
+                                            ->rows(3),
+                                        Textarea::make('personality')
+                                            ->label("List 3 personality traits [happy, serious, playful, etc]")
+                                            ->translateLabel()
+                                            ->required()
+                                            ->rows(3),
+                                        Textarea::make('skills')
+                                            ->label("List 3 skills and aptitudes [psychomotor development, memorizing, reasoning, etc]")
+                                            ->translateLabel()
+                                            ->rows(3),
+                                        Textarea::make('likes')
+                                            ->label("What do you like? (food, music, colors, pets)")
+                                            ->translateLabel()
+                                            ->rows(3),
+                                        Textarea::make('dislikes')
+                                            ->label("What doesn't the boy or girl like? (eat, play, be told, from school or the community)")
+                                            ->translateLabel()
+                                            ->rows(3),
+                                    ])
+                                    ->columns([
+                                        'sm' => 2,
+                                        'lg' => 3,
+                                    ]),
+                                SignaturePad::make('signature')
+                                    ->label(__('Sign here'))
+                                    ->dotSize(config('signature.dot-size'))
+                                    ->lineMinWidth(config('signature.line-min-width'))
+                                    ->lineMaxWidth(config('signature.line-max-width'))
+                                    ->throttle(config('signature.throttle'))
+                                    ->minDistance(config('signature.min-distance'))
+                                    ->velocityFilterWeight(config('signature.velocity-filter-weight'))
+                                    ->penColor(config('signature.hex-pen-color'))
+                                    ->penColorOnDark(config('signature.hex-dark-pen-color'))
+                                    ->downloadActionDropdownPlacement('center-end')
+                                    ->clearAction(
+                                        fn (Action $action) => $action->button()->iconButton()
+                                            ->color('danger')
+                                    )
+                                    ->downloadAction(fn (Action $action) => $action->color('primary'))
+                                    ->undoAction(fn (Action $action) => $action->icon('heroicon-o-arrow-uturn-left'))
+                                    ->doneAction(fn (Action $action) => $action->iconButton()->icon('heroicon-o-thumbs-up'))
+                                    ->required()
                             ]),
+
                     ]
                 )
-                    ->startOnStep(fn($context) => 'create' === $context ? 1 : 2)
-                    ->skippable(fn($context) => 'ceate' !== $context)
+                    ->startOnStep(fn ($context) => 'create' === $context ? 1 : 2)
+                    ->skippable(fn ($context) => 'ceate' !== $context)
                     ->persistStepInQueryString()
                     ->columnSpanFull(),
             ]);
@@ -505,7 +538,7 @@ final class ChildResource extends Resource
             ->columns([
                 Tables\Columns\Layout\Split::make([
                     Tables\Columns\ImageColumn::make('child_photo_path')
-                        ->defaultImageUrl(fn(Model $record) => $record->getFilamentAvatarUrl())
+                        ->defaultImageUrl(fn (Model $record) => $record->getFilamentAvatarUrl())
                         ->circular()
                         ->grow(false)
                         ->alignEnd()
@@ -536,7 +569,7 @@ final class ChildResource extends Resource
                             TextColumn::make('birthdate')
                                 ->translateLabel()
                                 ->formatStateUsing(
-                                    fn($state) => Carbon::parse($state)->age . ' ' . __('years')
+                                    fn ($state) => Carbon::parse($state)->age . ' ' . __('years')
                                 )
                                 ->badge()
                                 ->label('Age'),
@@ -551,20 +584,18 @@ final class ChildResource extends Resource
                 'md' => 2,
                 'xl' => 3,
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\Action::make('Family')
                     ->translateLabel()
                     ->icon('heroicon-o-user-group')
                     ->color(Color::Amber)
-                    ->url(fn(Child $record) => FamilyNucleusResource::getUrl('edit', [$record->family_nucleus_id])),
+                    ->url(fn (Child $record) => FamilyNucleusResource::getUrl('edit', [$record->family_nucleus_id])),
                 Tables\Actions\Action::make('Mailbox')
                     ->translateLabel()
                     ->icon('heroicon-o-envelope')
                     ->color('success')
-                    ->url(fn(Child $record) => MailboxResource::getUrl('edit', [$record->id])),
+                    ->url(fn (Child $record) => MailboxResource::getUrl('edit', [$record->id])),
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make()
@@ -582,15 +613,13 @@ final class ChildResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ])
             ->modifyQueryUsing(
-                fn(Builder $query) => RecordBuilder::correspondingRecords($query)
+                fn (Builder $query) => RecordBuilder::correspondingRecords($query)
             );
     }
 
     public static function getRelations(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     public static function getPages(): array

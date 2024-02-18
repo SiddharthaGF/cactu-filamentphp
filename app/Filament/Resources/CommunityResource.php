@@ -21,14 +21,17 @@ final class CommunityResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
 
+    protected static ?string $navigationGroup = 'Location';
+
+    
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')
                     ->required(),
-                Checkbox::make('vigency')
-                ,
+                Checkbox::make('vigency'),
                 Select::make('zone_code')
                     ->relationship(
                         'zone',
@@ -61,9 +64,7 @@ final class CommunityResource extends Resource
                 TextColumn::make('vigency')
                     ->badge(),
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -80,9 +81,7 @@ final class CommunityResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     public static function getPages(): array

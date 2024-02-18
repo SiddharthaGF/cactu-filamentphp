@@ -8,6 +8,7 @@ use App\Enums\AffiliationStatus;
 use App\Enums\Gender;
 use App\Enums\HealthStatus;
 use App\Enums\Message;
+use App\Enums\RisksChild;
 use App\Enums\WhatsappCommands;
 use App\Jobs\WhatsappJob;
 use App\Traits\HasRecords;
@@ -22,8 +23,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Facades\Storage;
 use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
-use Storage;
 
 /**
  * Class Child
@@ -142,6 +143,7 @@ final class Child extends Model implements HasAvatar
         'gender' => Gender::class,
         'affiliation_status' => AffiliationStatus::class,
         'health_status' => HealthStatus::class,
+        'risks_child' => 'json',
     ];
 
     protected $fillable = [
@@ -175,6 +177,14 @@ final class Child extends Model implements HasAvatar
         'disaffiliated_at',
         'health_status',
         'child_photo_path',
+        'physical_description',
+        'aspirations',
+        'personality',
+        'skills',
+        'likes',
+        'dislikes',
+        'risks_child',
+        "signature",
     ];
 
     public function getFilamentAvatarUrl(): ?string
@@ -269,5 +279,4 @@ final class Child extends Model implements HasAvatar
     {
         return 1 === $this->family_nucleus->children()->count();
     }
-
 }

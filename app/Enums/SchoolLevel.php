@@ -33,7 +33,6 @@ enum SchoolLevel: string implements HasLabel
             self::Initial => __('Initial'),
             self::Initial1 => __('Initial 1'),
             self::Initial2 => __('Initial 2'),
-
             self::Grade1 => __('1st Grade'),
             self::Grade2 => __('2nd Grade'),
             self::Grade3 => __('3rd Grade'),
@@ -44,10 +43,31 @@ enum SchoolLevel: string implements HasLabel
             self::Grade8 => __('8th Grade'),
             self::Grade9 => __('9th Grade'),
             self::Grade10 => __('10th Grade'),
-
             self::Baccalaureate1 => __('1st Baccalaureate'),
             self::Baccalaureate2 => __('2nd Baccalaureate'),
             self::Baccalaureate3 => __('3rd Baccalaureate'),
         };
+    }
+
+    public static function getTranslatedLevels(): array
+    {
+        return [
+            __(self::Initial->value),
+            __(self::Initial1->value),
+            __(self::Initial2->value),
+            __(self::Grade1->value),
+            __(self::Grade2->value),
+            __(self::Grade3->value),
+            __(self::Grade4->value),
+            __(self::Grade5->value),
+            __(self::Grade6->value),
+            __(self::Grade7->value),
+            __(self::Grade8->value),
+            __(self::Grade9->value),
+            __(self::Grade10->value),
+            __(self::Baccalaureate1->value),
+            __(self::Baccalaureate2->value),
+            __(self::Baccalaureate3->value),
+        ];
     }
 }
