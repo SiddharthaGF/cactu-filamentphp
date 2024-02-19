@@ -16,9 +16,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Hash;
 use Illuminate\Database\Eloquent\Model;
+use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
-use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 final class UserResource extends Resource
 {
@@ -29,6 +29,16 @@ final class UserResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static int $globalSearchResultsLimit = 3;
+
+    public static function getLabel(): ?string
+    {
+        return __("User");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Users");
+    }
 
     public static function getGloballySearchableAttributes(): array
     {
@@ -86,9 +96,9 @@ final class UserResource extends Resource
                             ->translateLabel()
                             ->prefixIcon('heroicon-o-lock-closed')
                             ->password()
-                            ->dehydrateStateUsing(fn($state) => Hash::make($state))
-                            ->dehydrated(fn($state) => filled($state))
-                            ->required(fn(string $context): bool => 'create' === $context),
+                            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->required(fn (string $context): bool => 'create' === $context),
                     ]),
                 Forms\Components\Section::make('Roles')
                     ->description(__('The panel_user role allows the user to log in, if you want a user not to access the system, remove the role'))
@@ -112,7 +122,7 @@ final class UserResource extends Resource
             ->columns([
                 Tables\Columns\Layout\Split::make([
                     Tables\Columns\ImageColumn::make('avatar_url')
-                        ->defaultImageUrl(fn(Model $record) => $record->getFilamentAvatarUrl())
+                        ->defaultImageUrl(fn (Model $record) => $record->getFilamentAvatarUrl())
                         ->circular()
                         ->grow(false)
                         ->alignEnd(),
@@ -120,7 +130,7 @@ final class UserResource extends Resource
                         Tables\Columns\TextColumn::make('name')
                             ->weight(FontWeight::Bold)
                             ->icon('heroicon-o-user')
-                            ->color(fn(Model $record) => $record->vigency ? 'success' : 'danger')
+                            ->color(fn (Model $record) => $record->vigency ? 'success' : 'danger')
                             ->searchable()
                             ->sortable(),
                         Tables\Columns\TextColumn::make('email')
@@ -134,15 +144,12 @@ final class UserResource extends Resource
                 'md' => 2,
                 'xl' => 3,
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->disabled(fn(Model $record) => $record->id === 1)
-                    ->hidden(fn(Model $record) => $record->id === 1),
+                    ->disabled(fn (Model $record) => $record->id === 1)
+                    ->hidden(fn (Model $record) => $record->id === 1),
                 Impersonate::make(),
             ])
             ->bulkActions([
@@ -172,7 +179,6 @@ final class UserResource extends Resource
         return [
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }

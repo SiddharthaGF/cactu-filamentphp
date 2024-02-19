@@ -118,7 +118,7 @@ return new class() extends Migration
             $table->foreignId('manager_id')->constrained('users')->cascadeOnDelete();
             $table->char('children_number', 9)->nullable();
             $table->string('case_number', 8)->nullable();
-            $table->foreignId('family_nucleus_id')->constrained();
+            $table->foreignId('family_nucleus_id')->nullable()->constrained();
             $table->foreignUlid('contact_id', 8)->nullable()->constrained();
             $table->string('name');
             $table->char('dni')->unique();

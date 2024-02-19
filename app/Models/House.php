@@ -91,6 +91,7 @@ final class House extends Model
         'neighborhood',
         'created_by',
         'updated_by',
+        'territory',
     ];
 
     protected $appends = [
@@ -136,5 +137,4 @@ final class House extends Model
     {
         return $this->hasMany(RiskNearHome::class);
     }
-
 }

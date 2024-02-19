@@ -184,6 +184,11 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->hasOne(CommunityManagers::class, 'manager_id');
     }
 
+    public function community()
+    {
+        return $this->hasOneThrough(Community::class, CommunityManagers::class, 'manager_id', 'id', 'id', 'community_id');
+    }
+
     public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class, 'updated_by');
@@ -275,5 +280,10 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         return Attribute::make(
             get: fn (): bool => $this->hasRole('panel_user'),
         );
+    }
+
+    public function scopeByRole($query, $roleName)
+    {
+        return $query->role([$roleName, 'super_admin']);
     }
 }

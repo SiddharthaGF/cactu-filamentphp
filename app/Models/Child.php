@@ -9,6 +9,7 @@ use App\Enums\Gender;
 use App\Enums\HealthStatus;
 use App\Enums\Message;
 use App\Enums\RisksChild;
+use App\Enums\SexualIdentity;
 use App\Enums\WhatsappCommands;
 use App\Jobs\WhatsappJob;
 use App\Traits\HasRecords;
@@ -141,6 +142,7 @@ final class Child extends Model implements HasAvatar
         'updated_by' => 'int',
         'disaffiliated_at' => 'datetime',
         'gender' => Gender::class,
+        'sexual_identity' => SexualIdentity::class,
         'affiliation_status' => AffiliationStatus::class,
         'health_status' => HealthStatus::class,
         'risks_child' => 'json',
@@ -185,6 +187,7 @@ final class Child extends Model implements HasAvatar
         'dislikes',
         'risks_child',
         "signature",
+        'manager_id'
     ];
 
     public function getFilamentAvatarUrl(): ?string

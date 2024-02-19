@@ -8,6 +8,7 @@ use App\Constants\BasicServices;
 use App\Enums\FloorMaterials;
 use App\Enums\HomeSpaceSituations;
 use App\Enums\HousePropertyTypes;
+use App\Enums\Location;
 use App\Enums\RoofMaterials;
 use App\Enums\WallMaterials;
 use App\Filament\Resources\HouseResource\Pages;
@@ -15,6 +16,7 @@ use App\Models\FamilyNucleus;
 use App\Models\House;
 use Cheesegrits\FilamentGoogleMaps\Fields\Map;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -112,6 +114,14 @@ final class HouseResource extends Resource
                 ->defaultLocation([env('GOOGLE_MAPS_DEFAULT_LAT', 0), env('GOOGLE_MAPS_DEFAULT_LNG', 0)]),
             TextInput::make('neighborhood')
                 ->translateLabel()
+                ->columnSpanFull()
+                ->required(),
+            Radio::make('territory')
+                ->translateLabel()
+                ->options(Location::class)
+                ->columns([
+                    'sm' => 4,
+                ])
                 ->required(),
             Repeater::make('dangerous_places_nearby')
                 ->translateLabel()
@@ -141,9 +151,7 @@ final class HouseResource extends Resource
                     ->badge()
                     ->sortable(),
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -156,9 +164,7 @@ final class HouseResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -31,7 +31,6 @@ final class EducationalInstitutionResource extends Resource
         return __("Educational Institutions");
     }
 
-
     protected static bool $shouldRegisterNavigation = true;
 
     public static function form(Form $form): Form

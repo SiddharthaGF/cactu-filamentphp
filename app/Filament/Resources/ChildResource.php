@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App;
 use App\Builder\RecordBuilder;
 use App\Enums\ActivityForFamilySupport;
 use App\Enums\ActivityForRecreation;
@@ -24,6 +25,8 @@ use App\Enums\SexualIdentity;
 use App\Filament\Resources\ChildResource\Pages;
 use App\Models\Child;
 use App\Models\EducationalInstitution;
+use App\Models\User;
+use Blade;
 use Carbon\Carbon;
 use Faker\Provider\ar_EG\Text;
 use Filament\Forms\Components\Actions\Action;
@@ -50,6 +53,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Pdf;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
@@ -118,9 +122,11 @@ final class ChildResource extends Resource
                                         TextInput::make('children_number')
                                             ->translateLabel()
                                             ->minValue(0)
+                                            ->placeholder(__('Assigned by coordinator'))
                                             ->numeric(),
                                         TextInput::make('case_number')
                                             ->translateLabel()
+                                            ->placeholder(__('Assigned by coordinator'))
                                             ->minValue(0)
                                             ->numeric(),
                                         Select::make('affiliation_status')
@@ -128,20 +134,30 @@ final class ChildResource extends Resource
                                             ->options(AffiliationStatus::class)
                                             ->default(AffiliationStatus::Pending)
                                             ->native(false)
+                                            ->dehydrated()
                                             ->required(),
-                                        FileUpload::make('child_photo_path')
-                                            ->label('Child photo')
+                                        Select::make('manager_id')
+                                            ->label('Manager in charge')
+                                            ->required()
                                             ->translateLabel()
-                                            ->imageEditor()
-                                            ->imageCropAspectRatio("3:4")
-                                            ->image()
-                                    ]),
+                                            ->native(false)
+                                            ->default(auth()->user()->id)
+                                            ->dehydrated()
+                                            ->options(fn () => User::byRole('gestor')->pluck('name', 'id')),
+                                    ])
+                                    ->disabled(fn () => !auth()->user()->hasRole('super_admin')),
                                 Section::make(__('Personal Information'))
                                     ->description(__('Fill out the information of the child.'))
                                     ->icon('heroicon-o-exclamation-triangle')
                                     ->aside()
                                     ->compact()
                                     ->schema([
+                                        FileUpload::make('child_photo_path')
+                                            ->label('Child photo')
+                                            ->translateLabel()
+                                            ->imageEditor()
+                                            ->imageCropAspectRatio("3.5:4")
+                                            ->image(),
                                         TextInput::make('name')
                                             ->translateLabel()
                                             ->prefixIcon('heroicon-o-user')
@@ -352,6 +368,10 @@ final class ChildResource extends Resource
                                     ->required()
                                     ->native(false)
                                     ->editOptionForm(fn (Form $form) => FamilyNucleusResource::form($form))
+                                    ->editOptionAction(
+                                        fn (Action $action) => $action->modalWidth('5xl')
+                                            ->slideOver()
+                                    )
                                     ->createOptionForm(fn (Form $form) => FamilyNucleusResource::form($form))
                                     ->createOptionAction(
                                         fn (Action $action) => $action->modalWidth('5xl')
@@ -526,7 +546,7 @@ final class ChildResource extends Resource
                     ]
                 )
                     ->startOnStep(fn ($context) => 'create' === $context ? 1 : 2)
-                    ->skippable(fn ($context) => 'ceate' !== $context)
+                    ->skippable(fn ($context) => 'create' !== $context)
                     ->persistStepInQueryString()
                     ->columnSpanFull(),
             ]);
@@ -586,11 +606,17 @@ final class ChildResource extends Resource
             ])
             ->filters([])
             ->actions([
+                Tables\Actions\Action::make('Sheet')
+                    ->translateLabel()
+                    ->icon('heroicon-o-document-text')
+                    ->color(Color::Stone)
+                    ->url(fn (Child $record) => route('sheet', $record->id)),
                 Tables\Actions\Action::make('Family')
                     ->translateLabel()
                     ->icon('heroicon-o-user-group')
                     ->color(Color::Amber)
-                    ->url(fn (Child $record) => FamilyNucleusResource::getUrl('edit', [$record->family_nucleus_id])),
+                    ->disabled(fn (Child $record) => is_null($record->family_nucleus_id))
+                    ->url(fn (Child $record) => FamilyNucleusResource::getUrl('edit', [$record->family_nucleus_id ?? 0])),
                 Tables\Actions\Action::make('Mailbox')
                     ->translateLabel()
                     ->icon('heroicon-o-envelope')
