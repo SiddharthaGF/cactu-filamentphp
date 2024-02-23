@@ -70,6 +70,7 @@ class House extends Model
 		'territory'
 	];
 
+<<<<<<< HEAD
 	public function family_nucleus()
 	{
 		return $this->belongsTo(FamilyNucleus::class);
@@ -79,4 +80,67 @@ class House extends Model
 	{
 		return $this->hasMany(RisksNearHome::class);
 	}
+=======
+    protected $fillable = [
+        'family_nucleus_id',
+        'property',
+        'home_space',
+        'roof',
+        'walls',
+        'floor',
+        'latitude',
+        'longitude',
+        'location',
+        'basic_services',
+        'extras',
+        'neighborhood',
+        'created_by',
+        'updated_by',
+        'territory',
+    ];
+
+    protected $appends = [
+        'location',
+    ];
+
+    public static function getComputedLocation(): string
+    {
+        return 'location';
+    }
+
+    public static function getLatLngAttributes(): array
+    {
+        return [
+            'lat' => 'latitude',
+            'lng' => 'longitude',
+        ];
+    }
+
+    public function setLocationAttribute(?array $location): void
+    {
+        if (is_array($location)) {
+            $this->attributes['latitude'] = $location['lat'];
+            $this->attributes['longitude'] = $location['lng'];
+            unset($this->attributes['location']);
+        }
+    }
+
+    public function getLocationAttribute(): array
+    {
+        return [
+            'lat' => (float) $this->latitude,
+            'lng' => (float) $this->longitude,
+        ];
+    }
+
+    public function family_nucleus(): BelongsTo
+    {
+        return $this->belongsTo(FamilyNucleus::class);
+    }
+
+    public function risks_near_home(): HasMany
+    {
+        return $this->hasMany(RiskNearHome::class);
+    }
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
 }

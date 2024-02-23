@@ -7,7 +7,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -117,7 +118,7 @@ return new class () extends Migration {
             $table->foreignId('manager_id')->constrained('users')->cascadeOnDelete();
             $table->char('children_number', 9)->nullable();
             $table->string('case_number', 8)->nullable();
-            $table->foreignId('family_nucleus_id')->constrained();
+            $table->foreignId('family_nucleus_id')->nullable()->constrained();
             $table->foreignUlid('contact_id', 8)->nullable()->constrained();
             $table->string('name');
             $table->char('dni')->unique();
@@ -187,16 +188,16 @@ return new class () extends Migration {
         Schema::create('educational_institutions', function (Blueprint $table): void {
             $table->id();
             $table->string('name', 200);
-            $table->string('education_type', 20);
-            $table->string('financing_type', 20);
+            $table->string('education_type', 20)->nullable();
+            $table->string('financing_type', 20)->nullable();
             $table->char('zone_code', 6);
             $table->string('address', 100)->nullable();
-            $table->string('area', 20);
-            $table->string('academic_regime', 20);
-            $table->string('modality', 120);
-            $table->string('academic_day', 50);
-            $table->string('educative_level', 40);
-            $table->string('typology', 100);
+            $table->string('area', 20)->nullable();
+            $table->string('academic_regime', 20)->nullable();
+            $table->string('modality', 120)->nullable();
+            $table->string('academic_day', 50)->nullable();
+            $table->string('educative_level', 40)->nullable();
+            $table->string('typology', 100)->nullable();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();

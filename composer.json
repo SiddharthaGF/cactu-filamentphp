@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.1",
         "aymanalhattami/filament-slim-scrollbar": "^2.0",
+<<<<<<< HEAD
         "barryvdh/laravel-debugbar": "^3.10",
         "barryvdh/laravel-dompdf": "^2.0",
         "barryvdh/laravel-ide-helper": "^2.15",
@@ -17,6 +18,15 @@
         "cheesegrits/filament-google-maps": "^3.0",
         "filament/filament": "3.2",
         "filament/spatie-laravel-media-library-plugin": "^3.2",
+=======
+        "baraja-core/php-pdf-to-image": "^2.0",
+        "barryvdh/laravel-dompdf": "^2.0",
+        "bezhansalleh/filament-shield": "^3.0",
+        "cheesegrits/filament-google-maps": "^3.0",
+        "filament/filament": "3.2.0",
+        "filament/notifications": "3.2",
+        "filament/spatie-laravel-media-library-plugin": "3.2",
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
         "guzzlehttp/guzzle": "^7.2",
         "jeffgreco13/filament-breezy": "^2.2",
         "laravel/framework": "^10.10",

@@ -86,6 +86,14 @@ final class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+<<<<<<< HEAD
             ->globalSearchKeyBindings(['command+k', 'ctrl+k']);
+=======
+            ->databaseNotifications()
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->resources([
+                //config('filament-logger.activity_resource')
+            ]);
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
     }
 }

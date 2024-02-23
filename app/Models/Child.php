@@ -10,15 +10,29 @@ use App\Enums\AffiliationStatus;
 use App\Enums\Gender;
 use App\Enums\HealthStatus;
 use App\Enums\Message;
+<<<<<<< HEAD
 use App\Enums\SexualIdentity;
 use App\Enums\WhatsappCommands;
 use App\Jobs\WhatsappJob;
 use Carbon\Carbon;
 use Filament\Models\Contracts\HasAvatar;
+=======
+use App\Enums\RisksChild;
+use App\Enums\SexualIdentity;
+use App\Enums\WhatsappCommands;
+use App\Jobs\WhatsappJob;
+use App\Traits\HasRecords;
+use App\Traits\UserStamps;
+use Carbon\Carbon;
+use Eloquent;
+use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Database\Eloquent\Builder;
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Facades\Storage;
 use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
 use Storage;
 
@@ -79,7 +93,11 @@ use Storage;
  *
  * @package App\Models
  */
+<<<<<<< HEAD
 class Child extends Model implements HasAvatar
+=======
+final class Child extends Model implements HasAvatar
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
 {
     protected $table = 'children';
 
@@ -105,7 +123,15 @@ class Child extends Model implements HasAvatar
         'created_by' => 'int',
         'updated_by' => 'int',
         'disaffiliated_at' => 'datetime',
+<<<<<<< HEAD
         'risks_child' => 'json'
+=======
+        'gender' => Gender::class,
+        'sexual_identity' => SexualIdentity::class,
+        'affiliation_status' => AffiliationStatus::class,
+        'health_status' => HealthStatus::class,
+        'risks_child' => 'json',
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
     ];
 
     protected $fillable = [
@@ -139,18 +165,38 @@ class Child extends Model implements HasAvatar
         'created_by',
         'updated_by',
         'disaffiliated_at',
+<<<<<<< HEAD
         'child_photo_path',
         'risks_child',
+=======
+        'health_status',
+        'child_photo_path',
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
         'physical_description',
         'aspirations',
         'personality',
         'skills',
         'likes',
         'dislikes',
+<<<<<<< HEAD
         'signature'
     ];
 
     public function contact()
+=======
+        'risks_child',
+        "signature",
+        'manager_id'
+    ];
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        $url = $this->child_photo_path ? Storage::disk('public')->url($this->child_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        return $url;
+    }
+
+    public function contact(): BelongsTo
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
     {
         return $this->belongsTo(Contact::class);
     }
@@ -208,7 +254,44 @@ class Child extends Model implements HasAvatar
 
     public function mobile_number(): MorphOne
     {
+<<<<<<< HEAD
         return $this->morphOne(MobileNumber::class, 'mobile_numerable');
+=======
+        return $this->hasOne(EducationalRecord::class);
+    }
+
+    public function health_status_record(): HasOne
+    {
+        return $this->hasOne(HealthStatusRecord::class);
+    }
+
+    public function mailbox(): HasOne
+    {
+        return $this->hasOne(Mailbox::class, 'id');
+    }
+
+    public function reasons_leaving_study(): HasOne
+    {
+        return $this->hasOne(ReasonsLeavingStudy::class);
+    }
+
+    public function disabilities(): HasMany
+    {
+        return $this->hasMany(Disability::class, 'child_id');
+    }
+
+    public function NotifyMails(int $id): void
+    {
+        $mobile_number = $this->getMobileNumber();
+        $pseudonym = $this->pseudonym;
+        if ($this->hasMobileNumber()) {
+            $text = str_replace("%pseudonym%", $pseudonym, Message::HelloForChild->value);
+        } else {
+            $tutor_name = $this->family_nucleus->tutors()->first()->name;
+            $text = str_replace('%tutor%', $tutor_name, str_replace("%pseudonym%", $pseudonym, Message::HelloForTutor->value));
+        }
+        WhatsappJob::sendButtonReplyMessage($mobile_number, $text, [new Button(WhatsappCommands::ViewNow->value . ' ' . $id, WhatsappCommands::ViewNow->getLabel())]);
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
     }
 
     public function getMobileNumber(): ?string

@@ -6,6 +6,13 @@
 
 namespace App\Models;
 
+<<<<<<< HEAD
+=======
+use App\Enums\FamilyRelationship;
+use App\Enums\Gender;
+use App\Enums\ReasonsIsNotPresent;
+use App\Traits\UserStamps;
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -50,8 +57,13 @@ class Tutor extends Model
         'deathdate' => 'datetime',
         'occupation' => 'int',
         'salary' => 'float',
+<<<<<<< HEAD
         'created_by' => 'int',
         'updated_by' => 'int'
+=======
+        'gender' => Gender::class,
+        'reason_not_present' => ReasonsIsNotPresent::class,
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
     ];
 
     protected $fillable = [

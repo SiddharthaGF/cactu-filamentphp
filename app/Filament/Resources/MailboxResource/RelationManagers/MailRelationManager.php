@@ -30,24 +30,27 @@ final class MailRelationManager extends RelationManager
 {
     protected static string $relationship = 'mails';
 
-    protected static function getPluralModelLabel(): ?string
-    {
-        return __("Mails");
-    }
-
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Select::make('type')
                     ->translateLabel()
+<<<<<<< HEAD
                     ->disabled(fn(Mail $record) => MailStatus::IsResponse === $record->status)
+=======
+                    ->disabled(fn (Mail $record) => MailStatus::IsResponse === $record->status)
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
                     ->required()
                     ->native(false)
                     ->options(MailsTypes::class)
                     ->default(MailsTypes::Response),
                 Select::make('status')
+<<<<<<< HEAD
                     ->disabled(fn(Mail $record) => MailStatus::IsResponse === $record->status)
+=======
+                    ->disabled(fn (Mail $record) => MailStatus::IsResponse === $record->status)
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
                     ->translateLabel()
                     ->required()
                     ->native(false)
@@ -96,16 +99,16 @@ final class MailRelationManager extends RelationManager
                                 ->inlineLabel()
                                 ->icon('heroicon-o-identification')
                                 ->label('Replies to letter')
-                                ->url(fn(Mail $record) => route('filament.admin.resources.mails.view', $record->answer_to ?? ''))
+                                ->url(fn (Mail $record) => route('filament.admin.resources.mails.view', $record->answer_to ?? ''))
                                 ->color('info'),
                             TextEntry::make('mailbox.child.name')
                                 ->color('info')
                                 ->inlineLabel()
                                 ->icon('heroicon-o-inbox-stack')
-                                ->url(fn(Mail $record) => route('filament.admin.resources.mailboxes.edit', $record->mailbox)),
+                                ->url(fn (Mail $record) => route('filament.admin.resources.mailboxes.edit', $record->mailbox)),
                             TextEntry::make('letter_type')
                                 ->badge()
-                                ->color(fn(string $state): string => match ($state) {
+                                ->color(fn (string $state): string => match ($state) {
                                     'initial' => 'gray',
                                     'response' => 'info',
                                     'thanks' => 'success',
@@ -118,7 +121,7 @@ final class MailRelationManager extends RelationManager
                                 ->falseIcon('heroicon-o-x-mark')
                                 ->inlineLabel(),
                             TextEntry::make('status')
-                                ->color(fn(string $state): string => match ($state) {
+                                ->color(fn (string $state): string => match ($state) {
                                     'create' => 'gray',
                                     'sent' => 'info',
                                     'replied' => 'success',
@@ -204,7 +207,11 @@ final class MailRelationManager extends RelationManager
                     ->name('Notify')
                     ->color(Color::Green)
                     ->translateLabel()
+<<<<<<< HEAD
                     ->hidden(fn(Mail $record) => MailStatus::IsResponse === $record->status)
+=======
+                    ->hidden(fn (Mail $record) => MailStatus::IsResponse === $record->status)
+>>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
                     ->action(function (Mail $record): void {
                         try {
@@ -236,7 +243,12 @@ final class MailRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->modifyQueryUsing(
-                fn(Builder $query) => $query->orderBy('id', 'desc')
+                fn (Builder $query) => $query->orderBy('id', 'desc')
             );
+    }
+
+    protected static function getPluralModelLabel(): ?string
+    {
+        return __("Mails");
     }
 }
