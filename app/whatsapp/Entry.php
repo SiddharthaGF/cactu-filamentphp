@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Whatsapp;
 
-use App\Interfaces\Whatsapp\EntryInterface;
 use App\Whatsapp\Entry\Changes;
 
-final class Entry implements EntryInterface
+final class Entry
 {
     private int $id;
     private Changes $changes;

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Whatsapp\Entry;
 
-use App\Interfaces\Whatsapp\Entry\ChangesInterface;
 use App\Whatsapp\Entry\Changes\Value;
 
-final class Changes implements ChangesInterface
+final class Changes
 {
     private Value $value;
     private string $field;

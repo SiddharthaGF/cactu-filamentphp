@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Whatsapp\Entry\Changes\Values\Messages;
 
-use App\Interfaces\Whatsapp\Entry\Changes\Values\Messages\ImageInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-final class Image implements ImageInterface
+final class Image
 {
     private string $mimeType;
     private string $sha256;
@@ -48,9 +48,9 @@ final class Image implements ImageInterface
                 $request = new Request('GET', $url, $headers);
                 return $client->sendAsync($request)->then(
                     function ($response) use ($media_id): string {
-                        $fileName = "{$media_id}.jpg";
-                        Storage::put("public/{$fileName}", $response->getBody());
-                        return $fileName;
+                        $path = "public/{$media_id}.jpg";
+                        Storage::put($path, $response->getBody());
+                        return $path;
                     }
                 );
             }

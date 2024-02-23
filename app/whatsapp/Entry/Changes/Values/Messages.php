@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Whatsapp\Entry\Changes\Values;
 
-use App\Interfaces\Whatsapp\Entry\Changes\Values\MessagesInterface;
 use App\Whatsapp\Entry\Changes\Values\Messages\Image;
 use App\Whatsapp\Entry\Changes\Values\Messages\Interactive;
 use App\Whatsapp\Entry\Changes\Values\Messages\Text;
 use Throwable;
 
-final class Messages implements MessagesInterface
+final class Messages
 {
     private string $from;
     private string $id;

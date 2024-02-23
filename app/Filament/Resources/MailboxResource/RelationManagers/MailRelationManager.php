@@ -11,6 +11,7 @@ use Exception;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\IconEntry;
@@ -36,13 +37,13 @@ final class MailRelationManager extends RelationManager
             ->schema([
                 Select::make('type')
                     ->translateLabel()
-                    ->disabled(fn(Mail $record) => MailStatus::IsResponse === $record->status)
+                    //->disabled(fn (Mail $record) => MailStatus::IsResponse === $record->status)
                     ->required()
                     ->native(false)
                     ->options(MailsTypes::class)
                     ->default(MailsTypes::Response),
                 Select::make('status')
-                    ->disabled(fn(Mail $record) => MailStatus::IsResponse === $record->status)
+                    //->disabled(fn (Mail $record) => MailStatus::IsResponse === $record->status)
                     ->translateLabel()
                     ->required()
                     ->native(false)
@@ -53,12 +54,12 @@ final class MailRelationManager extends RelationManager
                     ->relationship('answers')
                     ->required()
                     ->minItems(1)
-                    ->maxItems(
-                        fn(Mail $record) => match ($record->status) {
+                    /*->maxItems(
+                        fn (Mail $record) => match ($record->status) {
                             MailStatus::IsResponse => 1,
                             default => 10,
                         }
-                    )
+                    )*/
                     ->defaultItems(1)
                     ->columnSpanFull()
                     ->schema([
@@ -66,12 +67,14 @@ final class MailRelationManager extends RelationManager
                             ->translateLabel()
                             ->rows(20)
                             ->required(),
-                        FileUpload::make('attached_file_path')
+                        SpatieMediaLibraryFileUpload::make('attached_file_path')
+                            ->image()
                             ->translateLabel()
-                            ->preserveFilenames()
+                            ->imageEditor()
                             ->downloadable()
                             ->required()
-                            ->image(),
+                            ->maxFiles(1)
+                            ->collection('answers')
                     ]),
             ]);
     }
@@ -199,7 +202,7 @@ final class MailRelationManager extends RelationManager
                     ->name('Notify')
                     ->color(Color::Green)
                     ->translateLabel()
-                    ->hidden(fn(Mail $record) => MailStatus::IsResponse === $record->status)
+                    ->hidden(fn (Mail $record) => MailStatus::IsResponse === $record->status)
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
                     ->action(function (Mail $record): void {
                         try {

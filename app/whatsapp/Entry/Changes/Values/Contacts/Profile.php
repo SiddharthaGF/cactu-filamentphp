@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Whatsapp\Entry\Changes\Values\Contacts;
 
-use App\Interfaces\Whatsapp\Entry\Changes\Values\Contacts\ProfileInterface;
-
-final class Profile implements ProfileInterface
+final class Profile
 {
     private string $name;
 

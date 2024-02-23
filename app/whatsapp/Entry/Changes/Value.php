@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Whatsapp\Entry\Changes;
 
-use App\Interfaces\Whatsapp\Entry\Changes\ValueInterface as ValueInterface;
 use App\Whatsapp\Entry\Changes\Values\Contacts;
 use App\Whatsapp\Entry\Changes\Values\Messages;
 use App\Whatsapp\Entry\Changes\Values\Metadata;
 
-final class Value implements ValueInterface
+final class Value
 {
     private string $messagingProduct;
     private Metadata $metadata;

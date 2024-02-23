@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Whatsapp\Entry\Changes\Values;
 
-use App\Interfaces\Whatsapp\Entry\Changes\Values\MetadataInterface;
-
-final class Metadata implements MetadataInterface
+final class Metadata
 {
     private string $displayPhoneNumber;
     private int $phoneNumberId;

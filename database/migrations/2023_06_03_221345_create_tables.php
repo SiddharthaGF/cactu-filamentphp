@@ -241,7 +241,6 @@ return new class() extends Migration
             $table->id();
             $table->foreignId('mail_id')->constrained()->cascadeOnDelete();
             $table->text('content');
-            $table->string('attached_file_path');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
             $table->timestamps();

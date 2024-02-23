@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Whatsapp\Entry;
+use App\Whatsapp\Whatsapp;
 use Netflie\WhatsAppCloudApi\WebHook;
 use Netflie\WhatsAppCloudApi\WhatsAppCloudApi;
 
@@ -20,7 +21,7 @@ function webhook(): string
     return $webhook->verify($_GET, env('WHATSAPP_API_TOKEN_VERIFICATION'));
 }
 
-function receiveWhatsapp(string|false $payload)
+function receiveWhatsapp(mixed $payload)
 {
-    return new Entry($payload['entry']);
+    return new Whatsapp($payload);
 }
