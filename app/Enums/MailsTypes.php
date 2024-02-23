@@ -18,16 +18,16 @@ enum MailsTypes: int implements HasLabel, HasColor
 
     public function getLabel(): ?string
     {
-        return $this->name;
+        return __($this->name);
     }
 
     public function getColor(): ?string
     {
         return match ($this) {
-            self::Initial => 'success',
-            self::Response => 'danger',
-            self::Thanks => 'warning',
-            self::Goodbye => 'primary',
+            self::Initial => 'gray',
+            self::Response => 'success',
+            self::Thanks => 'primary',
+            self::Goodbye => 'danger',
         };
     }
 }

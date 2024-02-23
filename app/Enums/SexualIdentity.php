@@ -10,8 +10,8 @@ enum SexualIdentity: int implements HasLabel
 {
     use BaseEnum;
 
-    case Boy = 1;
-    case Girl = 2;
+    case Boy = 2;
+    case Girl = 1;
     case Other = 3;
 
     public function getLabel(): ?string

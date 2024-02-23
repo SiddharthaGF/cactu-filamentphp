@@ -21,8 +21,8 @@ final class EditUser extends EditRecord
                 ->icon('heroicon-m-lock-open')
                 ->translateLabel()
                 ->color(Color::Emerald)
-                ->visible(fn() => $this->record->hasEnabledTwoFactor())
-                ->action(fn() => $this->record->disableTwoFactorAuthentication())
+                ->visible(fn () => $this->record->hasEnabledTwoFactor())
+                ->action(fn () => $this->record->disableTwoFactorAuthentication())
                 ->requiresConfirmation(),
             Actions\ViewAction::make(),
             Actions\DeleteAction::make(),

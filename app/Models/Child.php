@@ -1,6 +1,8 @@
 <?php
 
-declare(strict_types=1);
+/**
+ * Created by Reliese Model.
+ */
 
 namespace App\Models;
 
@@ -8,141 +10,106 @@ use App\Enums\AffiliationStatus;
 use App\Enums\Gender;
 use App\Enums\HealthStatus;
 use App\Enums\Message;
+use App\Enums\SexualIdentity;
 use App\Enums\WhatsappCommands;
-use App\Http\Controllers\WhatsappController;
-use App\Traits\HasRecords;
-use App\Traits\UserStamps;
+use App\Jobs\WhatsappJob;
 use Carbon\Carbon;
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
+use Storage;
 
 /**
  * Class Child
  *
  * @property int $id
+ * @property int $manager_id
  * @property string|null $children_number
  * @property string|null $case_number
- * @property int $family_nucleus_id
+ * @property int|null $family_nucleus_id
  * @property string|null $contact_id
  * @property string $name
  * @property string $dni
- * @property string $gender
+ * @property int $gender
  * @property Carbon $birthdate
- * @property string $affiliation_status
+ * @property int $affiliation_status
  * @property string $pseudonym
- * @property string $sexual_identity
- * @property string $literacy
- * @property string $language
+ * @property int $sexual_identity
+ * @property int $literacy
+ * @property int $language
  * @property string|null $specific_language
  * @property string|null $religious
- * @property string $nationality
+ * @property int $nationality
  * @property string|null $specific_nationality
- * @property string $migratory_status
- * @property string $ethnic_group
+ * @property int $migratory_status
+ * @property int $ethnic_group
  * @property array|null $activities_for_family_support
  * @property array|null $recreation_activities
  * @property array|null $additional_information
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property int $health_status
  * @property int|null $reviewed_by
  * @property Carbon|null $reviewed_at
  * @property int|null $disaffiliated_by
  * @property int $created_by
  * @property int $updated_by
  * @property Carbon|null $disaffiliated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property string|null $child_photo_path
+ * @property array|null $risks_child
+ * @property string $physical_description
+ * @property string $aspirations
+ * @property string $personality
+ * @property string|null $skills
+ * @property string|null $likes
+ * @property string|null $dislikes
+ * @property string|null $signature
+ *
  * @property Contact|null $contact
- * @property User $user
- * @property FamilyNucleus $family_nucleus
- * @property Collection|BankingInformation[] $banking_informations
+ * @property User|null $user
+ * @property FamilyNucleus|null $family_nucleus
+ * @property Collection|Disability[] $disabilities
  * @property Collection|EducationalRecord[] $educational_records
  * @property Collection|HealthStatusRecord[] $health_status_records
  * @property Mailbox $mailbox
- * @property Collection|PreschoolEducationalRecord[] $preschool_educational_records
- * @property ReasonsLeavingStudy $reasons_leaving_study
- * @property-read int|null $banking_informations_count
- * @property-read int|null $educational_records_count
- * @property-read int|null $health_status_records_count
- * @property-read int|null $preschool_educational_records_count
+ * @property Collection|ReasonsLeavingStudy[] $reasons_leaving_studies
  *
- * @method static Builder|Child newModelQuery()
- * @method static Builder|Child newQuery()
- * @method static Builder|Child query()
- * @method static Builder|Child whereActivitiesForFamilySupport($value)
- * @method static Builder|Child whereAdditionalInformation($value)
- * @method static Builder|Child whereAffiliationStatus($value)
- * @method static Builder|Child whereBirthdate($value)
- * @method static Builder|Child whereCaseNumber($value)
- * @method static Builder|Child whereChildrenNumber($value)
- * @method static Builder|Child whereContactId($value)
- * @method static Builder|Child whereCreatedAt($value)
- * @method static Builder|Child whereCreatedBy($value)
- * @method static Builder|Child whereDisaffiliatedAt($value)
- * @method static Builder|Child whereDisaffiliatedBy($value)
- * @method static Builder|Child whereDni($value)
- * @method static Builder|Child whereEthnicGroup($value)
- * @method static Builder|Child whereFamilyNucleusId($value)
- * @method static Builder|Child whereGender($value)
- * @method static Builder|Child whereId($value)
- * @method static Builder|Child whereLanguage($value)
- * @method static Builder|Child whereLiteracy($value)
- * @method static Builder|Child whereMigratoryStatus($value)
- * @method static Builder|Child whereName($value)
- * @method static Builder|Child whereNationality($value)
- * @method static Builder|Child wherePseudonym($value)
- * @method static Builder|Child whereRecreationActivities($value)
- * @method static Builder|Child whereReligious($value)
- * @method static Builder|Child whereReviewedAt($value)
- * @method static Builder|Child whereReviewedBy($value)
- * @method static Builder|Child whereSexualIdentity($value)
- * @method static Builder|Child whereSpecificLanguage($value)
- * @method static Builder|Child whereSpecificNationality($value)
- * @method static Builder|Child whereUpdatedAt($value)
- * @method static Builder|Child whereUpdatedBy($value)
- *
- * @mixin IdeHelperChild
- *
- * @property int $manager_id
- * @property-read BankingInformation|null $banking_information
- * @property-read User|null $creator
- * @property-read User $manager
- * @property-read User|null $updater
- *
- * @method static Builder|Child whereManagerId($value)
- *
- * @mixin Eloquent
+ * @package App\Models
  */
-final class Child extends Model
+class Child extends Model implements HasAvatar
 {
-    use HasRecords;
-    use UserStamps;
-
     protected $table = 'children';
 
     protected $casts = [
+        'manager_id' => 'int',
         'family_nucleus_id' => 'int',
+        'gender' => Gender::class,
         'birthdate' => 'datetime',
+        'affiliation_status' => AffiliationStatus::class,
+        'sexual_identity' => SexualIdentity::class,
+        'literacy' => 'int',
+        'language' => 'int',
+        'nationality' => 'int',
+        'migratory_status' => 'int',
+        'ethnic_group' => 'int',
         'activities_for_family_support' => 'json',
         'recreation_activities' => 'json',
         'additional_information' => 'json',
+        'health_status' => HealthStatus::class,
         'reviewed_by' => 'int',
         'reviewed_at' => 'datetime',
         'disaffiliated_by' => 'int',
         'created_by' => 'int',
         'updated_by' => 'int',
         'disaffiliated_at' => 'datetime',
-        'gender' => Gender::class,
-        'affiliation_status' => AffiliationStatus::class,
-        'health_status' => HealthStatus::class,
+        'risks_child' => 'json'
     ];
 
     protected $fillable = [
+        'manager_id',
         'children_number',
         'case_number',
         'family_nucleus_id',
@@ -165,18 +132,32 @@ final class Child extends Model
         'activities_for_family_support',
         'recreation_activities',
         'additional_information',
+        'health_status',
         'reviewed_by',
         'reviewed_at',
         'disaffiliated_by',
         'created_by',
         'updated_by',
         'disaffiliated_at',
-        'health_status'
+        'child_photo_path',
+        'risks_child',
+        'physical_description',
+        'aspirations',
+        'personality',
+        'skills',
+        'likes',
+        'dislikes',
+        'signature'
     ];
 
-    public function contact(): BelongsTo
+    public function contact()
     {
         return $this->belongsTo(Contact::class);
+    }
+
+    public function coordinator()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     public function manager(): BelongsTo
@@ -184,9 +165,40 @@ final class Child extends Model
         return $this->belongsTo(User::class, 'manager_id');
     }
 
-    public function family_nucleus(): BelongsTo
+    public function family_nucleus()
     {
         return $this->belongsTo(FamilyNucleus::class);
+    }
+
+    public function disabilities()
+    {
+        return $this->hasMany(Disability::class);
+    }
+
+    public function educational_record()
+    {
+        return $this->hasOne(EducationalRecord::class);
+    }
+
+    public function health_status_record()
+    {
+        return $this->hasOne(HealthStatusRecord::class);
+    }
+
+    public function mailbox()
+    {
+        return $this->hasOne(Mailbox::class, 'id');
+    }
+
+    public function reasons_leaving_study()
+    {
+        return $this->hasOne(ReasonsLeavingStudy::class);
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        $url = $this->child_photo_path ? Storage::url($this->child_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        return $url;
     }
 
     public function banking_information(): MorphOne
@@ -194,42 +206,9 @@ final class Child extends Model
         return $this->morphOne(BankingInformation::class, 'banking_informationable');
     }
 
-    public function educational_record(): HasOne
+    public function mobile_number(): MorphOne
     {
-        return $this->hasOne(EducationalRecord::class);
-    }
-
-    public function health_status_record(): HasOne
-    {
-        return $this->hasOne(HealthStatusRecord::class);
-    }
-
-    public function mailbox(): HasOne
-    {
-        return $this->hasOne(Mailbox::class, 'id');
-    }
-
-    public function reasons_leaving_study(): HasOne
-    {
-        return $this->hasOne(ReasonsLeavingStudy::class);
-    }
-
-    public function disabilities(): HasMany
-    {
-        return $this->hasMany(Disability::class, 'child_id');
-    }
-
-    public function NotifyMails(int $id): void
-    {
-        $mobile_number = $this->getMobileNumber();
-        $pseudonym = $this->pseudonym;
-        if ($this->hasMobileNumber()) {
-            $text = str_replace("%pseudonym%", $pseudonym, Message::HelloForChild->value);
-        } else {
-            $tutor_name = $this->family_nucleus->tutors()->first()->name;
-            $text = str_replace('%tutor%', $tutor_name, str_replace("%pseudonym%", $pseudonym, Message::HelloForTutor->value));
-        }
-        WhatsappController::sendButtonReplyMessage($mobile_number, $text, [new Button(WhatsappCommands::ViewNow->value . ' ' . $id, WhatsappCommands::ViewNow->getLabel())]);
+        return $this->morphOne(MobileNumber::class, 'mobile_numerable');
     }
 
     public function getMobileNumber(): ?string
@@ -242,23 +221,21 @@ final class Child extends Model
         return $this->mobile_number()->exists();
     }
 
-    public function mobile_number(): MorphOne
+    public function NotifyMails(int $id): void
     {
-        return $this->morphOne(MobileNumber::class, 'mobile_numerable');
-    }
-
-    public function scopeFindByPhone(string $phone)
-    {
-        return $this->newQuery()->whereHas('mobile_number', function (Builder $query) use ($phone): void {
-            $query->where('number', $phone);
-        })->orWhereHas('family_nucleus.tutors.mobile_number', function (Builder $query) use ($phone): void {
-            $query->where('number', $phone);
-        })->first();
+        $mobile_number = $this->getMobileNumber();
+        $pseudonym = $this->pseudonym;
+        if ($this->hasMobileNumber()) {
+            $text = str_replace("%pseudonym%", $pseudonym, Message::HelloForChild->value);
+        } else {
+            $tutor_name = $this->family_nucleus->tutors()->first()->name;
+            $text = str_replace('%tutor%', $tutor_name, str_replace("%pseudonym%", $pseudonym, Message::HelloForTutor->value));
+        }
+        WhatsappJob::sendButtonReplyMessage($mobile_number, $text, [new Button(WhatsappCommands::ViewNow->value . ' ' . $id, WhatsappCommands::ViewNow->getLabel())]);
     }
 
     public function isOnlyAffiliated(): bool
     {
         return 1 === $this->family_nucleus->children()->count();
     }
-
 }

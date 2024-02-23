@@ -7,6 +7,7 @@ namespace App\Filament\Resources\MailBoxResource\RelationManagers;
 use App\Enums\MailStatus;
 use App\Enums\MailsTypes;
 use App\Models\Mail;
+use Exception;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -17,7 +18,9 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -37,23 +40,42 @@ final class MailRelationManager extends RelationManager
         return $form
             ->schema([
                 Select::make('type')
+                    ->translateLabel()
+                    ->disabled(fn(Mail $record) => MailStatus::IsResponse === $record->status)
                     ->required()
                     ->native(false)
-                    ->options(MailsTypes::class),
+                    ->options(MailsTypes::class)
+                    ->default(MailsTypes::Response),
                 Select::make('status')
+                    ->disabled(fn(Mail $record) => MailStatus::IsResponse === $record->status)
+                    ->translateLabel()
                     ->required()
                     ->native(false)
-                    ->options(MailStatus::class),
+                    ->options(MailStatus::class)
+                    ->default(MailStatus::Created),
                 Repeater::make('Answers')
+                    ->translateLabel()
                     ->relationship('answers')
-                    ->itemLabel('Answer')
+                    ->required()
                     ->minItems(1)
+                    ->maxItems(
+                        fn(Mail $record) => match ($record->status) {
+                            MailStatus::IsResponse => 1,
+                            default => 10,
+                        }
+                    )
                     ->defaultItems(1)
+                    ->columnSpanFull()
                     ->schema([
                         Textarea::make('content')
+                            ->translateLabel()
+                            ->rows(20)
                             ->required(),
                         FileUpload::make('attached_file_path')
+                            ->translateLabel()
+                            ->preserveFilenames()
                             ->downloadable()
+                            ->required()
                             ->image(),
                     ]),
             ]);
@@ -148,13 +170,22 @@ final class MailRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->translateLabel()
+                    ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('letter_type')
+                Tables\Columns\TextColumn::make('type')
+                    ->translateLabel()
                     ->badge(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
-                Tables\Columns\TextColumn::make('answer_to'),
+                Tables\Columns\IconColumn::make('reply_mail_id')
+                    ->label('')
+                    ->translateLabel()
+                    ->boolean()
+                    ->trueIcon('heroicon-o-arrow-down-left')
+                    ->falseIcon('heroicon-o-arrow-up-right')
+                    ->alignCenter()
+                    ->color(Color::Green),
             ])
             ->filters([
                 SelectFilter::make('Author')
@@ -169,15 +200,32 @@ final class MailRelationManager extends RelationManager
             ])
             ->actions([
                 //Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
                 Tables\Actions\Action::make()
                     ->name('Notify')
+                    ->color(Color::Green)
+                    ->translateLabel()
+                    ->hidden(fn(Mail $record) => MailStatus::IsResponse === $record->status)
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
-                    ->action(function (Mail $record) {
-                        $record->mailbox->child->NotifyMails($record->id);
-                        $record->update(["status" => MailStatus::Sent]);
-                    })
+                    ->action(function (Mail $record): void {
+                        try {
+                            $record->mailbox->child->NotifyMails($record->id);
+                            Notification::make()
+                                ->title(__("Sent to whatsapp successfully"))
+                                ->success()
+                                ->send();
+                            $record->update(["status" => MailStatus::Sent]);
+                        } catch (Exception $e) {
+                            Notification::make()
+                                ->title(__("Error sending to whatsapp"))
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -1,115 +1,76 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Created by Reliese Model.
  */
 
 namespace App\Models;
 
-use App\Traits\UserStamps;
+use App\Enums\MailStatus;
+use App\Enums\MailsTypes;
 use Carbon\Carbon;
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Mail
  *
  * @property int $id
  * @property int $mailbox_id
- * @property string $letter_type
- * @property string $status
- * @property string $letter_photo_1_path
- * @property string|null $letter_photo_2_path
- * @property string|null $answer
+ * @property int $type
+ * @property int|null $reply_mail_id
+ * @property int $status
  * @property int $created_by
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property User $user
+ *
  * @property Mailbox $mailbox
- * @property Ticket $ticket
+ * @property Mail|null $mail
+ * @property Collection|Answer[] $answers
+ * @property Collection|Mail[] $mails
  *
- * @method static Builder|Mail newModelQuery()
- * @method static Builder|Mail newQuery()
- * @method static Builder|Mail query()
- * @method static Builder|Mail whereAnswer($value)
- * @method static Builder|Mail whereCreatedAt($value)
- * @method static Builder|Mail whereCreatedBy($value)
- * @method static Builder|Mail whereId($value)
- * @method static Builder|Mail whereLetterPhoto1Path($value)
- * @method static Builder|Mail whereLetterPhoto2Path($value)
- * @method static Builder|Mail whereLetterType($value)
- * @method static Builder|Mail whereMailboxId($value)
- * @method static Builder|Mail whereStatus($value)
- * @method static Builder|Mail whereUpdatedAt($value)
- * @method static Builder|Mail whereUpdatedBy($value)
- *
- * @mixin IdeHelperLetter
- *
- * @property string $type
- * @property int $awswer_to
- * @property int $has_ticket
- * @property string $photo_path
- * @property-read User|null $creator
- * @property-read Mail|null $from
- * @property-read Mail|null $to
- * @property-read User|null $updater
- *
- * @method static Builder|Mail whereAwswerTo($value)
- * @method static Builder|Mail whereHasTicket($value)
- * @method static Builder|Mail wherePhotoPath($value)
- * @method static Builder|Mail whereType($value)
- *
- * @mixin Eloquent
+ * @package App\Models
  */
-final class Mail extends Model
+class Mail extends Model
 {
-    use UserStamps;
+	protected $table = 'mails';
 
-    protected $table = 'mails';
+	protected $casts = [
+		'mailbox_id' => 'int',
+		'type' => MailsTypes::class,
+		'reply_mail_id' => 'int',
+		'status' => MailStatus::class,
+		'created_by' => 'int',
+		'updated_by' => 'int'
+	];
 
-    protected $casts = [
-        'mailbox_id' => 'int',
-        'created_by' => 'int',
-        'updated_by' => 'int',
-    ];
+	protected $fillable = [
+		'mailbox_id',
+		'type',
+		'reply_mail_id',
+		'status',
+		'created_by',
+		'updated_by'
+	];
 
-    protected $fillable = [
-        'mailbox_id',
-        'type',
-        'status',
-        'reply_mail_id',
-        'created_by',
-        'updated_by',
-    ];
+	public function mailbox()
+	{
+		return $this->belongsTo(Mailbox::class);
+	}
 
-    public function from()
-    {
-        return $this->belongsTo(Mail::class);
-    }
+	public function mail()
+	{
+		return $this->belongsTo(Mail::class, 'reply_mail_id');
+	}
 
-    public function to()
-    {
-        return $this->hasOne(Mail::class, 'answer_to');
-    }
+	public function answers()
+	{
+		return $this->hasMany(Answer::class);
+	}
 
-    public function mailbox()
-    {
-        return $this->belongsTo(Mailbox::class);
-    }
-
-    public function ticket()
-    {
-        return $this->hasOne(Ticket::class);
-    }
-
-    public function answers(): HasMany
-    {
-        return $this->hasMany(Answers::class);
-    }
-
+	public function mails()
+	{
+		return $this->hasMany(Mail::class, 'reply_mail_id');
+	}
 }

@@ -1,7 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
+use App\Http\Controllers\PDFController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/chat/{id}', fn () => User::all())->name('chat');
+Route::controller(PDFController::class)->group(
+    function () {
+        Route::get('/sheet/{child}', 'sheet')->name('sheet');
+    }
+);

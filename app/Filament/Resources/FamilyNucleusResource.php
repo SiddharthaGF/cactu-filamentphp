@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Builder\RecordBuilder;
 use App\Enums\RisksTutor;
 use App\Filament\Resources\FamilyNucleusResource\Pages;
 use App\Filament\Resources\FamilyNucleusResource\RelationManagers;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -33,18 +35,22 @@ final class FamilyNucleusResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('conventional_phone')
-                    ->searchable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\Layout\Stack::make([
+                        TextColumn::make('tutors.name')
+                            ->weight(FontWeight::Bold)
+                            ->searchable(),
+                        TextColumn::make('tutors.dni')->searchable(),
+                        TextColumn::make('house.neighborhood')
+                            ->searchable()
+                            ->label(__('Neighborhood')),
+                    ])
+                ])
             ])
-            ->paginated(false)
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
+            ])
             ->filters([
 
             ])
@@ -61,7 +67,7 @@ final class FamilyNucleusResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ])
             ->modifyQueryUsing(
-                fn($query) => $query->with('tutors')
+                fn ($query) => RecordBuilder::correspondingRecords($query)->with('tutors')
             );
     }
 
@@ -87,15 +93,17 @@ final class FamilyNucleusResource extends Resource
         return $form
             ->schema([
                 Section::make(__('Tutors'))
+                    ->translateLabel()
                     ->description(__('This section is about the tutors of the family'))
                     ->aside()
                     ->columns(1)
                     ->columnSpanFull()
                     ->schema([
                         Repeater::make('Tutor')
+                            ->translateLabel()
                             ->relationship('tutors')
                             ->deleteAction(
-                                fn(Action $action) => $action->requiresConfirmation(),
+                                fn (Action $action) => $action->requiresConfirmation(),
                             )
                             ->grid([
                                 'lg' => 1,
@@ -107,6 +115,7 @@ final class FamilyNucleusResource extends Resource
                             ->minItems(1)
                             ->maxItems(2),
                         CheckboxList::make('risk_factors')
+                            ->translateLabel()
                             ->options(RisksTutor::class)
                             ->columns(4),
                     ]),

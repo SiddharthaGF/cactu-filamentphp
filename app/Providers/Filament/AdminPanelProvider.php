@@ -24,10 +24,10 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Njxqlus\FilamentProgressbar\FilamentProgressbarPlugin;
-use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 use Rupadana\ApiService\ApiServicePlugin;
 use Swis\Filament\Backgrounds\FilamentBackgroundsPlugin;
 use Swis\Filament\Backgrounds\ImageProviders\MyImages;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 
 final class AdminPanelProvider extends PanelProvider
 {
@@ -43,7 +43,6 @@ final class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Cyan,
             ])
             ->plugins([
-                ApiServicePlugin::make(),
                 FilamentShieldPlugin::make('Roles'),
                 FilamentProgressbarPlugin::make()->color('primary'),
                 BreezyCore::make()
@@ -68,9 +67,7 @@ final class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-            ])
+
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
@@ -89,9 +86,6 @@ final class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
-            ->resources([
-                //config('filament-logger.activity_resource')
-            ]);
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k']);
     }
 }

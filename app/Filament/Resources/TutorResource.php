@@ -52,35 +52,42 @@ final class TutorResource extends Resource
     {
         return [
             TextInput::make('name')
+                ->translateLabel()
                 ->required(),
             TextInput::make('dni')
                 ->prefixIcon('heroicon-o-identification')
+                ->translateLabel()
                 ->numeric()
-                ->unique(ignorable: fn($record) => $record)
+                ->unique(ignorable: fn ($record) => $record)
                 ->required(),
             Group::make()
                 ->relationship('mobile_number')
                 ->schema([
                     PhoneInput::make('number')
-                        ->unique(ignorable: fn($record) => $record)
+                        ->translateLabel()
+                        ->unique(ignorable: fn ($record) => $record)
                         ->required(),
                 ]),
             DatePicker::make('birthdate')
+                ->translateLabel()
                 ->prefixIcon('heroicon-o-calendar')
                 ->native(false)
                 ->maxDate(now())
                 ->closeOnDateSelection()
                 ->required(),
             Select::make('gender')
+                ->translateLabel()
                 ->prefixIcon('heroicon-o-sparkles')
                 ->options(Gender::class)
                 ->native(false)
                 ->required(),
             Select::make('relationship')
+                ->translateLabel()
                 ->options(FamilyRelationship::class)
                 ->native(false)
                 ->required(),
             Toggle::make('is_present')
+                ->translateLabel()
                 ->onColor('success')
                 ->offColor('gray')
                 ->columnSpanFull()
@@ -88,41 +95,47 @@ final class TutorResource extends Resource
                 ->reactive(),
             Section::make()
                 ->hidden(
-                    fn(Get $get, $state) => $state = $get('is_present')
+                    fn (Get $get, $state) => $state = $get('is_present')
                 )
                 ->schema([
                     Select::make('reason_not_present')
+                        ->translateLabel()
                         ->prefixIcon('heroicon-o-question-mark-circle')
                         ->options(ReasonsIsNotPresent::class)
                         ->native(false)
+                        ->required()
                         ->reactive(),
                     Textarea::make('specific_reason')
+                        ->translateLabel()
                         ->required()
                         ->visible(
-                            fn(Get $get, $state) => $state = ReasonsIsNotPresent::Other->value === $get('reason_not_present')
+                            fn (Get $get, $state) => $state = ReasonsIsNotPresent::Other->value === $get('reason_not_present')
                         ),
                     DatePicker::make('deathdate')
+                        ->translateLabel()
                         ->prefixIcon('heroicon-o-calendar')
                         ->required()
                         ->native(false)
                         ->maxDate(now())
                         ->visible(
-                            fn(Get $get, $state) => $state = ReasonsIsNotPresent::Dead->value === $get('reason_not_present')
+                            fn (Get $get, $state) => $state = ReasonsIsNotPresent::Dead->value === $get('reason_not_present')
                         ),
                 ]),
             Section::make()
                 ->schema([
                     Select::make('occupation')
                         ->prefixIcon('heroicon-o-briefcase')
+                        ->translateLabel()
                         ->options(Occupation::class)
                         ->native(false)
                         ->required()
                         ->reactive(),
                     TextInput::make('specific_occupation')
+                        ->translateLabel()
                         ->prefixIcon('heroicon-o-question-mark-circle')
                         ->required()
                         ->visible(
-                            fn(Get $get, $state) => $state = Occupation::Other === $get('occupation')
+                            fn (Get $get, $state) => $state = Occupation::Other->value === $get('occupation')
                         ),
                     TextInput::make('salary')
                         ->prefixIcon('heroicon-o-currency-dollar')
@@ -130,7 +143,7 @@ final class TutorResource extends Resource
                         ->minValue(1),
                 ])
                 ->hidden(
-                    fn(Get $get, $state) => $state = !$get('is_present')
+                    fn (Get $get, $state) => $state = ! $get('is_present')
                 ),
         ];
     }
@@ -150,7 +163,7 @@ final class TutorResource extends Resource
                     ->attribute('is_parent'),
                 Filter::make('is_present')
                     ->query(
-                        fn(Builder $query, $state) => $query->where('is_parent', $state)
+                        fn (Builder $query, $state) => $query->where('is_parent', $state)
                     ),
             ])
             ->actions([
@@ -160,10 +173,10 @@ final class TutorResource extends Resource
             ->bulkActions([
                 ExportBulkAction::make()->exports([
                     ExcelExport::make('With the fields that appear in the registration form')
-                        ->withFilename(fn($resource) => 'tutors-' . date('YmdHis'))
+                        ->withFilename(fn ($resource) => 'tutors-' . date('YmdHis'))
                         ->fromForm(),
                     ExcelExport::make('All the information')
-                        ->withFilename(fn($resource) => 'tutors-' . date('YmdHis'))
+                        ->withFilename(fn ($resource) => 'tutors-' . date('YmdHis'))
                         ->fromModel(),
                 ]),
                 Tables\Actions\BulkActionGroup::make([
@@ -174,7 +187,7 @@ final class TutorResource extends Resource
                 Tables\Actions\CreateAction::make(),
             ])
             ->modifyQueryUsing(
-                fn(Builder $query) => Auth::user()->can('view_any_tutor')
+                fn (Builder $query) => Auth::user()->can('view_any_tutor')
                     ? $query
                     : $query->where('updated_by', auth()->id())
             );
@@ -191,7 +204,7 @@ final class TutorResource extends Resource
                 ->sortable(),
             TextColumn::make('birthdate')
                 ->formatStateUsing(
-                    fn($state) => Carbon::parse($state)->age
+                    fn ($state) => Carbon::parse($state)->age
                 )
                 ->badge()
                 ->color('info')

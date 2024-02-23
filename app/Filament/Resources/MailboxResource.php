@@ -4,24 +4,44 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Builder\RecordBuilder;
 use App\Enums\StatusVigency;
 use App\Filament\Resources\MailboxResource\Pages;
 use App\Filament\Resources\MailboxResource\RelationManagers;
 use App\Models\Mailbox;
-use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\FontWeight;
+use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 final class MailboxResource extends Resource
 {
     protected static ?string $model = Mailbox::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-envelope';
+
+    protected static int $globalSearchResultsLimit = 3;
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return $record->child->name;
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['child.name', 'child.dni', 'child.children_number', 'child.case_number'];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            __('Vigency') => $record->vigency->getLabel(),
+        ];
+    }
 
     public static function getLabel(): ?string
     {
@@ -38,6 +58,7 @@ final class MailboxResource extends Resource
         return $form
             ->schema([
                 Select::make('id')
+                    ->translateLabel()
                     ->searchable()
                     ->preload()
                     ->relationship('child', 'name')
@@ -45,35 +66,10 @@ final class MailboxResource extends Resource
                     ->native(false)
                     ->disabled(),
                 Select::make('vigency')
+                    ->translateLabel()
                     ->options(StatusVigency::class)
                     ->native(false)
                     ->required(),
-                TextInput::make('token')
-                    ->required()
-                    ->disabled()
-                    ->prefix(route('chat', '') . '/')
-                    ->prefixAction(
-                        Action::make('Visit mailbox')
-                            ->icon('heroicon-m-arrow-top-right-on-square')
-                            ->url(fn(Mailbox $record) => route('chat', $record->token ?? ''))
-                            ->openUrlInNewTab(),
-                    )
-                    ->suffixActions(
-                        [
-                            Action::make('Create new token')
-                                ->icon('heroicon-m-arrow-path')
-                                ->requiresConfirmation()
-                                ->action(
-                                    function (Mailbox $record, Set $set): void {
-                                        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                                        $new_token = mb_substr(str_shuffle($characters), 0, 15);
-                                        $set('token', $new_token);
-                                        $record->token = $new_token;
-                                        $record->save();
-                                    }
-                                ),
-                        ]
-                    ),
             ]);
     }
 
@@ -81,24 +77,37 @@ final class MailboxResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('child.name')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('vigency')
-                    ->badge(),
-                TextColumn::make('token')
-                    ->url(fn(Mailbox $record) => route('chat', $record->token ?? ''))
-                    ->openUrlInNewTab()
-                    ->icon('heroicon-m-arrow-top-right-on-square'),
+                Tables\Columns\Layout\Split::make([
+                    Tables\Columns\ImageColumn::make('child.child_photo_path')
+                        ->defaultImageUrl(fn (Model $record) => $record->child->getFilamentAvatarUrl())
+                        ->circular()
+                        ->grow(false)
+                        ->alignEnd(),
+                    Tables\Columns\Layout\Stack::make([
+                        TextColumn::make('child.name')
+                            ->weight(FontWeight::Bold)
+                            ->searchable()
+                            ->sortable(),
+                        TextColumn::make('vigency')
+                            ->badge(),
+                    ])
+                ])
+            ])
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
             ])
             ->filters([])
             ->actions([
-                //Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([])
             ->emptyStateActions([
                 //Tables\Actions\CreateAction::make(),
-            ]);
+            ])
+            ->modifyQueryUsing(
+                fn ($query) => RecordBuilder::correspondingRecords($query)->with('child')
+            );
     }
 
     public static function getRelations(): array

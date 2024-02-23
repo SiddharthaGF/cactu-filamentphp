@@ -21,17 +21,17 @@ final class CommunityResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
 
+    protected static ?string $navigationGroup = 'Location';
+
+    
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 TextInput::make('name')
                     ->required(),
-                Checkbox::make('vigency')
-                    ->dehydrateStateUsing(fn ($state) => $state ? 'active' : 'inactive')
-                    ->formatStateUsing(
-                        fn (string $state) => 'active' === $state
-                    ),
+                Checkbox::make('vigency'),
                 Select::make('zone_code')
                     ->relationship(
                         'zone',
@@ -41,6 +41,13 @@ final class CommunityResource extends Resource
                     ->preload()
                     ->reactive()
                     ->label('Zone'),
+                Select::make('manager_id')
+                    ->relationship('managers')
+                    ->multiple()
+                    ->searchable()
+                    ->preload()
+                    ->reactive()
+                    ->label('Manager'),
             ]);
     }
 
@@ -57,9 +64,7 @@ final class CommunityResource extends Resource
                 TextColumn::make('vigency')
                     ->badge(),
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -71,15 +76,12 @@ final class CommunityResource extends Resource
             ])
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
-            ])
-            ->paginated([10, 25, 50, 100, 'all']);
+            ]);
     }
 
     public static function getRelations(): array
     {
-        return [
-
-        ];
+        return [];
     }
 
     public static function getPages(): array

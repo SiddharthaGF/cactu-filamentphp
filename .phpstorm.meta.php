@@ -1,5 +1,7 @@
 <?php
+/* @noinspection ALL */
 // @formatter:off
+// phpcs:ignoreFile
 
 namespace PHPSTORM_META {
 
@@ -184,7 +186,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -424,7 +425,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -664,7 +664,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -904,7 +903,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -1144,7 +1142,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -1384,7 +1381,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -1624,7 +1620,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -1864,7 +1859,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -2104,7 +2098,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -2344,7 +2337,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
@@ -2584,7 +2576,6 @@ namespace PHPSTORM_META {
             'Spatie\Permission\Contracts\Permission' => \Spatie\Permission\Models\Permission::class,
             'Spatie\Permission\Contracts\Role' => \Spatie\Permission\Models\Role::class,
             'Spatie\Permission\PermissionRegistrar' => \Spatie\Permission\PermissionRegistrar::class,
-            'Spatie\QueryBuilder\QueryBuilderRequest' => \Spatie\QueryBuilder\QueryBuilderRequest::class,
             'Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface' => \Symfony\Component\HtmlSanitizer\HtmlSanitizer::class,
             'auth' => \Illuminate\Auth\AuthManager::class,
             'auth.driver' => \Lab404\Impersonate\Guard\SessionGuard::class,
