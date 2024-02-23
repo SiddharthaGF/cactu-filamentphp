@@ -36,21 +36,13 @@ final class MailRelationManager extends RelationManager
             ->schema([
                 Select::make('type')
                     ->translateLabel()
-<<<<<<< HEAD
                     ->disabled(fn(Mail $record) => MailStatus::IsResponse === $record->status)
-=======
-                    ->disabled(fn (Mail $record) => MailStatus::IsResponse === $record->status)
->>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
                     ->required()
                     ->native(false)
                     ->options(MailsTypes::class)
                     ->default(MailsTypes::Response),
                 Select::make('status')
-<<<<<<< HEAD
                     ->disabled(fn(Mail $record) => MailStatus::IsResponse === $record->status)
-=======
-                    ->disabled(fn (Mail $record) => MailStatus::IsResponse === $record->status)
->>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
                     ->translateLabel()
                     ->required()
                     ->native(false)
@@ -207,11 +199,7 @@ final class MailRelationManager extends RelationManager
                     ->name('Notify')
                     ->color(Color::Green)
                     ->translateLabel()
-<<<<<<< HEAD
                     ->hidden(fn(Mail $record) => MailStatus::IsResponse === $record->status)
-=======
-                    ->hidden(fn (Mail $record) => MailStatus::IsResponse === $record->status)
->>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
                     ->action(function (Mail $record): void {
                         try {

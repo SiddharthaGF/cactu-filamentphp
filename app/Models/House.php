@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class House
- * 
+ *
  * @property int $id
  * @property int $family_nucleus_id
  * @property int $property
@@ -29,7 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property int $territory
- * 
+ *
  * @property FamilyNucleus $family_nucleus
  * @property Collection|RisksNearHome[] $risks_near_homes
  *
@@ -70,77 +70,13 @@ class House extends Model
 		'territory'
 	];
 
-<<<<<<< HEAD
 	public function family_nucleus()
 	{
 		return $this->belongsTo(FamilyNucleus::class);
 	}
 
-	public function risks_near_homes()
+	public function risks_near_home()
 	{
 		return $this->hasMany(RisksNearHome::class);
 	}
-=======
-    protected $fillable = [
-        'family_nucleus_id',
-        'property',
-        'home_space',
-        'roof',
-        'walls',
-        'floor',
-        'latitude',
-        'longitude',
-        'location',
-        'basic_services',
-        'extras',
-        'neighborhood',
-        'created_by',
-        'updated_by',
-        'territory',
-    ];
-
-    protected $appends = [
-        'location',
-    ];
-
-    public static function getComputedLocation(): string
-    {
-        return 'location';
-    }
-
-    public static function getLatLngAttributes(): array
-    {
-        return [
-            'lat' => 'latitude',
-            'lng' => 'longitude',
-        ];
-    }
-
-    public function setLocationAttribute(?array $location): void
-    {
-        if (is_array($location)) {
-            $this->attributes['latitude'] = $location['lat'];
-            $this->attributes['longitude'] = $location['lng'];
-            unset($this->attributes['location']);
-        }
-    }
-
-    public function getLocationAttribute(): array
-    {
-        return [
-            'lat' => (float) $this->latitude,
-            'lng' => (float) $this->longitude,
-        ];
-    }
-
-    public function family_nucleus(): BelongsTo
-    {
-        return $this->belongsTo(FamilyNucleus::class);
-    }
-
-    public function risks_near_home(): HasMany
-    {
-        return $this->hasMany(RiskNearHome::class);
-    }
->>>>>>> e2f090c01e7b05179aa0c45c43380d40b16818c8
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
-use App\Constants\BasicServices;
+use App\Enums\BasicServices;
 use App\Enums\FloorMaterials;
 use App\Enums\HomeSpaceSituations;
 use App\Enums\HousePropertyTypes;

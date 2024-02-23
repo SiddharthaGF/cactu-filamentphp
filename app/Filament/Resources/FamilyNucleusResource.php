@@ -51,9 +51,7 @@ final class FamilyNucleusResource extends Resource
                 'md' => 2,
                 'xl' => 3,
             ])
-            ->filters([
-
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
@@ -135,7 +133,8 @@ final class FamilyNucleusResource extends Resource
                     ->collapsible()
                     ->collapsed()
                     ->columns(2)
-                    ->schema([BankingInformationResource::getSchema()
+                    ->schema([
+                        BankingInformationResource::getSchema()
                     ]),
             ]);
     }
