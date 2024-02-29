@@ -41,6 +41,16 @@ final class TutorResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getLabel(): ?string
+    {
+        return __("Tutor");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Tutors");
+    }
+
     public static function form(Form $form): Form
     {
         return $form

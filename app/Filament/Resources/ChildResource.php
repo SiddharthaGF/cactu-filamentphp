@@ -26,9 +26,7 @@ use App\Filament\Resources\ChildResource\Pages;
 use App\Models\Child;
 use App\Models\EducationalInstitution;
 use App\Models\User;
-use Blade;
 use Carbon\Carbon;
-use Faker\Provider\ar_EG\Text;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
@@ -53,7 +51,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Pdf;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
@@ -248,7 +245,6 @@ final class ChildResource extends Resource
                                                             ->icon('heroicon-o-x-circle')
                                                             ->action(fn (Set $set) => $set('fovorite_subject', '')),
                                                     ),
-
                                             ])
                                             ->hidden(fn (Get $get, $state) => count($get('reasons_leaving_study')) > 0)
                                             ->maxItems(1)

@@ -25,6 +25,15 @@ final class BankingInformationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getLabel(): ?string
+    {
+        return __("Baking Information");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Baking Information");
+    }
     public static function form(Form $form): Form
     {
         return $form->schema(self::getSchema());

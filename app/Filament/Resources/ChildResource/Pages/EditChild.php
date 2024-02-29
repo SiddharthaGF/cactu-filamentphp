@@ -33,7 +33,7 @@ final class EditChild extends EditRecord
                 ->form([
                     Radio::make('choice')
                         ->translateLabel()
-                        ->default(1)
+                        ->default(2)
                         ->options([
                             1 => __('Just the boy'),
                             2 => __('With the family'),
@@ -68,13 +68,19 @@ final class EditChild extends EditRecord
                                 }
                             );
                             $record->family_nucleus->save();
+                            $record->family_nucleus->children->each(
+                                function ($child) use ($manager_id) {
+                                    $child->updated_by = $manager_id;
+                                    $child->save();
+                                    $child->mailbox->each(
+                                        function ($mailbox) use ($manager_id) {
+                                            $mailbox->updated_by = $manager_id;
+                                            $mailbox->save();
+                                        }
+                                    );
+                                }
+                            );
                         }
-                        $record->mailbox->each(
-                            function ($mailbox) use ($manager_id) {
-                                $mailbox->updated_by = $manager_id;
-                                $mailbox->save();
-                            }
-                        );
                         $record->save();
                         Notification::make()
                             ->title(__('Child successfully transferred'))

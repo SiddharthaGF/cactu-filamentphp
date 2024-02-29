@@ -18,9 +18,24 @@ final class CityResource extends Resource
 {
     protected static ?string $model = City::class;
 
-    protected static ?string $navigationGroup = 'Location';
+    public static function getNavigationGroup(): ?string
+    {
+        return __("Location");
+    }
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
+
+    public static function getLabel(): ?string
+    {
+        return __("City");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Cities");
+    }
 
     public static function form(Form $form): Form
     {

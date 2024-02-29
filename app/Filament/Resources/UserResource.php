@@ -40,6 +40,13 @@ final class UserResource extends Resource
         return __("Users");
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __("Security");
+    }
+
+    //protected static ?int $navigationSort = 3;
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'email'];

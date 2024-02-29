@@ -9,10 +9,12 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class State
- * 
+ *
  * @property string $code
  * @property string $name
  * @property int|null $coordinator_id
@@ -20,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property User|null $user
  * @property Collection|City[] $cities
  *
@@ -45,13 +47,13 @@ class State extends Model
 		'updated_by'
 	];
 
-	public function user()
-	{
+	public function coordinator(): BelongsTo
+    {
 		return $this->belongsTo(User::class, 'coordinator_id');
 	}
 
-	public function cities()
-	{
+	public function cities(): HasMany
+    {
 		return $this->hasMany(City::class, 'state_code');
 	}
 }

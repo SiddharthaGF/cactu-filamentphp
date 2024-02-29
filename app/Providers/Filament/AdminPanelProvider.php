@@ -24,7 +24,6 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Jeffgreco13\FilamentBreezy\BreezyCore;
 use Njxqlus\FilamentProgressbar\FilamentProgressbarPlugin;
-use Rupadana\ApiService\ApiServicePlugin;
 use Swis\Filament\Backgrounds\FilamentBackgroundsPlugin;
 use Swis\Filament\Backgrounds\ImageProviders\MyImages;
 use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
@@ -40,10 +39,10 @@ final class AdminPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->colors([
-                'primary' => Color::Cyan,
+                'primary' => Color::Blue,
             ])
             ->plugins([
-                FilamentShieldPlugin::make('Roles'),
+                FilamentShieldPlugin::make(),
                 FilamentProgressbarPlugin::make()->color('primary'),
                 BreezyCore::make()
                     ->myProfile(
@@ -60,6 +59,8 @@ final class AdminPanelProvider extends PanelProvider
                     ->enableTwoFactorAuthentication(),
                 EnvironmentIndicatorPlugin::make(),
                 FilamentBackgroundsPlugin::make()
+                    ->showAttribution(false)
+                    ->remember(900)
                     ->imageProvider(
                         MyImages::make()
                             ->directory('images/backgrounds')
@@ -67,7 +68,6 @@ final class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
-
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,

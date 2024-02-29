@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -133,5 +134,20 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
     public function scopeByRole($query, $roleName)
     {
         return $query->role([$roleName, 'super_admin']);
+    }
+
+    public function canImpersonate()
+    {
+        return true;
+    }
+
+    public function isOwner(Model $model)
+    {
+        return $this->id == $model->updated_by;
+    }
+
+    public function isAdmin()
+    {
+        return $this->hasRole('super_admin');
     }
 }

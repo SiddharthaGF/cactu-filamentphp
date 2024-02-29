@@ -35,6 +35,16 @@ final class HouseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getLabel(): ?string
+    {
+        return __("House");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Houses");
+    }
+
     public static function form(Form $form): Form
     {
         return $form

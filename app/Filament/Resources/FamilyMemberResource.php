@@ -24,6 +24,16 @@ final class FamilyMemberResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getLabel(): ?string
+    {
+        return __("Family Member");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Family Members");
+    }
+
     public static function form(Form $form): Form
     {
         return $form

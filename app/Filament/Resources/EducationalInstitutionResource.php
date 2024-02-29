@@ -31,6 +31,13 @@ final class EducationalInstitutionResource extends Resource
         return __("Educational Institutions");
     }
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __("Location");
+    }
+
+    protected static ?int $navigationSort = 4;
+
     protected static bool $shouldRegisterNavigation = true;
 
     public static function form(Form $form): Form

@@ -17,9 +17,24 @@ final class StateResource extends Resource
 {
     protected static ?string $model = State::class;
 
-    protected static ?string $navigationGroup = 'Location';
+    public static function getNavigationGroup(): ?string
+    {
+        return __("Location");
+    }
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
+
+    public static function getLabel(): ?string
+    {
+        return __("State");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("States");
+    }
 
     public static function form(Form $form): Form
     {
@@ -42,7 +57,6 @@ final class StateResource extends Resource
                     ->relationship('coordinator', 'name')
                     ->native(false)
                     ->label('Coordinator'),
-
             ]);
     }
 
@@ -51,28 +65,21 @@ final class StateResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('code')
+                    ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->label("State")
+                    ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('coordinator.name')
+                    ->translateLabel()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cities_count')
+                    ->translateLabel()
+                    ->label('Cities')
                     ->counts('cities')
+                    ->alignCenter()
                     ->badge(),
-                Tables\Columns\TextColumn::make('creator.name')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updater.name')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
 

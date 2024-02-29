@@ -21,9 +21,22 @@ final class CommunityResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
 
-    protected static ?string $navigationGroup = 'Location';
+    public static function getNavigationGroup(): ?string
+    {
+        return __("Location");
+    }
 
-    
+    protected static ?int $navigationSort = 4;
+
+    public static function getLabel(): ?string
+    {
+        return __("Community");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Communities");
+    }
 
     public static function form(Form $form): Form
     {

@@ -9,10 +9,21 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 final class CitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'cities';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('Cities');
+    }
+
+    protected static function getModelLabel(): ?string
+    {
+        return __('City');
+    }
 
     public function form(Form $form): Form
     {

@@ -18,9 +18,24 @@ final class ZoneResource extends Resource
 {
     protected static ?string $model = Zone::class;
 
-    protected static ?string $navigationGroup = 'Location';
+    public static function getNavigationGroup(): ?string
+    {
+        return __("Location");
+    }
+
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
+
+    public static function getLabel(): ?string
+    {
+        return __("Zone");
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return __("Zones");
+    }
 
     public static function form(Form $form): Form
     {
