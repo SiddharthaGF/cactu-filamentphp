@@ -6,12 +6,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class BankingInformation
- * 
+ *
  * @property int $id
  * @property int $banking_informationable_id
  * @property string $banking_informationable_type
@@ -28,6 +29,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BankingInformation extends Model
 {
+
+    use UserStamps;
+
 	protected $table = 'banking_information';
 
 	protected $casts = [

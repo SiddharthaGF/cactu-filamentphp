@@ -6,13 +6,14 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Contact
- * 
+ *
  * @property string $id
  * @property int $alliance_id
  * @property string $name
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Alliance $alliance
  * @property Collection|Child[] $children
  *
@@ -28,6 +29,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Contact extends Model
 {
+
+    use UserStamps;
+
 	protected $table = 'contacts';
 	public $incrementing = false;
 

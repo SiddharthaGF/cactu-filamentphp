@@ -8,6 +8,7 @@ namespace App\Models;
 
 use App\Enums\FamilyRelationship;
 use App\Enums\Gender;
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -32,6 +33,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class FamilyMember extends Model
 {
+
+    use UserStamps;
+
     protected $table = 'family_members';
 
     protected $casts = [

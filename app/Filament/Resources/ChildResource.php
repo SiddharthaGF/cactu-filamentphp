@@ -159,6 +159,10 @@ final class ChildResource extends Resource
                                             ->translateLabel()
                                             ->prefixIcon('heroicon-o-user')
                                             ->required(),
+                                        TextInput::make('last_name')
+                                            ->translateLabel()
+                                            ->prefixIcon('heroicon-o-user')
+                                            ->required(),
                                         TextInput::make('dni')
                                             ->translateLabel()
                                             ->required()

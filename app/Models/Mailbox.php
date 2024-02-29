@@ -7,6 +7,7 @@
 namespace App\Models;
 
 use App\Enums\StatusVigency;
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +30,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Mailbox extends Model
 {
+
+    use UserStamps;
+
     protected $table = 'mailboxes';
     public $incrementing = false;
 

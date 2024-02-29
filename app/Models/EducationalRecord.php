@@ -6,12 +6,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class EducationalRecord
- * 
+ *
  * @property int $id
  * @property int $child_id
  * @property int $educational_institution_id
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Child $child
  * @property EducationalInstitution $educational_institution
  *
@@ -30,6 +31,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class EducationalRecord extends Model
 {
+
+    use UserStamps;
+
 	protected $table = 'educational_record';
 
 	protected $casts = [

@@ -6,12 +6,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class CommunityManager
- * 
+ *
  * @property int $id
  * @property int $community_id
  * @property int $manager_id
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Community $community
  * @property User $user
  *
@@ -27,6 +28,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class CommunityManager extends Model
 {
+
+    use UserStamps;
+
 	protected $table = 'community_managers';
 
 	protected $casts = [

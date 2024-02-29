@@ -13,14 +13,15 @@ use App\Enums\Message;
 use App\Enums\SexualIdentity;
 use App\Enums\WhatsappCommands;
 use App\Jobs\WhatsappJob;
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Facades\Storage;
 use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
-use Storage;
 
 /**
  * Class Child
@@ -81,6 +82,9 @@ use Storage;
  */
 class Child extends Model implements HasAvatar
 {
+
+    use UserStamps;
+
     protected $table = 'children';
 
     protected $casts = [
@@ -115,6 +119,7 @@ class Child extends Model implements HasAvatar
         'family_nucleus_id',
         'contact_id',
         'name',
+        'last_name',
         'dni',
         'gender',
         'birthdate',

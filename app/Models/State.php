@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +31,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class State extends Model
 {
+
+    use UserStamps;
+
 	protected $table = 'states';
 	protected $primaryKey = 'code';
 	public $incrementing = false;

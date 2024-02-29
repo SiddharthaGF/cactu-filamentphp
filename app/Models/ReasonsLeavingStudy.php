@@ -6,12 +6,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class ReasonsLeavingStudy
- * 
+ *
  * @property int $id
  * @property int $child_id
  * @property string $reason
@@ -19,13 +20,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Child $child
  *
  * @package App\Models
  */
 class ReasonsLeavingStudy extends Model
 {
+
+    use UserStamps;
+
 	protected $table = 'reasons_leaving_study';
 
 	protected $casts = [

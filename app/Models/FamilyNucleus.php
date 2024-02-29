@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -31,6 +32,9 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  */
 class FamilyNucleus extends Model
 {
+
+    use UserStamps;
+
     protected $table = 'family_nuclei';
 
     protected $casts = [

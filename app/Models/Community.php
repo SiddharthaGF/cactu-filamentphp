@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,6 +34,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Community extends Model
 {
+
+    use UserStamps;
+
 	protected $table = 'communities';
 
 	protected $casts = [

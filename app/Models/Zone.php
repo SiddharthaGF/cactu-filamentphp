@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -31,29 +32,32 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Zone extends Model
 {
-	protected $table = 'zones';
-	protected $primaryKey = 'code';
-	public $incrementing = false;
 
-	protected $casts = [
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    use UserStamps;
 
-	protected $fillable = [
-		'city_code',
-		'name',
-		'created_by',
-		'updated_by'
-	];
+    protected $table = 'zones';
+    protected $primaryKey = 'code';
+    public $incrementing = false;
 
-	public function city()
-	{
-		return $this->belongsTo(City::class, 'city_code');
-	}
+    protected $casts = [
+        'created_by' => 'int',
+        'updated_by' => 'int'
+    ];
 
-	public function communities()
-	{
-		return $this->hasMany(Community::class, 'zone_code');
-	}
+    protected $fillable = [
+        'city_code',
+        'name',
+        'created_by',
+        'updated_by'
+    ];
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_code');
+    }
+
+    public function communities()
+    {
+        return $this->hasMany(Community::class, 'zone_code');
+    }
 }

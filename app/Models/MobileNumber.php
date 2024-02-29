@@ -6,12 +6,13 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class MobileNumber
- * 
+ *
  * @property int $id
  * @property int $mobile_numerable_id
  * @property string $mobile_numerable_type
@@ -25,6 +26,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class MobileNumber extends Model
 {
+
+    use UserStamps;
+
 	protected $table = 'mobile_numbers';
 
 	protected $casts = [

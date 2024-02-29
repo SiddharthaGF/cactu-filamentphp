@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -38,6 +39,9 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  */
 class Tutor extends Model
 {
+
+    use UserStamps;
+
     protected $table = 'tutors';
 
     protected $casts = [
