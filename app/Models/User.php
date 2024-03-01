@@ -30,7 +30,7 @@ use Illuminate\Notifications\Notifiable;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class User

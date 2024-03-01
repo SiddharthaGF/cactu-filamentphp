@@ -32,24 +32,24 @@ class BankingInformation extends Model
 
     use UserStamps;
 
-	protected $table = 'banking_information';
+    protected $table = 'banking_information';
 
-	protected $casts = [
-		'banking_informationable_id' => 'int',
-		'account_type' => 'int',
-		'financial_institution_types' => 'int',
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $casts = [
+        'banking_informationable_id' => 'int',
+        'account_type' => 'int',
+        'financial_institution_types' => 'int',
+        'created_by' => 'int',
+        'updated_by' => 'int'
+    ];
 
-	protected $fillable = [
-		'banking_informationable_id',
-		'banking_informationable_type',
-		'account_type',
-		'financial_institution_types',
-		'financial_institution_bank',
-		'account_number',
-		'created_by',
-		'updated_by'
-	];
+    protected $fillable = [
+        'banking_informationable_id',
+        'banking_informationable_type',
+        'account_type',
+        'financial_institution_types',
+        'financial_institution_bank',
+        'account_number',
+        'created_by',
+        'updated_by'
+    ];
 }

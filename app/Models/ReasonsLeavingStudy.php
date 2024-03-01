@@ -30,23 +30,23 @@ class ReasonsLeavingStudy extends Model
 
     use UserStamps;
 
-	protected $table = 'reasons_leaving_study';
+    protected $table = 'reasons_leaving_study';
 
-	protected $casts = [
-		'child_id' => 'int',
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $casts = [
+        'child_id' => 'int',
+        'created_by' => 'int',
+        'updated_by' => 'int'
+    ];
 
-	protected $fillable = [
-		'child_id',
-		'reason',
-		'created_by',
-		'updated_by'
-	];
+    protected $fillable = [
+        'child_id',
+        'reason',
+        'created_by',
+        'updated_by'
+    ];
 
-	public function child()
-	{
-		return $this->belongsTo(Child::class);
-	}
+    public function child()
+    {
+        return $this->belongsTo(Child::class);
+    }
 }

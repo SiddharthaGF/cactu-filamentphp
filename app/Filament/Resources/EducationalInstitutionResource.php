@@ -6,6 +6,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EducationalInstitutionResource\Pages;
 use App\Models\EducationalInstitution;
+use Cheesegrits\FilamentGoogleMaps\Columns\MapColumn;
 use Cheesegrits\FilamentGoogleMaps\Fields\Geocomplete;
 use Cheesegrits\FilamentGoogleMaps\Fields\Map;
 use Filament\Forms\Components\Select;
@@ -44,11 +45,17 @@ final class EducationalInstitutionResource extends Resource
     {
         return $form
             ->schema([
+                TextInput::make('name')
+                    ->translateLabel()
+                    ->required()
+                    ->maxLength(200),
                 Select::make('zone_code')
+                    ->translateLabel()
                     ->relationship('zone', 'name')
                     ->native(false)
                     ->required(),
                 Geocomplete::make('search')
+                    ->translateLabel()
                     ->label('Search for a center educational')
                     ->prefixIcon('heroicon-o-magnifying-glass')
                     ->geolocate()
@@ -57,7 +64,6 @@ final class EducationalInstitutionResource extends Resource
                     ->placeholder('Search for a center educational')
                     ->types(['primary_school', 'secondary_school', 'school', 'university'])
                     ->reactive()
-                    ->required()
                     ->reverseGeocodeUsing(function (callable $set, array $results): void {
                         $set('address', $results['formatted_address']);
                         $set('view_map', [
@@ -67,8 +73,11 @@ final class EducationalInstitutionResource extends Resource
                     })
                     ->countries(['ec']),
                 TextInput::make('address')
+                    ->disabled()
+                    ->dehydrated()
                     ->label('School address'),
                 Map::make('view_map')
+                    ->translateLabel()
                     ->defaultZoom(17)
                     ->reactive()
                     ->reverseGeocodeUsing(function ($results, callable $get, callable $set): void {
@@ -76,25 +85,7 @@ final class EducationalInstitutionResource extends Resource
                     })
                     ->draggable(false)
                     ->defaultLocation([env('GOOGLE_MAPS_DEFAULT_LAT'), env('GOOGLE_MAPS_DEFAULT_LNG')]),
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(200),
-                TextInput::make('education_type')
-                    ->maxLength(20),
-                TextInput::make('financing_type')
-                    ->maxLength(20),
-                TextInput::make('area')
-                    ->maxLength(10),
-                TextInput::make('academic_regime')
-                    ->maxLength(20),
-                TextInput::make('modality')
-                    ->maxLength(120),
-                TextInput::make('academic_day')
-                    ->maxLength(50),
-                TextInput::make('educative_level')
-                    ->maxLength(40),
-                TextInput::make('typology')
-                    ->maxLength(100),
+
             ]);
     }
 
@@ -103,40 +94,13 @@ final class EducationalInstitutionResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('zone_code')
-                    ->searchable(),
+                    ->searchable()
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('education_type')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('financing_type')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('updated_by')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->searchable()
+                    ->translateLabel(),
                 Tables\Columns\TextColumn::make('address')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('area')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('academic_regime')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('modality')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('academic_day')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('educative_level')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('typology')
+                    ->translateLabel()
                     ->searchable(),
             ])
             ->filters([])

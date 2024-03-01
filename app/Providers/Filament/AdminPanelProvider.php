@@ -43,7 +43,7 @@ final class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
-                FilamentProgressbarPlugin::make()->color('primary'),
+                FilamentProgressbarPlugin::make()->color('#29b'),
                 BreezyCore::make()
                     ->myProfile(
                         hasAvatars: true,

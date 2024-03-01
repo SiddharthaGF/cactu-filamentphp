@@ -41,46 +41,81 @@ class House extends Model
 
     use UserStamps;
 
-	protected $table = 'houses';
+    protected $table = 'houses';
 
-	protected $casts = [
-		'family_nucleus_id' => 'int',
-		'property' => 'int',
-		'home_space' => 'int',
-		'roof' => 'int',
-		'walls' => 'int',
-		'floor' => 'int',
-		'basic_services' => 'json',
-		'latitude' => 'float',
-		'longitude' => 'float',
-		'created_by' => 'int',
-		'updated_by' => 'int',
-		'territory' => 'int'
-	];
+    protected $casts = [
+        'family_nucleus_id' => 'int',
+        'property' => 'int',
+        'home_space' => 'int',
+        'roof' => 'int',
+        'walls' => 'int',
+        'floor' => 'int',
+        'basic_services' => 'json',
+        'latitude' => 'float',
+        'longitude' => 'float',
+        'created_by' => 'int',
+        'updated_by' => 'int',
+        'territory' => 'int'
+    ];
 
-	protected $fillable = [
-		'family_nucleus_id',
-		'property',
-		'home_space',
-		'roof',
-		'walls',
-		'floor',
-		'basic_services',
-		'latitude',
-		'longitude',
-		'neighborhood',
-		'created_by',
-		'updated_by',
-		'territory'
-	];
+    protected $fillable = [
+        'family_nucleus_id',
+        'property',
+        'home_space',
+        'roof',
+        'walls',
+        'floor',
+        'basic_services',
+        'latitude',
+        'longitude',
+        'location',
+        'neighborhood',
+        'created_by',
+        'updated_by',
+        'territory'
+    ];
 
-	public function family_nucleus()
-	{
-		return $this->belongsTo(FamilyNucleus::class);
-	}
+    protected $appends = [
+        'location',
+    ];
 
-	public function risks_near_home()
-	{
-		return $this->hasMany(RisksNearHome::class);
-	}
+    public static function getComputedLocation(): string
+    {
+        return 'location';
+    }
+
+    public static function getLatLngAttributes(): array
+    {
+        return [
+            'lat' => 'latitude',
+            'lng' => 'longitude',
+        ];
+    }
+
+    public function setLocationAttribute(?array $location): void
+    {
+        if (is_array($location)) {
+            $this->attributes['latitude'] = $location['lat'];
+            $this->attributes['longitude'] = $location['lng'];
+            unset($this->attributes['location']);
+        }
+    }
+
+    public function getLocationAttribute(): array
+    {
+        return [
+            'lat' => (float) $this->latitude,
+            'lng' => (float) $this->longitude,
+        ];
+    }
+
+    public function family_nucleus()
+    {
+        return $this->belongsTo(FamilyNucleus::class);
+    }
+
+    public function risks_near_home()
+    {
+        return $this->hasMany(RisksNearHome::class);
+    }
 }

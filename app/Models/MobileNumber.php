@@ -29,19 +29,20 @@ class MobileNumber extends Model
 
     use UserStamps;
 
-	protected $table = 'mobile_numbers';
 
-	protected $casts = [
-		'mobile_numerable_id' => 'int',
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $table = 'mobile_numbers';
 
-	protected $fillable = [
-		'mobile_numerable_id',
-		'mobile_numerable_type',
-		'number',
-		'created_by',
-		'updated_by'
-	];
+    protected $casts = [
+        'mobile_numerable_id' => 'int',
+        'created_by' => 'int',
+        'updated_by' => 'int'
+    ];
+
+    protected $fillable = [
+        'mobile_numerable_id',
+        'mobile_numerable_type',
+        'number',
+        'created_by',
+        'updated_by'
+    ];
 }

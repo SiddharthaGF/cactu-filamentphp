@@ -6,7 +6,6 @@
 
 namespace App\Models;
 
-use App\Enums\StatusVigency;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -38,7 +37,7 @@ class Mailbox extends Model
 
     protected $casts = [
         'id' => 'int',
-        'vigency' => StatusVigency::class,
+        'vigency' => 'int',
         'created_by' => 'int',
         'updated_by' => 'int'
     ];

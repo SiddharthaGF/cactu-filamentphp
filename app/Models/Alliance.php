@@ -29,24 +29,24 @@ use Illuminate\Database\Eloquent\Model;
 class Alliance extends Model
 {
 
-	use UserStamps;
+    use UserStamps;
 
-	protected $table = 'alliances';
+    protected $table = 'alliances';
 
-	protected $casts = [
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $casts = [
+        'created_by' => 'int',
+        'updated_by' => 'int'
+    ];
 
-	protected $fillable = [
-		'alliance',
-		'country',
-		'created_by',
-		'updated_by'
-	];
+    protected $fillable = [
+        'alliance',
+        'country',
+        'created_by',
+        'updated_by'
+    ];
 
-	public function contacts()
-	{
-		return $this->hasMany(Contact::class);
-	}
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class);
+    }
 }

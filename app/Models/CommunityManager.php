@@ -31,29 +31,29 @@ class CommunityManager extends Model
 
     use UserStamps;
 
-	protected $table = 'community_managers';
+    protected $table = 'community_managers';
 
-	protected $casts = [
-		'community_id' => 'int',
-		'manager_id' => 'int',
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $casts = [
+        'community_id' => 'int',
+        'manager_id' => 'int',
+        'created_by' => 'int',
+        'updated_by' => 'int'
+    ];
 
-	protected $fillable = [
-		'community_id',
-		'manager_id',
-		'created_by',
-		'updated_by'
-	];
+    protected $fillable = [
+        'community_id',
+        'manager_id',
+        'created_by',
+        'updated_by'
+    ];
 
-	public function community()
-	{
-		return $this->belongsTo(Community::class);
-	}
+    public function community()
+    {
+        return $this->belongsTo(Community::class);
+    }
 
-	public function user()
-	{
-		return $this->belongsTo(User::class, 'manager_id');
-	}
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
 }

@@ -10,8 +10,6 @@ use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class State
@@ -51,13 +49,13 @@ class State extends Model
 		'updated_by'
 	];
 
-	public function coordinator(): BelongsTo
-    {
+	public function user()
+	{
 		return $this->belongsTo(User::class, 'coordinator_id');
 	}
 
-	public function cities(): HasMany
-    {
+	public function cities()
+	{
 		return $this->hasMany(City::class, 'state_code');
 	}
 }

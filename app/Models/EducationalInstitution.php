@@ -31,6 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
+ * @property Zone $zone
  * @property Collection|EducationalRecord[] $educational_records
  *
  * @package App\Models
@@ -62,6 +63,11 @@ class EducationalInstitution extends Model
 		'created_by',
 		'updated_by'
 	];
+
+	public function zone()
+	{
+		return $this->belongsTo(Zone::class, 'zone_code');
+	}
 
 	public function educational_records()
 	{

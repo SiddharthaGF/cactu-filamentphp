@@ -190,7 +190,8 @@ return new class() extends Migration
             $table->string('name', 200);
             $table->string('education_type', 20)->nullable();
             $table->string('financing_type', 20)->nullable();
-            $table->char('zone_code', 6);
+            $table->foreignUlid('zone_code', 6)->nullable()->constrained('zones', 'code');
+            $table->unsignedBigInteger('created_by');
             $table->string('address', 100)->nullable();
             $table->string('area', 20)->nullable();
             $table->string('academic_regime', 20)->nullable();

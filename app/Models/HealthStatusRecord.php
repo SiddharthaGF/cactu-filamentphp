@@ -31,24 +31,24 @@ class HealthStatusRecord extends Model
 
     use UserStamps;
 
-	protected $table = 'health_status_record';
+    protected $table = 'health_status_record';
 
-	protected $casts = [
-		'child_id' => 'int',
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $casts = [
+        'child_id' => 'int',
+        'created_by' => 'int',
+        'updated_by' => 'int'
+    ];
 
-	protected $fillable = [
-		'child_id',
-		'description',
-		'treatment',
-		'created_by',
-		'updated_by'
-	];
+    protected $fillable = [
+        'child_id',
+        'description',
+        'treatment',
+        'created_by',
+        'updated_by'
+    ];
 
-	public function child()
-	{
-		return $this->belongsTo(Child::class);
-	}
+    public function child()
+    {
+        return $this->belongsTo(Child::class);
+    }
 }

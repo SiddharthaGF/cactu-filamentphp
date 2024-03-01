@@ -31,26 +31,26 @@ class Disability extends Model
 
     use UserStamps;
 
-    protected $table = 'disabilities';
+	protected $table = 'disabilities';
 
-    protected $casts = [
-        'child_id' => 'int',
-        'type' => 'int',
-        'percent' => 'int',
-        'created_by' => 'int',
-        'updated_by' => 'int'
-    ];
+	protected $casts = [
+		'child_id' => 'int',
+		'type' => 'int',
+		'percent' => 'int',
+		'created_by' => 'int',
+		'updated_by' => 'int'
+	];
 
-    protected $fillable = [
-        'child_id',
-        'type',
-        'percent',
-        'created_by',
-        'updated_by'
-    ];
+	protected $fillable = [
+		'child_id',
+		'type',
+		'percent',
+		'created_by',
+		'updated_by'
+	];
 
-    public function child()
-    {
-        return $this->belongsTo(Child::class);
-    }
+	public function child()
+	{
+		return $this->belongsTo(Child::class);
+	}
 }

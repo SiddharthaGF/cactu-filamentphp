@@ -8,10 +8,7 @@ namespace App\Models;
 
 use App\Traits\UserStamps;
 use Carbon\Carbon;
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\HigherOrderBuilderProxy;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -27,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property City $city
  * @property Collection|Community[] $communities
+ * @property Collection|EducationalInstitution[] $educational_institutions
  *
  * @package App\Models
  */
@@ -59,5 +57,10 @@ class Zone extends Model
     public function communities()
     {
         return $this->hasMany(Community::class, 'zone_code');
+    }
+
+    public function educational_institutions()
+    {
+        return $this->hasMany(EducationalInstitution::class, 'zone_code');
     }
 }

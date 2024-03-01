@@ -32,29 +32,29 @@ class Contact extends Model
 
     use UserStamps;
 
-	protected $table = 'contacts';
-	public $incrementing = false;
+    protected $table = 'contacts';
+    public $incrementing = false;
 
-	protected $casts = [
-		'alliance_id' => 'int',
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $casts = [
+        'alliance_id' => 'int',
+        'created_by' => 'int',
+        'updated_by' => 'int'
+    ];
 
-	protected $fillable = [
-		'alliance_id',
-		'name',
-		'created_by',
-		'updated_by'
-	];
+    protected $fillable = [
+        'alliance_id',
+        'name',
+        'created_by',
+        'updated_by'
+    ];
 
-	public function alliance()
-	{
-		return $this->belongsTo(Alliance::class);
-	}
+    public function alliance()
+    {
+        return $this->belongsTo(Alliance::class);
+    }
 
-	public function children()
-	{
-		return $this->hasMany(Child::class);
-	}
+    public function children()
+    {
+        return $this->hasMany(Child::class);
+    }
 }

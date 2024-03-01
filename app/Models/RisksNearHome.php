@@ -30,23 +30,23 @@ class RisksNearHome extends Model
 
     use UserStamps;
 
-	protected $table = 'risks_near_home';
+    protected $table = 'risks_near_home';
 
-	protected $casts = [
-		'house_id' => 'int',
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $casts = [
+        'house_id' => 'int',
+        'created_by' => 'int',
+        'updated_by' => 'int'
+    ];
 
-	protected $fillable = [
-		'house_id',
-		'description',
-		'created_by',
-		'updated_by'
-	];
+    protected $fillable = [
+        'house_id',
+        'description',
+        'created_by',
+        'updated_by'
+    ];
 
-	public function house()
-	{
-		return $this->belongsTo(House::class);
-	}
+    public function house()
+    {
+        return $this->belongsTo(House::class);
+    }
 }

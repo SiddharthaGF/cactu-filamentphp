@@ -10,7 +10,6 @@ use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * Class FamilyNucleus
@@ -70,7 +69,7 @@ class FamilyNucleus extends Model
         return $this->hasMany(Tutor::class);
     }
 
-    public function banking_information(): MorphOne
+    public function banking_information()
     {
         return $this->morphOne(BankingInformation::class, 'banking_informationable');
     }
