@@ -32,14 +32,10 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property FamilyNucleus $family_nucleus
- *
- * @package App\Models
  */
 class Tutor extends Model
 {
-
     use UserStamps;
 
     protected $table = 'tutors';
@@ -55,7 +51,7 @@ class Tutor extends Model
         'occupation' => 'int',
         'salary' => 'float',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -73,7 +69,7 @@ class Tutor extends Model
         'specific_occupation',
         'salary',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function family_nucleus()

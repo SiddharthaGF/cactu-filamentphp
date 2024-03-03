@@ -11,8 +11,11 @@ use App\Whatsapp\Entry\Changes\Values\Metadata;
 final class Value
 {
     private string $messagingProduct;
+
     private Metadata $metadata;
+
     private Contacts $contacts;
+
     private Messages $messages;
 
     public function __construct(mixed $payload)

@@ -20,7 +20,7 @@ final class ZoneResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __("Location");
+        return __('Location');
     }
 
     protected static ?int $navigationSort = 3;
@@ -29,12 +29,12 @@ final class ZoneResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("Zone");
+        return __('Zone');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Zones");
+        return __('Zones');
     }
 
     public static function form(Form $form): Form

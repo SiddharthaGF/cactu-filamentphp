@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
-use App;
 use App\Builder\RecordBuilder;
 use App\Enums\ActivityForFamilySupport;
 use App\Enums\ActivityForRecreation;
@@ -36,8 +35,8 @@ use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Form;
@@ -51,10 +50,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Saade\FilamentAutograph\Forms\Components\SignaturePad;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 final class ChildResource extends Resource
 {
@@ -83,7 +82,7 @@ final class ChildResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("Child");
+        return __('Child');
     }
 
     public static function getGlobalSearchResultUrl(Model $record): string
@@ -96,7 +95,7 @@ final class ChildResource extends Resource
         return [
             \Filament\GlobalSearch\Actions\Action::make('edit')
                 ->icon('heroicon-o-pencil-square')
-                ->url(static::getUrl('edit', ['record' => $record])),
+                ->url(self::getUrl('edit', ['record' => $record])),
         ];
     }
 
@@ -142,7 +141,7 @@ final class ChildResource extends Resource
                                             ->dehydrated()
                                             ->options(fn () => User::byRole('gestor')->pluck('name', 'id')),
                                     ])
-                                    ->disabled(fn () => !auth()->user()->hasRole('super_admin')),
+                                    ->disabled(fn () => ! auth()->user()->hasRole('super_admin')),
                                 Section::make(__('Personal Information'))
                                     ->description(__('Fill out the information of the child.'))
                                     ->icon('heroicon-o-exclamation-triangle')
@@ -153,7 +152,7 @@ final class ChildResource extends Resource
                                             ->label('Child photo')
                                             ->translateLabel()
                                             ->imageEditor()
-                                            ->imageCropAspectRatio("3.5:4")
+                                            ->imageCropAspectRatio('3.5:4')
                                             ->image(),
                                         TextInput::make('name')
                                             ->translateLabel()
@@ -192,6 +191,25 @@ final class ChildResource extends Resource
                                             ->prefixIcon('heroicon-o-heart')
                                             ->required(),
                                     ]),
+                                Section::make(__('Baking Information'))
+                                    ->schema([
+                                        BankingInformationResource::getSchema(),
+                                        Repeater::make('mobile_number')
+                                            ->relationship('mobile_number')
+                                            ->translateLabel()
+                                            ->defaultItems(0)
+                                            ->maxItems(1)
+                                            ->schema([
+                                                PhoneInput::make('number')
+                                                    ->required()
+                                                    ->translateLabel()
+                                                    ->unique(ignorable: fn ($record) => $record)
+                                                    ->columnSpanFull(),
+                                            ]),
+                                    ])
+                                    ->description(__('Fill out if and only if the child has his or her own bank account and is over 18, or has consent from the parent or representative.'))
+                                    ->icon('heroicon-o-exclamation-triangle')
+                                    ->iconColor('danger'),
                             ]),
                         Step::make(__('Educational Information'))
                             ->icon('heroicon-o-academic-cap')
@@ -215,7 +233,7 @@ final class ChildResource extends Resource
                                                     ->translateLabel()
                                                     ->options(EducationalStatus::class)
                                                     ->columnSpanFull()
-                                                    ->disableOptionWhen(fn (string $value): bool => 'published' === $value)
+                                                    ->disableOptionWhen(fn (string $value): bool => $value === 'published')
                                                     ->required(),
                                                 Select::make('educational_institution_id')
                                                     ->prefixIcon('heroicon-o-academic-cap')
@@ -266,7 +284,7 @@ final class ChildResource extends Resource
                                             ->hidden(fn (Get $get, $state) => count($get('educational_record')) > 0)
                                             ->maxItems(1)
                                             ->defaultItems(0),
-                                    ])
+                                    ]),
                             ]),
                         Step::make('Health Information')
                             ->translateLabel()
@@ -284,21 +302,26 @@ final class ChildResource extends Resource
                                     ])
                                     ->columnSpanFull(),
                                 Group::make()
-                                    ->relationship('health_status_record')
                                     ->schema([
-                                        TextInput::make('especific_health_problems')
-                                            ->label('Mention in case the child has health problems')
+                                        Repeater::make('health status')
+                                            ->relationship('health_status_record')
                                             ->translateLabel()
-                                            ->columnSpanFull()
-                                            ->required(),
-                                        TextInput::make('treatment')
-                                            ->label('Is the child following any treatment? (specify)')
-                                            ->translateLabel()
-                                            ->columnSpanFull(),
+                                            ->minItems(1)
+                                            ->defaultItems(1)
+                                            ->maxItems(10)
+                                            ->schema([
+                                                TextInput::make('description')
+                                                    ->label('Mention in case the child has health problems')
+                                                    ->translateLabel()
+                                                    ->columnSpanFull()
+                                                    ->required(),
+                                                TextInput::make('treatment')
+                                                    ->label('Is the child following any treatment? (specify)')
+                                                    ->translateLabel()
+                                                    ->columnSpanFull(),
+                                            ]),
                                     ])
-                                    ->hidden(
-                                        fn (Get $get, $state) => $state = HealthStatus::HasProblems !== $get('health_status')
-                                    ),
+                                    ->hidden(fn (Get $get, $state) => $state = $get('health_status') != HealthStatus::HasProblems->value),
                                 Repeater::make('disabilities')
                                     ->translateLabel()
                                     ->relationship('disabilities')
@@ -315,32 +338,6 @@ final class ChildResource extends Resource
                                     ])
                                     ->defaultItems(0)
                                     ->columns(2),
-
-                            ]),
-                        Step::make('Baking Information')
-                            ->translateLabel()
-                            ->icon('heroicon-o-currency-dollar')
-                            ->schema([
-                                Section::make(__('Baking Information'))
-                                    ->schema([
-                                        BankingInformationResource::getSchema(),
-                                        Repeater::make('mobile_number')
-                                            ->relationship('mobile_number')
-                                            ->translateLabel()
-                                            ->defaultItems(0)
-                                            ->maxItems(1)
-                                            ->schema([
-                                                PhoneInput::make('number')
-                                                    ->required()
-                                                    ->translateLabel()
-                                                    ->unique(ignorable: fn ($record) => $record)
-                                                    ->columnSpanFull(),
-                                            ]),
-                                    ])
-                                    ->description(__('Fill out if and only if the child has his or her own bank account and is over 18, or has consent from the parent or representative.'))
-                                    ->icon('heroicon-o-exclamation-triangle')
-                                    ->iconColor('danger'),
-
                             ]),
                         Step::make('Home information')
                             ->translateLabel()
@@ -400,7 +397,7 @@ final class ChildResource extends Resource
                                         TextInput::make('specific_language')
                                             ->translateLabel()
                                             ->hidden(
-                                                fn (Get $get) => Language::Other !== $get('language')
+                                                fn (Get $get) => $get('language') !== Language::Other
                                             )
                                             ->required(),
                                     ]),
@@ -417,7 +414,7 @@ final class ChildResource extends Resource
                                         TextInput::make('specific_ethnic_group')
                                             ->translateLabel()
                                             ->hidden(
-                                                fn (Get $get) => EthnicGroup::Other !== $get('ethnic_group')
+                                                fn (Get $get) => $get('ethnic_group') !== EthnicGroup::Other
                                             )
                                             ->required(),
                                     ]),
@@ -435,7 +432,7 @@ final class ChildResource extends Resource
                                         TextInput::make('specific_nationality')
                                             ->translateLabel()
                                             ->hidden(
-                                                fn (Get $get) => Nationality::Other !== $get('nationality')
+                                                fn (Get $get) => $get('nationality') !== Nationality::Other
                                             )
                                             ->required(),
                                     ]),
@@ -501,16 +498,16 @@ final class ChildResource extends Resource
                                             ->label("What are your future aspirations? (in the case of children under 3 years old, what are the family's aspirations)")->translateLabel()
                                             ->rows(3),
                                         Textarea::make('personality')
-                                            ->label("List 3 personality traits [happy, serious, playful, etc]")
+                                            ->label('List 3 personality traits [happy, serious, playful, etc]')
                                             ->translateLabel()
                                             ->required()
                                             ->rows(3),
                                         Textarea::make('skills')
-                                            ->label("List 3 skills and aptitudes [psychomotor development, memorizing, reasoning, etc]")
+                                            ->label('List 3 skills and aptitudes [psychomotor development, memorizing, reasoning, etc]')
                                             ->translateLabel()
                                             ->rows(3),
                                         Textarea::make('likes')
-                                            ->label("What do you like? (food, music, colors, pets)")
+                                            ->label('What do you like? (food, music, colors, pets)')
                                             ->translateLabel()
                                             ->rows(3),
                                         Textarea::make('dislikes')
@@ -540,13 +537,13 @@ final class ChildResource extends Resource
                                     ->downloadAction(fn (Action $action) => $action->color('primary'))
                                     ->undoAction(fn (Action $action) => $action->icon('heroicon-o-arrow-uturn-left'))
                                     ->doneAction(fn (Action $action) => $action->iconButton()->icon('heroicon-o-thumbs-up'))
-                                    ->required()
+                                    ->required(),
                             ]),
 
                     ]
                 )
-                    ->startOnStep(fn ($context) => 'create' === $context ? 1 : 2)
-                    ->skippable(fn ($context) => 'create' !== $context)
+                    ->startOnStep(fn ($context) => $context === 'create' ? 1 : 2)
+                    ->skippable(fn ($context) => $context !== 'create')
                     ->persistStepInQueryString()
                     ->columnSpanFull(),
             ]);
@@ -589,7 +586,7 @@ final class ChildResource extends Resource
                             TextColumn::make('birthdate')
                                 ->translateLabel()
                                 ->formatStateUsing(
-                                    fn ($state) => Carbon::parse($state)->age . ' ' . __('years')
+                                    fn ($state) => Carbon::parse($state)->age.' '.__('years')
                                 )
                                 ->badge()
                                 ->label('Age'),
@@ -597,7 +594,7 @@ final class ChildResource extends Resource
                                 ->translateLabel()
                                 ->badge(),
                         ]),
-                    ])
+                    ]),
                 ]),
             ])
             ->contentGrid([
@@ -624,8 +621,8 @@ final class ChildResource extends Resource
                     ->url(fn (Child $record) => MailboxResource::getUrl('edit', [$record->id])),
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make()
-                ])
+                    Tables\Actions\DeleteAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

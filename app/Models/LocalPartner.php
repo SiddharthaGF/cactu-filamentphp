@@ -22,33 +22,29 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property Collection|User[] $users
- *
- * @package App\Models
  */
 class LocalPartner extends Model
 {
-
     use UserStamps;
 
-	protected $table = 'local_partners';
+    protected $table = 'local_partners';
 
-	protected $casts = [
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $casts = [
+        'created_by' => 'int',
+        'updated_by' => 'int',
+    ];
 
-	protected $fillable = [
-		'name',
-		'alias',
-		'description',
-		'created_by',
-		'updated_by'
-	];
+    protected $fillable = [
+        'name',
+        'alias',
+        'description',
+        'created_by',
+        'updated_by',
+    ];
 
-	public function users()
-	{
-		return $this->hasMany(User::class);
-	}
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

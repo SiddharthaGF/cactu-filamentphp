@@ -21,41 +21,39 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property User|null $user
  * @property Collection|City[] $cities
- *
- * @package App\Models
  */
 class State extends Model
 {
-
     use UserStamps;
 
-	protected $table = 'states';
-	protected $primaryKey = 'code';
-	public $incrementing = false;
+    protected $table = 'states';
 
-	protected $casts = [
-		'coordinator_id' => 'int',
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $primaryKey = 'code';
 
-	protected $fillable = [
-		'name',
-		'coordinator_id',
-		'created_by',
-		'updated_by'
-	];
+    public $incrementing = false;
 
-	public function user()
-	{
-		return $this->belongsTo(User::class, 'coordinator_id');
-	}
+    protected $casts = [
+        'coordinator_id' => 'int',
+        'created_by' => 'int',
+        'updated_by' => 'int',
+    ];
 
-	public function cities()
-	{
-		return $this->hasMany(City::class, 'state_code');
-	}
+    protected $fillable = [
+        'name',
+        'coordinator_id',
+        'created_by',
+        'updated_by',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'coordinator_id');
+    }
+
+    public function cities()
+    {
+        return $this->hasMany(City::class, 'state_code');
+    }
 }

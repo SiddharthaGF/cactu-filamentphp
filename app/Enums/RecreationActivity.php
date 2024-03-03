@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum ActivityForFamilySupport: int implements HasColor, HasLabel
+enum ActivityForFamilySupport: int implements HasLabel
 {
     use BaseEnum;
 
@@ -37,16 +36,6 @@ enum ActivityForFamilySupport: int implements HasColor, HasLabel
             self::CleansTheHouse => __('Cleans the house'),
             self::RunsErrands => __('Runs errands'),
             self::GathersGrassForAnimals => __('Gathers grass for animals'),
-        };
-    }
-
-    public function getColor(): string|array|null
-    {
-        return match ($this) {
-            self::Affiliated => 'success',
-            self::Disaffiliated => 'gray',
-            self::Pending => 'warning',
-            self::Rejected => 'danger',
         };
     }
 }

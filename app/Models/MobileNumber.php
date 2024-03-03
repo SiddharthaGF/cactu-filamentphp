@@ -21,21 +21,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
- * @package App\Models
  */
 class MobileNumber extends Model
 {
-
     use UserStamps;
-
 
     protected $table = 'mobile_numbers';
 
     protected $casts = [
         'mobile_numerable_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -43,6 +39,6 @@ class MobileNumber extends Model
         'mobile_numerable_type',
         'number',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 }

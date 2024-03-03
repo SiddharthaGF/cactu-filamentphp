@@ -37,12 +37,12 @@ final class HouseResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("House");
+        return __('House');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Houses");
+        return __('Houses');
     }
 
     public static function form(Form $form): Form

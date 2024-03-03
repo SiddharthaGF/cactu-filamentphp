@@ -9,6 +9,7 @@ use App\Whatsapp\Entry\Changes\Value;
 final class Changes
 {
     private Value $value;
+
     private string $field;
 
     public function __construct(mixed $payload)

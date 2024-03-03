@@ -20,7 +20,7 @@ final class ZoneSeeder extends Seeder
 
         foreach ($allowedCodesCities as $code) {
             $client = new Client();
-            $response = $client->get('https://polaris-sage.vercel.app/api/v1/dpa/' . $code);
+            $response = $client->get('https://polaris-sage.vercel.app/api/v1/dpa/'.$code);
             $zones = json_decode($response->getBody()->getContents(), true);
 
             foreach ($zones as $cityIndex => $zone) {

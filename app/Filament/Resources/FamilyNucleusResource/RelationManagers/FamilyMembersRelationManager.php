@@ -71,7 +71,7 @@ final class FamilyMembersRelationManager extends RelationManager
                     ->badge(),
                 TextColumn::make('birthdate')
                     ->translateLabel()
-                    ->formatStateUsing(fn ($state) => Carbon::parse($state)->age . ' ' . __('years'))
+                    ->formatStateUsing(fn ($state) => Carbon::parse($state)->age.' '.__('years'))
                     ->badge()
                     ->label('Age'),
             ])

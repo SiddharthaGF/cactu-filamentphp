@@ -20,7 +20,7 @@ final class CityResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __("Location");
+        return __('Location');
     }
 
     protected static ?int $navigationSort = 2;
@@ -29,12 +29,12 @@ final class CityResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("City");
+        return __('City');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Cities");
+        return __('Cities');
     }
 
     public static function form(Form $form): Form

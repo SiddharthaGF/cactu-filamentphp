@@ -6,7 +6,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EducationalInstitutionResource\Pages;
 use App\Models\EducationalInstitution;
-use Cheesegrits\FilamentGoogleMaps\Columns\MapColumn;
 use Cheesegrits\FilamentGoogleMaps\Fields\Geocomplete;
 use Cheesegrits\FilamentGoogleMaps\Fields\Map;
 use Filament\Forms\Components\Select;
@@ -24,17 +23,17 @@ final class EducationalInstitutionResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("Educational Institution");
+        return __('Educational Institution');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Educational Institutions");
+        return __('Educational Institutions');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return __("Location");
+        return __('Location');
     }
 
     protected static ?int $navigationSort = 4;
@@ -67,8 +66,8 @@ final class EducationalInstitutionResource extends Resource
                     ->reverseGeocodeUsing(function (callable $set, array $results): void {
                         $set('address', $results['formatted_address']);
                         $set('view_map', [
-                            'lat' => (float)($results['geometry']['location']['lat']),
-                            'lng' => (float)($results['geometry']['location']['lng']),
+                            'lat' => (float) ($results['geometry']['location']['lat']),
+                            'lng' => (float) ($results['geometry']['location']['lng']),
                         ]);
                     })
                     ->countries(['ec']),

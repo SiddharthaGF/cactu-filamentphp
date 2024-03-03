@@ -16,9 +16,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Hash;
 use Illuminate\Database\Eloquent\Model;
-use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use STS\FilamentImpersonate\Tables\Actions\Impersonate;
 
 final class UserResource extends Resource
 {
@@ -32,17 +32,17 @@ final class UserResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("User");
+        return __('User');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Users");
+        return __('Users');
     }
 
     public static function getNavigationGroup(): ?string
     {
-        return __("Security");
+        return __('Security');
     }
 
     //protected static ?int $navigationSort = 3;
@@ -71,7 +71,7 @@ final class UserResource extends Resource
         return [
             Action::make('edit')
                 ->icon('heroicon-o-pencil-square')
-                ->url(static::getUrl('edit', ['record' => $record])),
+                ->url(self::getUrl('edit', ['record' => $record])),
         ];
     }
 
@@ -105,7 +105,7 @@ final class UserResource extends Resource
                             ->password()
                             ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                             ->dehydrated(fn ($state) => filled($state))
-                            ->required(fn (string $context): bool => 'create' === $context),
+                            ->required(fn (string $context): bool => $context === 'create'),
                     ]),
                 Forms\Components\Section::make('Roles')
                     ->description(__('The panel_user role allows the user to log in, if you want a user not to access the system, remove the role'))
@@ -145,7 +145,7 @@ final class UserResource extends Resource
                             ->searchable()
                             ->sortable(),
                     ]),
-                ])
+                ]),
             ])
             ->contentGrid([
                 'md' => 2,

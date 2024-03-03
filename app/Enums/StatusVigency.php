@@ -7,7 +7,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum StatusVigency: int implements HasLabel, HasColor
+enum StatusVigency: int implements HasColor, HasLabel
 {
     use BaseEnum;
 
@@ -26,5 +26,4 @@ enum StatusVigency: int implements HasLabel, HasColor
             self::Inactive => 'danger',
         };
     }
-
 }

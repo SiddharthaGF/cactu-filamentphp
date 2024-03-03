@@ -26,12 +26,12 @@ final class FamilyMemberResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("Family Member");
+        return __('Family Member');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Family Members");
+        return __('Family Members');
     }
 
     public static function form(Form $form): Form
@@ -99,7 +99,7 @@ final class FamilyMemberResource extends Resource
                     ->searchable()
                     ->badge(),
                 TextColumn::make('birthdate')
-                    ->formatStateUsing(fn($state) => Carbon::parse($state)->age)
+                    ->formatStateUsing(fn ($state) => Carbon::parse($state)->age)
                     ->badge()
                     ->label('Age'),
             ])

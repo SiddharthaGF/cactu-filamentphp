@@ -112,7 +112,6 @@ return new class() extends Migration
             $table->timestamps();
         });
 
-
         Schema::create('children', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('manager_id')->constrained('users')->cascadeOnDelete();

@@ -20,14 +20,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property Child $child
- *
- * @package App\Models
  */
 class ReasonsLeavingStudy extends Model
 {
-
     use UserStamps;
 
     protected $table = 'reasons_leaving_study';
@@ -35,14 +31,14 @@ class ReasonsLeavingStudy extends Model
     protected $casts = [
         'child_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'child_id',
         'reason',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function child()

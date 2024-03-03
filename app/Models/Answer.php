@@ -22,14 +22,10 @@ use Spatie\MediaLibrary\InteractsWithMedia;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property Mail $mail
- *
- * @package App\Models
  */
 class Answer extends Model implements HasMedia
 {
-
     use InteractsWithMedia;
     use UserStamps;
 
@@ -38,14 +34,14 @@ class Answer extends Model implements HasMedia
     protected $casts = [
         'mail_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'mail_id',
         'content',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function mail()

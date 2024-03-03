@@ -65,8 +65,8 @@ final class PrepareSystem extends Command
                 $this->info('Base de datos preparada con éxito');
                 $this->newLine(1);
                 $this->info('credenciales de usuario administrador:');
-                $this->line('Correo: ' . $email);
-                $this->line('Contraseña: ' . $password);
+                $this->line('Correo: '.$email);
+                $this->line('Contraseña: '.$password);
                 $this->newLine(2);
             } catch (Throwable $th) {
                 $this->error('Error al preparar la base de datos');

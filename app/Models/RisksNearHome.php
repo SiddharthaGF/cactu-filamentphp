@@ -20,14 +20,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property House $house
- *
- * @package App\Models
  */
 class RisksNearHome extends Model
 {
-
     use UserStamps;
 
     protected $table = 'risks_near_home';
@@ -35,14 +31,14 @@ class RisksNearHome extends Model
     protected $casts = [
         'house_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'house_id',
         'description',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function house()

@@ -21,32 +21,30 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property City $city
  * @property Collection|Community[] $communities
  * @property Collection|EducationalInstitution[] $educational_institutions
- *
- * @package App\Models
  */
 class Zone extends Model
 {
-
     use UserStamps;
 
     protected $table = 'zones';
+
     protected $primaryKey = 'code';
+
     public $incrementing = false;
 
     protected $casts = [
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'city_code',
         'name',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function city()

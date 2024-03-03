@@ -22,5 +22,4 @@ enum HomeSpaceSituations: int implements HasLabel
             self::Other => __('Other'),
         };
     }
-
 }

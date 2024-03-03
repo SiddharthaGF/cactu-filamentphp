@@ -23,7 +23,7 @@ final class StateSeeder extends Seeder
 
         foreach ($states as $state) {
 
-            if ( ! in_array($state['code'], $allowedCodes)) {
+            if (! in_array($state['code'], $allowedCodes)) {
                 continue;
             }
 

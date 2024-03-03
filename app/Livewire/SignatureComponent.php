@@ -15,6 +15,7 @@ use Throwable;
 final class SignatureComponent extends MyProfileComponent
 {
     public ?array $data = [];
+
     protected string $view = 'livewire.signature-component';
 
     public function form(Form $form): Form
@@ -40,7 +41,7 @@ final class SignatureComponent extends MyProfileComponent
                     ->downloadAction(fn (Action $action) => $action->color('primary'))
                     ->undoAction(fn (Action $action) => $action->icon('heroicon-o-arrow-uturn-left'))
                     ->doneAction(fn (Action $action) => $action->iconButton()->icon('heroicon-o-thumbs-up'))
-                    ->required()
+                    ->required(),
             ])
             ->statePath('data');
     }

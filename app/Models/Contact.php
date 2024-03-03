@@ -21,31 +21,28 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property Alliance $alliance
  * @property Collection|Child[] $children
- *
- * @package App\Models
  */
 class Contact extends Model
 {
-
     use UserStamps;
 
     protected $table = 'contacts';
+
     public $incrementing = false;
 
     protected $casts = [
         'alliance_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'alliance_id',
         'name',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function alliance()

@@ -18,7 +18,6 @@ enum WhatsappCommands: string implements HasLabel
     case ViewLetter = '!!VIEW-LETTER!!';
     case ReplyNow = '!!REPLY-NOW!!';
 
-
     public function getLabel(): string
     {
         return match ($this) {

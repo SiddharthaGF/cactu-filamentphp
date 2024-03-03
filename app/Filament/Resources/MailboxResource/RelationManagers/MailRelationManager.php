@@ -8,17 +8,11 @@ use App\Enums\MailStatus;
 use App\Enums\MailsTypes;
 use App\Models\Mail;
 use Exception;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
-use Filament\Infolists\Components\IconEntry;
-use Filament\Infolists\Components\ImageEntry;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
@@ -37,13 +31,21 @@ final class MailRelationManager extends RelationManager
             ->schema([
                 Select::make('type')
                     ->translateLabel()
-                    //->disabled(fn (Mail $record) => MailStatus::IsResponse === $record->status)
+                    ->disabled(function (?Mail $record, string $context) {
+                        $status = $record ? $record->status : null;
+
+                        return $status === MailStatus::Response && $context == 'edit';
+                    })
                     ->required()
                     ->native(false)
                     ->options(MailsTypes::class)
                     ->default(MailsTypes::Response),
                 Select::make('status')
-                    //->disabled(fn (Mail $record) => MailStatus::IsResponse === $record->status)
+                    ->disabled(function (?Mail $record, string $context) {
+                        $status = $record ? $record->status : null;
+
+                        return $status === MailStatus::Response && $context == 'edit';
+                    })
                     ->translateLabel()
                     ->required()
                     ->native(false)
@@ -54,12 +56,24 @@ final class MailRelationManager extends RelationManager
                     ->relationship('answers')
                     ->required()
                     ->minItems(1)
-                    /*->maxItems(
-                        fn (Mail $record) => match ($record->status) {
-                            MailStatus::IsResponse => 1,
-                            default => 10,
-                        }
-                    )*/
+                    ->maxItems(
+                        function (?Mail $record, string $context) {
+                            $status = $record ? $record->status : null;
+
+                            return match ($status) {
+                                MailStatus::Response => 1,
+                                default => 10,
+                            };
+                        })
+                    ->deletable(
+                        function (?Mail $record, string $context) {
+                            $status = $record ? $record->status : null;
+                            if ($context == 'create') {
+                                return true;
+                            }
+
+                            return $status !== MailStatus::Response;
+                        })
                     ->defaultItems(1)
                     ->columnSpanFull()
                     ->schema([
@@ -74,92 +88,9 @@ final class MailRelationManager extends RelationManager
                             ->downloadable()
                             ->required()
                             ->maxFiles(1)
-                            ->collection('answers')
+                            ->collection('answers'),
                     ]),
             ]);
-    }
-
-    public function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-            ->schema([
-                Section::make()
-                    ->schema(
-                        [
-                            TextEntry::make('id')
-                                ->inlineLabel()
-                                ->icon('heroicon-o-identification')
-                                ->label('Mail Nro'),
-                            TextEntry::make('answer_to')
-                                ->inlineLabel()
-                                ->icon('heroicon-o-identification')
-                                ->label('Replies to letter')
-                                ->url(fn (Mail $record) => route('filament.admin.resources.mails.view', $record->answer_to ?? ''))
-                                ->color('info'),
-                            TextEntry::make('mailbox.child.name')
-                                ->color('info')
-                                ->inlineLabel()
-                                ->icon('heroicon-o-inbox-stack')
-                                ->url(fn (Mail $record) => route('filament.admin.resources.mailboxes.edit', $record->mailbox)),
-                            TextEntry::make('letter_type')
-                                ->badge()
-                                ->color(fn (string $state): string => match ($state) {
-                                    'initial' => 'gray',
-                                    'response' => 'info',
-                                    'thanks' => 'success',
-                                    'goodbye' => 'danger',
-                                })
-                                ->inlineLabel(),
-                            IconEntry::make('child_is_author')
-                                ->boolean()
-                                ->trueIcon('heroicon-o-check-badge')
-                                ->falseIcon('heroicon-o-x-mark')
-                                ->inlineLabel(),
-                            TextEntry::make('status')
-                                ->color(fn (string $state): string => match ($state) {
-                                    'create' => 'gray',
-                                    'sent' => 'info',
-                                    'replied' => 'success',
-                                    'due' => 'danger',
-                                })
-                                ->badge()
-                                ->inlineLabel(),
-                            TextEntry::make('answer')
-                                ->color('primary')
-                                ->html()
-                                ->inlineLabel()
-                                ->icon('heroicon-o-chat-bubble-bottom-center-text'),
-                            Section::make('Photos')
-                                ->schema([
-                                    ImageEntry::make('letter_photo_1_path'),
-                                    ImageEntry::make('letter_photo_2_path'),
-                                ])
-                                ->icon('heroicon-o-photo')
-                                ->collapsed()
-                                ->columns(2),
-                            TextEntry::make('creator.name')
-                                ->color('gray')
-                                ->inlineLabel()
-                                ->icon('heroicon-o-user'),
-                            TextEntry::make('created_at')
-                                ->color('gray')
-                                ->dateTime()
-                                ->inlineLabel()
-                                ->icon('heroicon-o-calendar-days'),
-                            TextEntry::make('updater.name')
-                                ->color('gray')
-                                ->inlineLabel()
-                                ->icon('heroicon-o-user'),
-                            TextEntry::make('updated_at')
-                                ->color('gray')
-                                ->dateTime()
-                                ->inlineLabel()
-                                ->icon('heroicon-o-calendar-days'),
-                        ]
-                    )
-                    ->columns(2),
-            ])
-            ->columns(2);
     }
 
     public function table(Table $table): Table
@@ -197,24 +128,23 @@ final class MailRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                //Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make()
                     ->name('Notify')
                     ->color(Color::Green)
                     ->translateLabel()
-                    ->hidden(fn (Mail $record) => MailStatus::IsResponse === $record->status)
+                    ->hidden(fn (Mail $record) => $record->status === MailStatus::Response)
                     ->icon('heroicon-o-chat-bubble-bottom-center-text')
                     ->action(function (Mail $record): void {
                         try {
                             $record->mailbox->child->NotifyMails($record->id);
                             Notification::make()
-                                ->title(__("Sent to whatsapp successfully"))
+                                ->title(__('Sent to whatsapp successfully'))
                                 ->success()
                                 ->send();
-                            $record->update(["status" => MailStatus::Sent]);
+                            $record->update(['status' => MailStatus::Sent]);
                         } catch (Exception $e) {
                             Notification::make()
-                                ->title(__("Error sending to whatsapp"))
+                                ->title(__('Error sending to whatsapp'))
                                 ->danger()
                                 ->send();
                         }
@@ -222,7 +152,7 @@ final class MailRelationManager extends RelationManager
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
-                ])
+                ]),
 
             ])
             ->bulkActions([
@@ -240,6 +170,6 @@ final class MailRelationManager extends RelationManager
 
     protected static function getPluralModelLabel(): ?string
     {
-        return __("Mails");
+        return __('Mails');
     }
 }

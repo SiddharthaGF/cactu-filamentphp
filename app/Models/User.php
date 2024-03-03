@@ -11,26 +11,19 @@ namespace App\Models;
 use App\Traits\UserStamps;
 use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Carbon\Carbon;
-use Database\Factories\UserFactory;
-use Eloquent;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Class User
@@ -47,13 +40,10 @@ use Illuminate\Support\Facades\Storage;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property LocalPartner|null $local_partner
  * @property Collection|Child[] $children
  * @property CommunityManager $community_manager
  * @property State $state
- *
- * @package App\Models
  */
 final class User extends Authenticatable implements FilamentUser, HasAvatar
 {
@@ -70,12 +60,12 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
     protected $casts = [
         'local_partner_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $hidden = [
         'password',
-        'remember_token'
+        'remember_token',
     ];
 
     protected $fillable = [
@@ -89,7 +79,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         'avatar_url',
         'signature',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     protected function vigency(): Attribute
@@ -121,7 +111,8 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        $url = $this->avatar_url ? Storage::url($this->avatar_url) : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        $url = $this->avatar_url ? Storage::url($this->avatar_url) : 'https://ui-avatars.com/api/?name='.urlencode($this->name);
+
         return $url;
     }
 

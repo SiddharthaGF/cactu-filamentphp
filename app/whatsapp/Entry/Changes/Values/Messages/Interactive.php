@@ -9,6 +9,7 @@ use App\Whatsapp\Entry\Changes\Values\Messages\Interactive\ButtonReply;
 final class Interactive
 {
     private string $type;
+
     private ButtonReply $buttonReply;
 
     public function __construct(mixed $payload)

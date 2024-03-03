@@ -7,6 +7,7 @@ namespace App\Whatsapp;
 final class Whatsapp
 {
     private string $object;
+
     private Entry $entry;
 
     public function __construct(mixed $json)

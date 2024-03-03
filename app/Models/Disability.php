@@ -9,6 +9,8 @@ namespace App\Models;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\Disability as Disabilities;
+
 
 /**
  * Class Disability
@@ -35,7 +37,7 @@ class Disability extends Model
 
 	protected $casts = [
 		'child_id' => 'int',
-		'type' => 'int',
+		'type' => Disabilities::class,
 		'percent' => 'int',
 		'created_by' => 'int',
 		'updated_by' => 'int'

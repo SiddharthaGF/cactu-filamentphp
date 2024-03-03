@@ -14,7 +14,8 @@ final class WhatsappController extends Controller
         echo webhook();
     }
 
-    #[NoReturn] public function receive(): void
+    #[NoReturn]
+    public function receive(): void
     {
         WhatsappJob::dispatch(file_get_contents('php://input'));
         exit();

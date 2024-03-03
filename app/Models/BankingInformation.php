@@ -24,12 +24,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
- * @package App\Models
  */
 class BankingInformation extends Model
 {
-
     use UserStamps;
 
     protected $table = 'banking_information';
@@ -39,7 +36,7 @@ class BankingInformation extends Model
         'account_type' => 'int',
         'financial_institution_types' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -50,6 +47,6 @@ class BankingInformation extends Model
         'financial_institution_bank',
         'account_number',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 }

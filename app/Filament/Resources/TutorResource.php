@@ -43,12 +43,12 @@ final class TutorResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("Tutor");
+        return __('Tutor');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Tutors");
+        return __('Tutors');
     }
 
     public static function form(Form $form): Form
@@ -183,10 +183,10 @@ final class TutorResource extends Resource
             ->bulkActions([
                 ExportBulkAction::make()->exports([
                     ExcelExport::make('With the fields that appear in the registration form')
-                        ->withFilename(fn ($resource) => 'tutors-' . date('YmdHis'))
+                        ->withFilename(fn ($resource) => 'tutors-'.date('YmdHis'))
                         ->fromForm(),
                     ExcelExport::make('All the information')
-                        ->withFilename(fn ($resource) => 'tutors-' . date('YmdHis'))
+                        ->withFilename(fn ($resource) => 'tutors-'.date('YmdHis'))
                         ->fromModel(),
                 ]),
                 Tables\Actions\BulkActionGroup::make([

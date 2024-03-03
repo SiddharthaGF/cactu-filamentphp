@@ -6,16 +6,16 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-enum Disability: string implements HasLabel
+enum Disability: int implements HasLabel
 {
     use BaseEnum;
 
-    case Cognitive = 'Cognitive';
-    case Physical = 'Physical';
-    case Visual = 'Visual';
-    case Hearing = 'Hearing';
-    case Speech = 'Speech';
-    case Psychosocial = 'Psychosocial';
+    case Cognitive = 1;
+    case Physical = 2;
+    case Visual = 3;
+    case Hearing = 4;
+    case Speech = 5;
+    case Psychosocial = 6;
 
     public function getLabel(): ?string
     {

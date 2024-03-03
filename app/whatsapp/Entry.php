@@ -9,11 +9,12 @@ use App\Whatsapp\Entry\Changes;
 final class Entry
 {
     private int $id;
+
     private Changes $changes;
 
     public function __construct(mixed $payload)
     {
-        $this->id = (int)($payload[0]['id']);
+        $this->id = (int) ($payload[0]['id']);
         $this->changes = new Changes($payload[0]['changes']);
     }
 

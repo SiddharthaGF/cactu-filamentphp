@@ -7,7 +7,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum MailsTypes: int implements HasLabel, HasColor
+enum MailsTypes: int implements HasColor, HasLabel
 {
     use BaseEnum;
 

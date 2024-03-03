@@ -21,17 +21,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property Collection|Child[] $children
  * @property Collection|FamilyMember[] $family_members
  * @property Collection|House[] $houses
  * @property Collection|Tutor[] $tutors
- *
- * @package App\Models
  */
 class FamilyNucleus extends Model
 {
-
     use UserStamps;
 
     protected $table = 'family_nuclei';
@@ -39,14 +35,14 @@ class FamilyNucleus extends Model
     protected $casts = [
         'risk_factors' => 'json',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'conventional_phone',
         'risk_factors',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function children()

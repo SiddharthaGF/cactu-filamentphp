@@ -8,7 +8,6 @@ use App\Filament\Resources\UserResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Colors\Color;
-use STS\FilamentImpersonate\Pages\Actions\Impersonate;
 
 final class EditUser extends EditRecord
 {

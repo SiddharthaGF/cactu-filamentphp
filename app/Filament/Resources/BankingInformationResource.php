@@ -27,13 +27,14 @@ final class BankingInformationResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("Baking Information");
+        return __('Baking Information');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Baking Information");
+        return __('Baking Information');
     }
+
     public static function form(Form $form): Form
     {
         return $form->schema(self::getSchema());
@@ -46,7 +47,7 @@ final class BankingInformationResource extends Resource
             ->label('Banking Account')
             ->translateLabel()
             ->deleteAction(
-                fn(Action $action) => $action->requiresConfirmation(),
+                fn (Action $action) => $action->requiresConfirmation(),
             )
             ->schema([
                 Select::make('account_type')
@@ -68,7 +69,7 @@ final class BankingInformationResource extends Resource
                 TextInput::make('account_number')
                     ->translateLabel()
                     ->columnSpanFull()
-                    ->unique(ignorable: fn($record) => $record)
+                    ->unique(ignorable: fn ($record) => $record)
                     ->required(),
             ])
             ->defaultItems(0)

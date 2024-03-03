@@ -25,17 +25,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property Mailbox $mailbox
  * @property Mail|null $mail
  * @property Collection|Answer[] $answers
  * @property Collection|Mail[] $mails
- *
- * @package App\Models
  */
 class Mail extends Model
 {
-
     use UserStamps;
 
     protected $table = 'mails';
@@ -46,7 +42,7 @@ class Mail extends Model
         'reply_mail_id' => 'int',
         'status' => MailStatus::class,
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -55,7 +51,7 @@ class Mail extends Model
         'reply_mail_id',
         'status',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function mailbox()

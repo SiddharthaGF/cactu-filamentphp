@@ -30,47 +30,43 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property Zone $zone
  * @property Collection|EducationalRecord[] $educational_records
- *
- * @package App\Models
  */
 class EducationalInstitution extends Model
 {
-
     use UserStamps;
 
-	protected $table = 'educational_institutions';
+    protected $table = 'educational_institutions';
 
-	protected $casts = [
-		'created_by' => 'int',
-		'updated_by' => 'int'
-	];
+    protected $casts = [
+        'created_by' => 'int',
+        'updated_by' => 'int',
+    ];
 
-	protected $fillable = [
-		'name',
-		'education_type',
-		'financing_type',
-		'zone_code',
-		'address',
-		'area',
-		'academic_regime',
-		'modality',
-		'academic_day',
-		'educative_level',
-		'typology',
-		'created_by',
-		'updated_by'
-	];
+    protected $fillable = [
+        'name',
+        'education_type',
+        'financing_type',
+        'zone_code',
+        'address',
+        'area',
+        'academic_regime',
+        'modality',
+        'academic_day',
+        'educative_level',
+        'typology',
+        'created_by',
+        'updated_by',
+    ];
 
-	public function zone()
-	{
-		return $this->belongsTo(Zone::class, 'zone_code');
-	}
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class, 'zone_code');
+    }
 
-	public function educational_records()
-	{
-		return $this->hasMany(EducationalRecord::class);
-	}
+    public function educational_records()
+    {
+        return $this->hasMany(EducationalRecord::class);
+    }
 }

@@ -72,11 +72,11 @@ use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
  * @property Contact|null $contact
  * @property User|null $user
  * @property FamilyNucleus|null $family_nucleus
- * @property Collection|Disability[] $disabilities
- * @property Collection|EducationalRecord[] $educational_records
- * @property Collection|HealthStatusRecord[] $health_status_records
+ * @property Disability[] $disabilities
+ * @property EducationalRecord|null $educational_records
+ * @property HealthStatusRecord $health_status_records
  * @property Mailbox $mailbox
- * @property Collection|ReasonsLeavingStudy[] $reasons_leaving_studies
+ * @property ReasonsLeavingStudy|null $reasons_leaving_studies
  *
  * @package App\Models
  */

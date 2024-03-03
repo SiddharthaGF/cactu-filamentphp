@@ -26,14 +26,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property FamilyNucleus $family_nucleus
- *
- * @package App\Models
  */
 class FamilyMember extends Model
 {
-
     use UserStamps;
 
     protected $table = 'family_members';
@@ -45,7 +41,7 @@ class FamilyMember extends Model
         'relationship' => FamilyRelationship::class,
         'education_level' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -56,7 +52,7 @@ class FamilyMember extends Model
         'relationship',
         'education_level',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function family_nucleus()

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Enums\BaseEnum;
 use Filament\Support\Contracts\HasLabel;
 
 enum BasicServices: int implements HasLabel

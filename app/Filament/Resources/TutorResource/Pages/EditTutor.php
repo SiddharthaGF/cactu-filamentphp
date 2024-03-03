@@ -31,5 +31,4 @@ final class EditTutor extends EditRecord
             $this->record->salary = null;
         }
     }
-
 }

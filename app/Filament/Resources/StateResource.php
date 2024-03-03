@@ -19,7 +19,7 @@ final class StateResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __("Location");
+        return __('Location');
     }
 
     protected static ?int $navigationSort = 1;
@@ -28,12 +28,12 @@ final class StateResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("State");
+        return __('State');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("States");
+        return __('States');
     }
 
     public static function form(Form $form): Form
@@ -68,7 +68,7 @@ final class StateResource extends Resource
                     ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
-                    ->label("State")
+                    ->label('State')
                     ->translateLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('coordinator.name')

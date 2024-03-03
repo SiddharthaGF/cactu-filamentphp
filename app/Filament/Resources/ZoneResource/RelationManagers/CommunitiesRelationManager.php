@@ -28,7 +28,7 @@ final class CommunitiesRelationManager extends RelationManager
                 Checkbox::make('vigency')
                     ->dehydrateStateUsing(fn ($state) => $state ? 'active' : 'inactive')
                     ->formatStateUsing(
-                        fn (string $state) => 'active' === $state
+                        fn (string $state) => $state === 'active'
                     ),
             ]);
     }

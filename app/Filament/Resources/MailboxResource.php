@@ -45,12 +45,12 @@ final class MailboxResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("Mailbox");
+        return __('Mailbox');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Mailboxes");
+        return __('Mailboxes');
     }
 
     public static function form(Form $form): Form
@@ -90,8 +90,8 @@ final class MailboxResource extends Resource
                             ->sortable(),
                         TextColumn::make('vigency')
                             ->badge(),
-                    ])
-                ])
+                    ]),
+                ]),
             ])
             ->contentGrid([
                 'md' => 2,

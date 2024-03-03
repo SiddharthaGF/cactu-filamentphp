@@ -10,7 +10,7 @@ trait HasRecords
     {
         static::creating(function ($model): void {
 
-            if ( ! $model->isDirty('manager_id')) {
+            if (! $model->isDirty('manager_id')) {
                 $model->manager_id = auth()->user()->id;
             }
         });

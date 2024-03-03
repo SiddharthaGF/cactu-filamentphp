@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\PDFController;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*

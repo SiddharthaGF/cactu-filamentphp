@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\ChildResource\Pages;
 
 use App\Enums\AffiliationStatus;
+use App\Enums\HealthStatus;
 use App\Enums\StatusVigency;
 use App\Filament\Resources\ChildResource;
 use App\Models\Child;
@@ -55,7 +56,7 @@ final class EditChild extends EditRecord
                         $record->updated_by = $manager_id;
                         if ($opc === 1) {
                             $record->family_nucleus_id = null;
-                        } else if ($opc === 2) {
+                        } elseif ($opc === 2) {
                             $record->family_nucleus->updated_by = $manager_id;
                             $record->family_nucleus->tutors->each(function ($tutor) use ($manager_id) {
                                 $tutor->updated_by = $manager_id;
@@ -100,28 +101,31 @@ final class EditChild extends EditRecord
 
     protected function afterSave(): void
     {
-        $updated_user = $this->record;
-        $current_user = $this->record->getOriginal();
-        if ($updated_user->affiliation_status !== $current_user['affiliation_status']) {
+        $child = $this->record;
+        $child_original = $this->record->getOriginal();
+        if ($child->affiliation_status !== $child_original['affiliation_status']) {
             return;
         }
-        $affiliation_status = $updated_user->affiliation_status;
+        if ($child->health_status != HealthStatus::HasProblems) {
+            $child->health_status_record->delete();
+        }
+        $affiliation_status = $child->affiliation_status;
         switch ($affiliation_status) {
             case AffiliationStatus::Affiliated:
-                $mailbox = Mailbox::find($updated_user->id);
+                $mailbox = Mailbox::find($child->id);
                 if ($mailbox) {
                     $mailbox->update(['vigency' => StatusVigency::Active->value]);
                 } else {
                     Mailbox::create([
-                        'id' => $updated_user->id,
+                        'id' => $child->id,
                         'vigency' => StatusVigency::Active->value,
-                        'token' => Mailbox::generateToken()
+                        'token' => Mailbox::generateToken(),
                     ]);
                 }
                 break;
             default:
                 Mailbox::updateOrCreate(
-                    ['id' => $updated_user->id],
+                    ['id' => $child->id],
                     ['vigency' => StatusVigency::Inactive->value]
                 );
                 break;

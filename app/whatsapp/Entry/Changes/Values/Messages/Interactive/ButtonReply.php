@@ -7,6 +7,7 @@ namespace App\Whatsapp\Entry\Changes\Values\Messages\Interactive;
 final class ButtonReply
 {
     private string $id;
+
     private string $title;
 
     public function __construct(mixed $payload)

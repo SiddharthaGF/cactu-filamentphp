@@ -12,7 +12,6 @@
         "aymanalhattami/filament-slim-scrollbar": "^2.0",
         "barryvdh/laravel-debugbar": "^3.10",
         "barryvdh/laravel-dompdf": "^2.0",
-        "barryvdh/laravel-ide-helper": "^2.15",
         "bezhansalleh/filament-shield": "^3.2",
         "cheesegrits/filament-google-maps": "^3.0",
         "filament/filament": "3.2",
@@ -35,6 +34,7 @@
         "ysfkaya/filament-phone-input": "^2.3"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.0",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
@@ -67,8 +67,10 @@
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "@php artisan optimize",
+            "@php artisan ide-helper:models",
             "@php artisan ide-helper:generate",
-            "php artisan ide-helper:meta"
+            "@php artisan ide-helper:meta"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

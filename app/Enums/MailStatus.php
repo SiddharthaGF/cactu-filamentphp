@@ -7,7 +7,7 @@ namespace App\Enums;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum MailStatus: int implements HasLabel, HasColor
+enum MailStatus: int implements HasColor, HasLabel
 {
     use BaseEnum;
 
@@ -16,17 +16,17 @@ enum MailStatus: int implements HasLabel, HasColor
     case View = 3;
     case Replied = 4;
     case Expired = 5;
-    case IsResponse = 6;
+    case Response = 6;
 
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::Created => 'Creado',
-            self::Sent => 'Enviado',
-            self::View => 'Visto',
-            self::Replied => 'Respondido',
-            self::Expired => 'Expirado',
-            self::IsResponse => 'Es Respuesta',
+            self::Created => __('Created'),
+            self::Sent => __('Sent'),
+            self::View => __('View'),
+            self::Replied => __('Replied'),
+            self::Expired => __('Expired'),
+            self::Response => __('Es Respuesta'),
         };
     }
 
@@ -38,7 +38,7 @@ enum MailStatus: int implements HasLabel, HasColor
             self::View => 'info',
             self::Replied => 'warning',
             self::Expired => 'gray',
-            self::IsResponse => 'primary',
+            self::Response => 'primary',
         };
     }
 }

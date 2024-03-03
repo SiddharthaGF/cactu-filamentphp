@@ -32,13 +32,14 @@ final class WhatsappJob implements ShouldQueue
     use SerializesModels;
 
     private string|false $payload;
+
     private Whatsapp $whatsapp;
 
     public function __construct()
     {
         $this->payload = file_get_contents('php://input');
         $json = json_decode($this->payload, true);
-        if (isset($json["entry"][0]["changes"][0]["value"]["messages"][0])) {
+        if (isset($json['entry'][0]['changes'][0]['value']['messages'][0])) {
             $this->whatsapp = new Whatsapp($json);
         } else {
             exit;
@@ -104,27 +105,27 @@ final class WhatsappJob implements ShouldQueue
 
     public function extractId($command): int
     {
-        return (int)preg_replace('/[^0-9]+/', '', $command);
+        return (int) preg_replace('/[^0-9]+/', '', $command);
     }
 
-    public function saveOnTempJson(string $fileName, mixed $data, string $folder = "whatsapp-temp"): void
+    public function saveOnTempJson(string $fileName, mixed $data, string $folder = 'whatsapp-temp'): void
     {
         Storage::put("{$folder}/{$fileName}.json", json_encode($data));
     }
 
     public function existTempEmptyFile($from): bool
     {
-        return Storage::exists("whatsapp-temp/" . $from . ".json");
+        return Storage::exists('whatsapp-temp/'.$from.'.json');
     }
 
-    public function loadFromTempJson(string $fileName, $folder = "whatsapp-temp"): int
+    public function loadFromTempJson(string $fileName, $folder = 'whatsapp-temp'): int
     {
-        return (int)json_decode(Storage::get("{$folder}/{$fileName}.json"), true)["id"];
+        return (int) json_decode(Storage::get("{$folder}/{$fileName}.json"), true)['id'];
     }
 
     public function deleteContentFile($from): void
     {
-        $file_name = "whatsapp-temp/" . $from . ".json";
+        $file_name = 'whatsapp-temp/'.$from.'.json';
         Storage::delete($file_name);
     }
 
@@ -166,7 +167,7 @@ final class WhatsappJob implements ShouldQueue
         self::sendButtonReplyMessage(
             $from,
             Message::QuestionReply->value,
-            [new Button(WhatsappCommands::ReplyNow->value . ' ' . $id, WhatsappCommands::ReplyNow->getLabel())]
+            [new Button(WhatsappCommands::ReplyNow->value.' '.$id, WhatsappCommands::ReplyNow->getLabel())]
         );
     }
 
@@ -187,29 +188,30 @@ final class WhatsappJob implements ShouldQueue
         if ($this->existTempEmptyFile($from)) {
             try {
                 $reply_mail_id = $this->loadFromTempJson($from);
-                Mail::whereId($reply_mail_id)->update(["status" => MailStatus::Replied]);
+                Mail::whereId($reply_mail_id)->update(['status' => MailStatus::Replied]);
                 $mail = Mail::findOrFail($reply_mail_id);
                 $mailbox = $mail->mailbox;
                 $mail = Mail::create([
-                    "mailbox_id" => $mailbox->id,
-                    "type" => MailsTypes::Response,
-                    "status" => MailStatus::IsResponse,
-                    "reply_mail_id" => $reply_mail_id,
-                    "created_by" => 1,
-                    "updated_by" => 1
+                    'mailbox_id' => $mailbox->id,
+                    'type' => MailsTypes::Response,
+                    'status' => MailStatus::Response,
+                    'reply_mail_id' => $reply_mail_id,
+                    'created_by' => 1,
+                    'updated_by' => 1,
                 ]);
                 $answer = Answer::create([
-                    "mail_id" => $mail->id,
-                    "content" => $command,
-                    "created_by" => 1,
-                    "updated_by" => 1
+                    'mail_id' => $mail->id,
+                    'content' => $command,
+                    'created_by' => 1,
+                    'updated_by' => 1,
                 ]);
                 $id = $answer->id;
                 $this->saveOnTempJson($from, compact('id'));
-                whatsapp()->sendTextMessage($from, );
+                whatsapp()->sendTextMessage($from, Message::RequirePhoto->value);
             } catch (Exception $e) {
                 whatsapp()->sendTextMessage($from, $e->getMessage());
             }
+
             return;
         }
         whatsapp()->sendTextMessage($from, Message::NotHaveLetter->value);

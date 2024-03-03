@@ -24,7 +24,6 @@ enum ActivityForRecreation: int implements HasLabel
     case PlaysHulaHoops = 12;
     case RidesABicycle = 13;
 
-
     public function getLabel(): ?string
     {
         return match ($this) {

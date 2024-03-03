@@ -22,5 +22,4 @@ enum HousePropertyTypes: int implements HasLabel
             self::Borrowed => __('Borrowed'),
         };
     }
-
 }

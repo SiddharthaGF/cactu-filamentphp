@@ -10,7 +10,7 @@ use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Enums\Location;
 /**
  * Class House
  *
@@ -55,7 +55,7 @@ class House extends Model
         'longitude' => 'float',
         'created_by' => 'int',
         'updated_by' => 'int',
-        'territory' => 'int'
+        'territory' => Location::class
     ];
 
     protected $fillable = [

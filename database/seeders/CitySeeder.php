@@ -21,7 +21,7 @@ final class CitySeeder extends Seeder
 
         foreach ($allowedCodesCommunities as $code) {
             $client = new Client();
-            $response = $client->get('https://polaris-sage.vercel.app/api/v1/dpa/' . $code);
+            $response = $client->get('https://polaris-sage.vercel.app/api/v1/dpa/'.$code);
             $cities = json_decode($response->getBody()->getContents(), true);
 
             foreach ($cities as $cityIndex => $city) {

@@ -28,7 +28,7 @@ final class FamilyNucleusResource extends Resource
 
     public static function getLabel(): ?string
     {
-        return __("Family");
+        return __('Family');
     }
 
     public static function table(Table $table): Table
@@ -44,8 +44,8 @@ final class FamilyNucleusResource extends Resource
                         TextColumn::make('house.neighborhood')
                             ->searchable()
                             ->label(__('Neighborhood')),
-                    ])
-                ])
+                    ]),
+                ]),
             ])
             ->contentGrid([
                 'md' => 2,
@@ -134,7 +134,7 @@ final class FamilyNucleusResource extends Resource
                     ->collapsed()
                     ->columns(2)
                     ->schema([
-                        BankingInformationResource::getSchema()
+                        BankingInformationResource::getSchema(),
                     ]),
             ]);
     }

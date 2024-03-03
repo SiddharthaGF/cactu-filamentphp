@@ -21,14 +21,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property Child $child
- *
- * @package App\Models
  */
 class HealthStatusRecord extends Model
 {
-
     use UserStamps;
 
     protected $table = 'health_status_record';
@@ -36,7 +32,7 @@ class HealthStatusRecord extends Model
     protected $casts = [
         'child_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
@@ -44,7 +40,7 @@ class HealthStatusRecord extends Model
         'description',
         'treatment',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function child()

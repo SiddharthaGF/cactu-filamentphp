@@ -19,17 +19,19 @@ use Filament\Tables\Table;
 final class MailResource extends Resource
 {
     protected static ?string $model = Mail::class;
+
     protected static bool $shouldRegisterNavigation = false;
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getLabel(): ?string
     {
-        return __("Mail");
+        return __('Mail');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Mails");
+        return __('Mails');
     }
 
     public static function form(Form $form): Form

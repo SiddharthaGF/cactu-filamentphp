@@ -20,15 +20,11 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $updated_by
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
  * @property Community $community
  * @property User $user
- *
- * @package App\Models
  */
 class CommunityManager extends Model
 {
-
     use UserStamps;
 
     protected $table = 'community_managers';
@@ -37,14 +33,14 @@ class CommunityManager extends Model
         'community_id' => 'int',
         'manager_id' => 'int',
         'created_by' => 'int',
-        'updated_by' => 'int'
+        'updated_by' => 'int',
     ];
 
     protected $fillable = [
         'community_id',
         'manager_id',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function community()

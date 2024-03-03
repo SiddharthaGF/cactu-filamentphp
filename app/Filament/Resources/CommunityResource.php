@@ -23,19 +23,19 @@ final class CommunityResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return __("Location");
+        return __('Location');
     }
 
     protected static ?int $navigationSort = 4;
 
     public static function getLabel(): ?string
     {
-        return __("Community");
+        return __('Community');
     }
 
     public static function getPluralLabel(): ?string
     {
-        return __("Communities");
+        return __('Communities');
     }
 
     public static function form(Form $form): Form
