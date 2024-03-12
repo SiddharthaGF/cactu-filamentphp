@@ -28,6 +28,7 @@
         "reliese/laravel": "^1.2",
         "saade/filament-autograph": "^3.0",
         "silviolleite/laravelpwa": "^2.0",
+        "smalot/pdfparser": "^2.9",
         "spatie/laravel-ignition": "^2.4",
         "stechstudio/filament-impersonate": "^3.7",
         "swisnl/filament-backgrounds": "^1.1",

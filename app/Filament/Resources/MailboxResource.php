@@ -60,8 +60,7 @@ final class MailboxResource extends Resource
                 Select::make('id')
                     ->translateLabel()
                     ->searchable()
-                    ->preload()
-                    ->relationship('child', 'name')
+                    ->relationship('child', 'dni')
                     ->required()
                     ->native(false)
                     ->disabled(),
@@ -85,7 +84,12 @@ final class MailboxResource extends Resource
                         ->alignEnd(),
                     Tables\Columns\Layout\Stack::make([
                         TextColumn::make('child.name')
+                            ->formatStateUsing(fn ($record) => __('Child').': '.$record->child->name.' '.$record->child->last_name)
                             ->weight(FontWeight::Bold)
+                            ->searchable()
+                            ->sortable(),
+                        TextColumn::make('child.dni')
+                            ->formatStateUsing(fn ($record) => __('Dni').': '.$record->child->dni)
                             ->searchable()
                             ->sortable(),
                         TextColumn::make('vigency')
@@ -114,6 +118,7 @@ final class MailboxResource extends Resource
     {
         return [
             RelationManagers\MailRelationManager::class,
+            RelationManagers\MailInRelationManager::class,
         ];
     }
 

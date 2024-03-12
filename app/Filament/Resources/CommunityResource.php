@@ -6,9 +6,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommunityResource\Pages;
 use App\Models\Community;
-use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -43,24 +44,38 @@ final class CommunityResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')
+                    ->translateLabel()
                     ->required(),
-                Checkbox::make('vigency'),
                 Select::make('zone_code')
                     ->relationship(
                         'zone',
                         'name'
                     )
+                    ->translateLabel()
                     ->searchable()
                     ->preload()
                     ->reactive()
                     ->label('Zone'),
+                Toggle::make('vigency')
+                    ->translateLabel(),
                 Select::make('manager_id')
-                    ->relationship('managers')
-                    ->multiple()
+                    ->translateLabel()
+                    ->relationship('managers', 'name')
                     ->searchable()
+                    ->multiple()
                     ->preload()
+                    ->maxItems(10)
+                    ->columnSpanFull()
                     ->reactive()
-                    ->label('Manager'),
+                    ->label('Managers'),
+                Hidden::make('created_by')
+                    ->default(auth()->id())
+                    ->dehydrated(
+                        fn ($context) => $context == 'create'
+                    ),
+                Hidden::make('updated_by')
+                    ->default(auth()->id())
+                    ->dehydrated(),
             ]);
     }
 
@@ -70,11 +85,15 @@ final class CommunityResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
+                    ->translateLabel()
                     ->sortable(),
                 TextColumn::make('community_managers_count')
+                    ->label('Managers')
+                    ->translateLabel()
                     ->counts('community_managers')
                     ->badge(),
                 TextColumn::make('vigency')
+                    ->translateLabel()
                     ->badge(),
             ])
             ->filters([])

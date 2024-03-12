@@ -47,9 +47,10 @@ class State extends Model
         'updated_by',
     ];
 
-    public function user()
+    public function coordinator()
     {
-        return $this->belongsTo(User::class, 'coordinator_id');
+        return $this->belongsTo(User::class, 'coordinator_id')->role('coordinator');
+
     }
 
     public function cities()

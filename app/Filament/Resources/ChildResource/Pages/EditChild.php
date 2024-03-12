@@ -98,37 +98,4 @@ final class EditChild extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
-
-    protected function afterSave(): void
-    {
-        $child = $this->record;
-        $child_original = $this->record->getOriginal();
-        if ($child->affiliation_status !== $child_original['affiliation_status']) {
-            return;
-        }
-        if ($child->health_status != HealthStatus::HasProblems) {
-            $child->health_status_record->delete();
-        }
-        $affiliation_status = $child->affiliation_status;
-        switch ($affiliation_status) {
-            case AffiliationStatus::Affiliated:
-                $mailbox = Mailbox::find($child->id);
-                if ($mailbox) {
-                    $mailbox->update(['vigency' => StatusVigency::Active->value]);
-                } else {
-                    Mailbox::create([
-                        'id' => $child->id,
-                        'vigency' => StatusVigency::Active->value,
-                        'token' => Mailbox::generateToken(),
-                    ]);
-                }
-                break;
-            default:
-                Mailbox::updateOrCreate(
-                    ['id' => $child->id],
-                    ['vigency' => StatusVigency::Inactive->value]
-                );
-                break;
-        }
-    }
 }

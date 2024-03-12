@@ -10,6 +10,7 @@ use App\Models\State;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 
@@ -71,8 +72,11 @@ final class StateResource extends Resource
                     ->label('State')
                     ->translateLabel()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('coordinator.name')
+                Tables\Columns\TextColumn::make('coordinator.email')
                     ->translateLabel()
+                    ->grow(false)
+                    ->color(Color::Gray)
+                    ->badge()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('cities_count')
                     ->translateLabel()

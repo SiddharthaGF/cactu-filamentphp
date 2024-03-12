@@ -13,10 +13,11 @@ use App\Enums\Message;
 use App\Enums\SexualIdentity;
 use App\Enums\WhatsappCommands;
 use App\Jobs\WhatsappJob;
+use App\Observers\ChildObserver;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Filament\Models\Contracts\HasAvatar;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -33,10 +34,11 @@ use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
  * @property int|null $family_nucleus_id
  * @property string|null $contact_id
  * @property string $name
+ * @property string $last_name
  * @property string $dni
  * @property int $gender
  * @property Carbon $birthdate
- * @property int $affiliation_status
+ * @property AffiliationStatus $affiliation_status
  * @property string $pseudonym
  * @property int $sexual_identity
  * @property int $literacy
@@ -68,7 +70,6 @@ use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
  * @property string|null $likes
  * @property string|null $dislikes
  * @property string|null $signature
- *
  * @property Contact|null $contact
  * @property User|null $user
  * @property FamilyNucleus|null $family_nucleus
@@ -76,13 +77,11 @@ use Netflie\WhatsAppCloudApi\Message\ButtonReply\Button;
  * @property EducationalRecord|null $educational_records
  * @property HealthStatusRecord $health_status_records
  * @property Mailbox $mailbox
- * @property ReasonsLeavingStudy|null $reasons_leaving_studies
- *
- * @package App\Models
+ * @property ReasonsLeavingStudy|null $reasons_leaving_study
  */
+#[ObservedBy([ChildObserver::class])]
 class Child extends Model implements HasAvatar
 {
-
     use UserStamps;
 
     protected $table = 'children';
@@ -109,7 +108,7 @@ class Child extends Model implements HasAvatar
         'created_by' => 'int',
         'updated_by' => 'int',
         'disaffiliated_at' => 'datetime',
-        'risks_child' => 'json'
+        'risks_child' => 'json',
     ];
 
     protected $fillable = [
@@ -152,7 +151,7 @@ class Child extends Model implements HasAvatar
         'skills',
         'likes',
         'dislikes',
-        'signature'
+        'signature',
     ];
 
     public function contact()
@@ -202,7 +201,8 @@ class Child extends Model implements HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        $url = $this->child_photo_path ? Storage::url($this->child_photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        $url = $this->child_photo_path ? Storage::url($this->child_photo_path) : 'https://ui-avatars.com/api/?name='.urlencode($this->name);
+
         return $url;
     }
 
@@ -231,16 +231,16 @@ class Child extends Model implements HasAvatar
         $mobile_number = $this->getMobileNumber();
         $pseudonym = $this->pseudonym;
         if ($this->hasMobileNumber()) {
-            $text = str_replace("%pseudonym%", $pseudonym, Message::HelloForChild->value);
+            $text = str_replace('%pseudonym%', $pseudonym, Message::HelloForChild->value);
         } else {
             $tutor_name = $this->family_nucleus->tutors()->first()->name;
-            $text = str_replace('%tutor%', $tutor_name, str_replace("%pseudonym%", $pseudonym, Message::HelloForTutor->value));
+            $text = str_replace('%tutor%', $tutor_name, str_replace('%pseudonym%', $pseudonym, Message::HelloForTutor->value));
         }
-        WhatsappJob::sendButtonReplyMessage($mobile_number, $text, [new Button(WhatsappCommands::ViewNow->value . ' ' . $id, WhatsappCommands::ViewNow->getLabel())]);
+        WhatsappJob::sendButtonReplyMessage($mobile_number, $text, [new Button(WhatsappCommands::ViewNow->value.' '.$id, WhatsappCommands::ViewNow->getLabel())]);
     }
 
     public function isOnlyAffiliated(): bool
     {
-        return 1 === $this->family_nucleus->children()->count();
+        return $this->family_nucleus->children()->count() === 1;
     }
 }

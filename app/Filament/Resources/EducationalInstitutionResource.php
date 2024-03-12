@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EducationalInstitutionResource\Pages;
+use App\Models\City;
 use App\Models\EducationalInstitution;
 use Cheesegrits\FilamentGoogleMaps\Fields\Geocomplete;
 use Cheesegrits\FilamentGoogleMaps\Fields\Map;
@@ -50,7 +51,14 @@ final class EducationalInstitutionResource extends Resource
                     ->maxLength(200),
                 Select::make('zone_code')
                     ->translateLabel()
-                    ->relationship('zone', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->options(
+                        City::all()->mapWithKeys(fn ($city) => ["$city->code - $city->name" => $city->zones->mapWithKeys(
+                            fn ($zone) => [$zone->code => "$zone->code - $zone->name"]
+                        )])->toArray(),
+                    )
+                    //->relationship('zone', 'name')
                     ->native(false)
                     ->required(),
                 Geocomplete::make('search')

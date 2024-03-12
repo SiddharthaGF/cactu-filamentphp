@@ -58,9 +58,7 @@ return new class() extends Migration
         Schema::create('community_managers', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('community_id')->constrained();
-            $table->foreignId('manager_id')->unique()->constrained('users');
-            $table->unsignedBigInteger('created_by');
-            $table->unsignedBigInteger('updated_by');
+            $table->foreignId('manager_id')->constrained('users');
             $table->timestamps();
         });
 
@@ -190,7 +188,6 @@ return new class() extends Migration
             $table->string('education_type', 20)->nullable();
             $table->string('financing_type', 20)->nullable();
             $table->foreignUlid('zone_code', 6)->nullable()->constrained('zones', 'code');
-            $table->unsignedBigInteger('created_by');
             $table->string('address', 100)->nullable();
             $table->string('area', 20)->nullable();
             $table->string('academic_regime', 20)->nullable();
@@ -222,7 +219,6 @@ return new class() extends Migration
             $table->unsignedTinyInteger('vigency');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');
-            $table->string('token')->unique();
             $table->timestamps();
         });
 

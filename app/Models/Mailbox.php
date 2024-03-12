@@ -40,15 +40,11 @@ class Mailbox extends Model
         'updated_by' => 'int',
     ];
 
-    protected $hidden = [
-        'token',
-    ];
-
     protected $fillable = [
+        'id',
         'vigency',
         'created_by',
         'updated_by',
-        'token',
     ];
 
     public function child()

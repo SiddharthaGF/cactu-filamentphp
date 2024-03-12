@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use Spatie\Permission\Models\Role;
 use Throwable;
 
 final class PrepareSystem extends Command
@@ -57,10 +58,12 @@ final class PrepareSystem extends Command
                 ]);
                 $this->line('Usuario administrador creado con éxito');
                 $this->info('Ejecutando Seeders...');
-                //Artisan::call('db:seed');
+                Artisan::call('db:seed');
                 $this->line('Seeders realizados con éxito');
                 $this->info('Creando roles, permisos...');
                 Artisan::call('shield:install --fresh --minimal');
+                Role::create(['name' => 'gestor', 'guard_name' => 'web']);
+                Role::create(['name' => 'coordinador', 'guard_name' => 'web']);
                 $this->line('Roles, permisos creados con éxito');
                 $this->info('Base de datos preparada con éxito');
                 $this->newLine(1);

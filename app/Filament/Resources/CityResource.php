@@ -42,13 +42,16 @@ final class CityResource extends Resource
         return $form
             ->schema([
                 TextInput::make('code')
+                    ->translateLabel()
                     ->required()
                     ->maxLength(4),
                 Select::make('state_code')
+                    ->translateLabel()
                     ->required()
                     ->relationship('state', 'name')
                     ->native(false),
                 TextInput::make('name')
+                    ->translateLabel()
                     ->required()
                     ->maxLength(100),
             ]);

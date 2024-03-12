@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\Location;
+
 /**
  * Class House
  *
@@ -117,5 +118,10 @@ class House extends Model
     public function risks_near_home()
     {
         return $this->hasMany(RisksNearHome::class);
+    }
+
+    public function tutor()
+    {
+        return $this->belongsTo(User::class, 'tutor_id');
     }
 }

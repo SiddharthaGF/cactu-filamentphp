@@ -30,7 +30,7 @@ return new class() extends Migration
             $table->foreignId('local_partner_id')->nullable()->constrained();
             $table->string('password');
             $table->rememberToken();
-            $table->string('profile_photo_path', 2048)->nullable();
+            $table->string('avatar_url', 2048)->nullable();
             $table->text('signature')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by');

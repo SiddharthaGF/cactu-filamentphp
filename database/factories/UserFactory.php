@@ -22,10 +22,9 @@ final class UserFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(env('EMAIL_DOMAIN')),
+            'email' => $this->faker->unique()->email(),
             'local_partner_id' => 1,
             'password' => Hash::make('123456789'),
-            'email_verified_at' => now(),
             'remember_token' => Str::random(10),
             'created_by' => 1,
             'updated_by' => 1,

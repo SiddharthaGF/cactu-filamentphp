@@ -111,7 +111,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function getFilamentAvatarUrl(): ?string
     {
-        $url = $this->avatar_url ? Storage::url($this->avatar_url) : 'https://ui-avatars.com/api/?name='.urlencode($this->name);
+        $url = $this->avatar_url ? Storage::url($this->avatar_url) : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
 
         return $url;
     }
@@ -140,5 +140,10 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
     public function isAdmin()
     {
         return $this->hasRole('super_admin');
+    }
+
+    public function community()
+    {
+        return $this->belongsToMany(Community::class, 'community_managers', 'manager_id', 'community_id', 'id', 'id', 'community_managers');
     }
 }

@@ -32,8 +32,6 @@ class CommunityManager extends Model
     protected $casts = [
         'community_id' => 'int',
         'manager_id' => 'int',
-        'created_by' => 'int',
-        'updated_by' => 'int',
     ];
 
     protected $fillable = [

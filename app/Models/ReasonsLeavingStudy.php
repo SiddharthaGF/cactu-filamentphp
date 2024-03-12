@@ -6,8 +6,10 @@
 
 namespace App\Models;
 
+use App\Observers\ReasonsLeavingStudyObserver;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -22,6 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $updated_at
  * @property Child $child
  */
+
+ #[ObservedBy([ReasonsLeavingStudyObserver::class])]
 class ReasonsLeavingStudy extends Model
 {
     use UserStamps;

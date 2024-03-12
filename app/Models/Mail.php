@@ -71,6 +71,6 @@ class Mail extends Model
 
     public function mails()
     {
-        return $this->hasMany(Mail::class, 'reply_mail_id');
+        return $this->hasOne(Mail::class, 'reply_mail_id');
     }
 }

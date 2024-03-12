@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Enums\FamilyRelationship;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -44,7 +45,7 @@ class Tutor extends Model
         'family_nucleus_id' => 'int',
         'gender' => 'int',
         'birthdate' => 'datetime',
-        'relationship' => 'int',
+        'relationship' => FamilyRelationship::class,
         'is_present' => 'bool',
         'reason_not_present' => 'int',
         'deathdate' => 'datetime',

@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Enums\StatusVigency;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -34,7 +35,7 @@ class Community extends Model
     protected $casts = [
         'created_by' => 'int',
         'updated_by' => 'int',
-        'vigency' => 'int',
+        'vigency' => StatusVigency::class,
     ];
 
     protected $fillable = [
@@ -53,5 +54,10 @@ class Community extends Model
     public function community_managers()
     {
         return $this->hasMany(CommunityManager::class);
+    }
+
+    public function managers()
+    {
+        return $this->belongsToMany(User::class, 'community_managers', 'community_id', 'manager_id', 'id', 'id', 'community_managers')->role('gestor');
     }
 }

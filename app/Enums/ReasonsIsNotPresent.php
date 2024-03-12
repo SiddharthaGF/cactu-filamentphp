@@ -14,7 +14,7 @@ enum ReasonsIsNotPresent: int implements HasLabel
     case Separated = 2;
     case LivesElsewhere = 3;
     case Dead = 4;
-    case Other = 0;
+    case Other = 5;
 
     public function getLabel(): ?string
     {

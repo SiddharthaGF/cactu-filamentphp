@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\StateResource\RelationManagers;
 
+use App\Filament\Resources\CityResource;
+use App\Models\City;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -29,13 +31,13 @@ final class CitiesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                TextInput::make('code')
-                    ->required()
-                    ->maxLength(4)
-                    ->disabledOn('edit'),
                 TextInput::make('name')
+                    ->translateLabel()
                     ->required()
                     ->maxLength(255),
+                TextInput::make('code')
+                    ->translateLabel()
+                    ->required(),
             ]);
     }
 
@@ -56,7 +58,12 @@ final class CitiesRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('edit')
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil')
+                    ->url(
+                        fn (City $city) => CityResource::getUrl('edit', [$city->code])
+                    ),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

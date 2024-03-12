@@ -2,76 +2,95 @@
 
 declare(strict_types=1);
 
-function validate($strCedula): void
+namespace App\Filament\Validations;
+
+class DniOrRucValidator
 {
-    if ($strCedula === null || empty($strCedula)) { //compruebo si que el numero enviado es vacio o null
-        echo 'Por Favor Ingrese la Cedula';
-    } else { //caso contrario sigo el proceso
-        if (is_numeric($strCedula)) {
-            $total_caracteres = mb_strlen($strCedula); // se suma el total de caracteres
-            if ($total_caracteres === 10) { //compruebo que tenga 10 digitos la cedula
-                $nro_region = mb_substr($strCedula, 0, 2); //extraigo los dos primeros caracteres de izq a der
-                if ($nro_region >= 1 && $nro_region <= 24) { // compruebo a que region pertenece esta cedula//
-                    $ult_digito = mb_substr($strCedula, -1, 1); //extraigo el ultimo digito de la cedula
-                    //extraigo los valores pares//
-                    $valor2 = mb_substr($strCedula, 1, 1);
-                    $valor4 = mb_substr($strCedula, 3, 1);
-                    $valor6 = mb_substr($strCedula, 5, 1);
-                    $valor8 = mb_substr($strCedula, 7, 1);
-                    $suma_pares = ($valor2 + $valor4 + $valor6 + $valor8);
-                    //extraigo los valores impares//
-                    $valor1 = mb_substr($strCedula, 0, 1);
-                    $valor1 = ($valor1 * 2);
-                    if ($valor1 > 9) {
-                        $valor1 = ($valor1 - 9);
-                    }
+    public static function validate(string $dni): bool
+    {
+        try {
+            if ($dni === null || empty($dni)) {
+                return false;
+            } else {
+                if (is_numeric($dni)) {
 
-                    $valor3 = mb_substr($strCedula, 2, 1);
-                    $valor3 = ($valor3 * 2);
-                    if ($valor3 > 9) {
-                        $valor3 = ($valor3 - 9);
-                    }
+                    $len = strlen($dni);
+                    if ($len === 10) {
+                        $region = (int) substr($dni, 0, 2);
 
-                    $valor5 = mb_substr($strCedula, 4, 1);
-                    $valor5 = ($valor5 * 2);
-                    if ($valor5 > 9) {
-                        $valor5 = ($valor5 - 9);
-                    }
+                        if ($region >= 1 && $region <= 24) {
+                            $last = (int) mb_substr($dni, -1, 1);
 
-                    $valor7 = mb_substr($strCedula, 6, 1);
-                    $valor7 = ($valor7 * 2);
-                    if ($valor7 > 9) {
-                        $valor7 = ($valor7 - 9);
-                    }
+                            $value2 = (int) mb_substr($dni, 1, 1);
+                            $value4 = (int) mb_substr($dni, 3, 1);
+                            $value6 = (int) mb_substr($dni, 5, 1);
+                            $value8 = (int) mb_substr($dni, 7, 1);
+                            $pairSum = ($value2 + $value4 + $value6 + $value8);
 
-                    $valor9 = mb_substr($strCedula, 8, 1);
-                    $valor9 = ($valor9 * 2);
-                    if ($valor9 > 9) {
-                        $valor9 = ($valor9 - 9);
-                    }
+                            $value1 = (int) mb_substr($dni, 0, 1);
+                            $value1 = ($value1 * 2);
 
-                    $suma_impares = ($valor1 + $valor3 + $valor5 + $valor7 + $valor9);
-                    $suma = ($suma_pares + $suma_impares);
-                    $dis = mb_substr($suma, 0, 1); //extraigo el primer numero de la suma
-                    $dis = (($dis + 1) * 10); //luego ese numero lo multiplico x 10, consiguiendo asi la decena inmediata superior
-                    $digito = ($dis - $suma);
-                    if ($digito === 10) {
-                        $digito = '0';
-                    }
-                    //si la suma nos resulta 10, el decimo digito es cero
-                    if ($digito === $ult_digito) { //comparo los digitos final y ultimo
-                        echo 'Cedula Correcta';
+                            if ($value1 > 9) {
+                                $value1 = ($value1 - 9);
+                            }
+
+                            $value3 = (int) mb_substr($dni, 2, 1);
+                            $value3 = ($value3 * 2);
+                            if ($value3 > 9) {
+                                $value3 = ($value3 - 9);
+                            }
+
+                            $value5 = (int) mb_substr($dni, 4, 1);
+                            $value5 = ($value5 * 2);
+                            if ($value5 > 9) {
+                                $value5 = ($value5 - 9);
+                            }
+
+                            $value7 = (int) mb_substr($dni, 6, 1);
+                            $value7 = ($value7 * 2);
+                            if ($value7 > 9) {
+                                $value7 = ($value7 - 9);
+                            }
+
+                            $value9 = (int) mb_substr($dni, 8, 1);
+                            $value9 = ($value9 * 2);
+                            if ($value9 > 9) {
+                                $value9 = ($value9 - 9);
+                            }
+
+                            $oddSum = ($value1 + $value3 + $value5 + $value7 + $value9);
+                            $sum = ($pairSum + $oddSum);
+                            $dis = (int) mb_substr((string) $sum, 0, 1);
+
+                            $dis = (($dis + 1) * 10);
+
+                            $current = ($dis - $sum);
+
+                            if ($current == 10) {
+                                $current = 0;
+                            }
+
+
+
+                            if ($current == $last) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        } else {
+                            return false;
+                        }
                     } else {
-                        echo 'Cedula Incorrecta';
+                        return false;
                     }
                 } else {
-                    echo 'Este Nro de Cedula no corresponde a ninguna provincia del ecuador';
+                    return false;
                 }
-            } else {
-                echo 'Es un Numero y tiene solo'.$total_caracteres;
             }
-        } else {
-            echo 'Esta Cedula no corresponde a un Nro de Cedula de Ecuador';
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+
+            return false;
         }
     }
 }

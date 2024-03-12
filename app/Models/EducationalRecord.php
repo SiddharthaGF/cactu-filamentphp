@@ -6,8 +6,10 @@
 
 namespace App\Models;
 
+use App\Observers\EducationalRecordObserver;
 use App\Traits\UserStamps;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -26,6 +28,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Child $child
  * @property EducationalInstitution $educational_institution
  */
+#[ObservedBy([EducationalRecordObserver::class])]
 class EducationalRecord extends Model
 {
     use UserStamps;

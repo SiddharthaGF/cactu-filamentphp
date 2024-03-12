@@ -81,7 +81,6 @@ final class TutorResource extends Resource
             DatePicker::make('birthdate')
                 ->translateLabel()
                 ->prefixIcon('heroicon-o-calendar')
-                ->native(false)
                 ->maxDate(now())
                 ->closeOnDateSelection()
                 ->required(),
@@ -119,7 +118,7 @@ final class TutorResource extends Resource
                         ->translateLabel()
                         ->required()
                         ->visible(
-                            fn (Get $get, $state) => $state = ReasonsIsNotPresent::Other->value === $get('reason_not_present')
+                            fn (Get $get, $state) => $state = $get('reason_not_present') == ReasonsIsNotPresent::Other->value
                         ),
                     DatePicker::make('deathdate')
                         ->translateLabel()
@@ -128,8 +127,9 @@ final class TutorResource extends Resource
                         ->native(false)
                         ->maxDate(now())
                         ->visible(
-                            fn (Get $get, $state) => $state = ReasonsIsNotPresent::Dead->value === $get('reason_not_present')
+                            fn (Get $get, $state) => $state = $get('reason_not_present') == ReasonsIsNotPresent::Dead->value
                         ),
+
                 ]),
             Section::make()
                 ->schema([
@@ -145,7 +145,7 @@ final class TutorResource extends Resource
                         ->prefixIcon('heroicon-o-question-mark-circle')
                         ->required()
                         ->visible(
-                            fn (Get $get, $state) => $state = Occupation::Other->value === $get('occupation')
+                            fn (Get $get, $state) => $state = Occupation::Other->value == $get('occupation')
                         ),
                     TextInput::make('salary')
                         ->prefixIcon('heroicon-o-currency-dollar')

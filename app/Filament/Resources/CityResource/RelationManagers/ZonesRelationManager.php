@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\CityResource\RelationManagers;
 
-use Filament\Forms;
+use App\Filament\Resources\ZoneResource;
+use App\Models\Zone;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -29,12 +31,13 @@ final class ZonesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('code')
+                TextInput::make('name')
+                    ->translateLabel()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                TextInput::make('code')
+                    ->translateLabel()
+                    ->required(),
             ]);
     }
 
@@ -55,7 +58,12 @@ final class ZonesRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('edit')
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil')
+                    ->url(
+                        fn (Zone $zone) => ZoneResource::getUrl('edit', [$zone->code])
+                    ),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

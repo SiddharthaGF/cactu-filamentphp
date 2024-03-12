@@ -8,6 +8,7 @@ use App\Filament\Resources\ZoneResource\Pages;
 use App\Filament\Resources\ZoneResource\RelationManagers;
 use App\Models\Zone;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -41,21 +42,22 @@ final class ZoneResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('city_code')
-                    ->required()
-                    ->maxLength(4),
                 Forms\Components\TextInput::make('code')
+                    ->translateLabel()
                     ->required()
                     ->maxLength(6),
+                Select::make('city_code')
+                    ->translateLabel()
+                    ->required()
+                    ->preload()
+                    ->maxItems(15)
+                    ->searchable()
+                    ->relationship('city', 'name')
+                    ->native(false),
                 Forms\Components\TextInput::make('name')
+                    ->translateLabel()
                     ->required()
                     ->maxLength(100),
-                Forms\Components\TextInput::make('created_by')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('updated_by')
-                    ->required()
-                    ->numeric(),
             ]);
     }
 

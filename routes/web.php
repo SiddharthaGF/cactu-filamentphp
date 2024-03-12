@@ -14,8 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::controller(PDFController::class)->group(
+Route::middleware('auth:sanctum')->controller(PDFController::class)->group(
     function () {
         Route::get('/sheet/{child}', 'sheet')->name('sheet');
+        Route::get('/letter1/{answer}', 'letter1')->name('letter1');
     }
 );
