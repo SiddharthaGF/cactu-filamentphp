@@ -170,10 +170,26 @@
             <p style="position: absolute; padding-left: 28.7rem; padding-top: 19.8rem">X</p>
         @endif
 
+        <p style="position: absolute; padding-top: 26.5rem;">
+            @php
+                $accountNumberDigits = str_split($child->children_number);
+                $leftOffset = 20.5;
+            @endphp
+
+            @foreach ($accountNumberDigits as $digit)
+                <span style="position: absolute; left: {{ $leftOffset }}rem;">
+                    {{ $digit }}
+                </span>
+                @php
+                    $leftOffset += 1.71;
+                @endphp
+            @endforeach
+        </p>
+
         <p style="position: absolute; padding-left: 10.2rem; padding-top: 28.5rem; white-space: nowrap;">
             {{ $child->name }}</p>
 
-        <p style="position: absolute; padding-left: 43.6rem; padding-top: 28.5rem; white-space: nowrap;">
+        <p style="position: absolute; padding-left: 43.7rem; padding-top: 28.5rem; white-space: nowrap;">
             {{ $child->last_name }}
         </p>
 
@@ -339,22 +355,36 @@
             <p style="position: absolute; padding-left: 15.5rem; padding-top: 60.4rem; white-space: nowrap;">X</p>
         @elseif ($child->language == \App\Enums\Language::Other->value)
             <p style="position: absolute; padding-left: 23.6rem; padding-top: 60.4rem; white-space: nowrap;">X</p>
+            <p style="position: absolute; padding-left: 34.4rem; padding-top: 60.4rem; white-space: nowrap;">
+                {{ $child->specific_language }}
+            </p>
         @endif
 
         <p style="position: absolute; padding-left: 53.7rem; padding-top: 60.3rem; white-space: nowrap;">
             {{ $child->religious }}</p>
 
+
+
         @if ($child->nationality == \App\Enums\Nationality::Ecuadorian->value)
             <p style="position: absolute; padding-left: 15.5rem; padding-top: 62.5rem; white-space: nowrap;">X</p>
         @elseif ($child->nationality == \App\Enums\Nationality::Other->value)
             <p style="position: absolute; padding-left: 28rem; padding-top: 62.5rem; white-space: nowrap;">X</p>
+            <p style="position: absolute; padding-left: 38.1rem; padding-top: 62.5rem; white-space: nowrap;">
+                {{ $child->specific_nationality }}
+            </p>
         @endif
 
-        @if ($child->migratory_status == \App\Enums\MigratoryStatus::Migrant->value)
+
+
+        @if ($child->migratory_status == \App\Enums\MigratoryStatus::None->value)
+            <p style="position: absolute; padding-left: 53.2rem; padding-top: 64.6rem; white-space: nowrap;"></p>
+        @elseif ($child->migratory_status == \App\Enums\MigratoryStatus::Migrant->value)
             <p style="position: absolute; padding-left: 53.2rem; padding-top: 64.6rem; white-space: nowrap;">X</p>
         @elseif ($child->migratory_status == \App\Enums\MigratoryStatus::Refugee->value)
             <p style="position: absolute; padding-left: 61.6rem; padding-top: 64.6rem; white-space: nowrap;">X</p>
         @endif
+
+
 
         @if ($child->ethnic_group == \App\Enums\EthnicGroup::AfroEcuadorian->value)
             <p style="position: absolute; padding-left: 14.2rem; padding-top: 66.7rem; white-space: nowrap;">X</p>
@@ -379,13 +409,64 @@
 
         @if ($educational_record?->status == \App\Enums\EducationalStatus::Kindergarten->value)
             <p style="position: absolute; padding-left: 20.1rem; padding-top: 77.2rem; white-space: nowrap;">X</p>
+
+            @if ($educational_record->level == __(\App\Enums\SchoolLevel::Initial->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 77.2rem; white-space: nowrap;">Inicial
+                </p>
+            @endif
         @elseif ($educational_record?->status == \App\Enums\EducationalStatus::InitialEducation->value)
             <p style="position: absolute; padding-left: 20.1rem; padding-top: 79rem; white-space: nowrap;">X</p>
+
+            @if ($educational_record->level == __(\App\Enums\SchoolLevel::Initial1->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 79rem; white-space: nowrap;">Inicial 1
+                </p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Initial2->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 79rem; white-space: nowrap;">Inicial 2
+                </p>
+            @endif
         @elseif ($educational_record?->status == \App\Enums\EducationalStatus::BasicGeneralEducation->value)
             <p style="position: absolute; padding-left: 20.1rem; padding-top: 80.8rem; white-space: nowrap;">X</p>
+
+            @if ($educational_record->level == __(\App\Enums\SchoolLevel::Grade1->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">1er</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Grade2->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">2do</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Grade3->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">3er</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Grade4->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">4to</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Grade5->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">5to</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Grade6->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">6to</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Grade7->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">7mo</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Grade8->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">8vo</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Grade9->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">9no</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Grade10->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 80.8rem; white-space: nowrap;">10mo
+                </p>
+            @endif
         @elseif ($educational_record?->status == \App\Enums\EducationalStatus::UnifiedGeneralBaccalaureate->value)
             <p style="position: absolute; padding-left: 20.1rem; padding-top: 82.5rem; white-space: nowrap;">X</p>
+
+            @if ($educational_record->level == __(\App\Enums\SchoolLevel::Baccalaureate1->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 82.5rem; white-space: nowrap;">1er
+                    Bachillerato</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Baccalaureate2->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 82.5rem; white-space: nowrap;">2do
+                    Bachillerato</p>
+            @elseif ($educational_record->level == __(\App\Enums\SchoolLevel::Baccalaureate3->getLabel()))
+                <p style="position: absolute; padding-left: 43.7rem; padding-top: 82.5rem; white-space: nowrap;">3er
+                    Bachillerato</p>
+            @endif
+
         @endif
+
+
+
 
         <p style="position: absolute; padding-left: 20.2rem; padding-top: 84.5rem; white-space: nowrap;">
             {{ $educational_record?->fovorite_subject }}</p>
@@ -406,9 +487,17 @@
             <p style="position: absolute; padding-left: 50rem; padding-top: 90.7rem; white-space: nowrap;">X</p>
         @endif
 
+
+
+
+
+
+
         <img style="z-index: -1; position: absolute" src="{{ public_path('/images/sheet/1.jpg') }}" height="1120">
 
+
     </div>
+
 
 
     <div style="page-break-after: always"></div>
@@ -460,68 +549,106 @@
 
         @php
             $SupportActivities = $child->activities_for_family_support;
+            $activityFound = false;
         @endphp
 
         @foreach ($SupportActivities as $activity)
             @if ($activity == \App\Enums\ActivityForFamilySupport::Washes->value)
                 <p style="position: absolute; padding-left: 4.5rem; padding-top: 27.7rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::BringsFirewood->value)
                 <p style="position: absolute; padding-left: 4.5rem; padding-top: 29.4rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::BringsWater->value)
                 <p style="position: absolute; padding-left: 4.5rem; padding-top: 31.1rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::TakesCareOfAnimals->value)
                 <p style="position: absolute; padding-left: 20.1rem; padding-top: 26rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::Cooks->value)
                 <p style="position: absolute; padding-left: 20.1rem; padding-top: 27.7rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::HasDeBed->value)
                 <p style="position: absolute; padding-left: 20.1rem; padding-top: 29.4rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::DoesTheShopping->value)
                 <p style="position: absolute; padding-left: 20.1rem; padding-top: 31.1rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::CaresOfBrothersSisters->value)
                 <p style="position: absolute; padding-left: 36.6rem; padding-top: 26rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::CleansTheHouse->value)
                 <p style="position: absolute; padding-left: 36.6rem; padding-top: 29.4rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::RunsErrands->value)
                 <p style="position: absolute; padding-left: 53.2rem; padding-top: 26rem;">X</p>
+                @php $activityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForFamilySupport::GathersGrassForAnimals->value)
                 <p style="position: absolute; padding-left: 53.2rem; padding-top: 27.7rem;">X</p>
+                @php $activityFound = true; @endphp
             @endif
         @endforeach
+
+        @if (!$activityFound)
+            <p style="position: absolute; padding-left: 4.5rem; padding-top: 26rem;">X</p>
+        @endif
 
 
         @php
             $RecreationActivities = $child->recreation_activities;
+            $RecActivityFound = false;
         @endphp
 
         @foreach ($RecreationActivities as $activity)
             @if ($activity == \App\Enums\ActivityForRecreation::PlaysWithDolls->value)
                 <p style="position: absolute; padding-left: 4.5rem; padding-top: 39.6rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::JumpsRope->value)
                 <p style="position: absolute; padding-left: 4.5rem; padding-top: 41.3rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::PlaysBall->value)
                 <p style="position: absolute; padding-left: 4.5rem; padding-top: 43rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::PlaysMarbles->value)
                 <p style="position: absolute; padding-left: 20.1rem; padding-top: 37.9rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::PlaysHouse->value)
                 <p style="position: absolute; padding-left: 20.1rem; padding-top: 39.6rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::PlaysWithCarts->value)
                 <p style="position: absolute; padding-left: 20.1rem; padding-top: 41.3rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::PlaysHopscotch->value)
                 <p style="position: absolute; padding-left: 20.1rem; padding-top: 43rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::Runs->value)
                 <p style="position: absolute; padding-left: 36.6rem; padding-top: 37.9rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::PlaysWithRattles->value)
                 <p style="position: absolute; padding-left: 36.6rem; padding-top: 39.6rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::PlaysHideAndSeek->value)
                 <p style="position: absolute; padding-left: 36.6rem; padding-top: 41.3rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::PlaysWithFriends->value)
                 <p style="position: absolute; padding-left: 36.6rem; padding-top: 43rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::PlaysHulaHoops->value)
                 <p style="position: absolute; padding-left: 53.2rem; padding-top: 37.9rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @elseif ($activity == \App\Enums\ActivityForRecreation::RidesABicycle->value)
                 <p style="position: absolute; padding-left: 53.2rem; padding-top: 39.6rem;">X</p>
+                @php $RecActivityFound = true; @endphp
             @endif
         @endforeach
+
+        @if (!$RecActivityFound)
+            <p style="position: absolute; padding-left: 4.5rem; padding-top: 37.9rem;">X</p>
+        @endif
+
+
+
+
 
         <p style="position: absolute; padding-left: 20.3rem; padding-top: 49.5rem; white-space: nowrap;">
             {{ $child->physical_description }}
@@ -613,73 +740,259 @@
             $upOffset = 0;
         @endphp
 
+
+
+
         @foreach ($tutors as $tutor)
             @if ($tutor != null)
-                @if ($tutor->is_present == 1)
-                    <p style="position: absolute; padding-left: 30.4rem; padding-top: {{ 7.9 + $upOffset }}rem">X</p>
-                @elseif ($tutor->is_present == 0)
-                    <p style="position: absolute; padding-left: 36.5rem; padding-top: {{ 7.9 + $upOffset }}rem">X</p>
+
+
+
+
+                {{-- Para padre o cuidador --}}
+                @if ($tutor?->gender == \App\Enums\Gender::Male->value)
+                    @if ($tutor->is_present == 1)
+                        <p style="position: absolute; padding-left: 30.4rem; padding-top: {{ 7.9 + $upOffset }}rem">X
+                        </p>
+                        <p
+                            style="position: absolute; padding-left: 62rem; padding-top: {{ 7.9 + $upOffset }}rem; white-space: nowrap; ">
+                            {{ $tutor->salary }}
+                        </p>
+
+                        @if ($tutor->occupation == \App\Enums\Occupation::PrivateEmployee->value)
+                            <p
+                                style="position: absolute; padding-left: 4.5rem; padding-top: {{ 11.6 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Artisan->value)
+                            <p
+                                style="position: absolute; padding-left: 4.5rem; padding-top: {{ 13.3 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Farmer->value)
+                            <p style="position: absolute; padding-left: 4.5rem; padding-top: {{ 15 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::AnimalKeeper->value)
+                            <p
+                                style="position: absolute; padding-left: 4.5rem; padding-top: {{ 16.7 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Cook->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 11.6 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Carpenter->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 13.3 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Builder->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 15 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::DayLaborer->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 16.7 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Mechanic->value)
+                            <p
+                                style="position: absolute; padding-left: 32.5rem; padding-top: {{ 11.6 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Salesman->value)
+                            <p
+                                style="position: absolute; padding-left: 32.5rem; padding-top: {{ 13.3 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::PaidHouseholdWork->value)
+                            <p
+                                style="position: absolute; padding-left: 32.5rem; padding-top: {{ 15 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::UnpaidHouseholdWork->value)
+                            <p
+                                style="position: absolute; padding-left: 32.5rem; padding-top: {{ 16.7 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Unknown->value)
+                            <p
+                                style="position: absolute; padding-left: 53.2rem; padding-top: {{ 11.6 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Other->value)
+                            <p
+                                style="position: absolute; padding-left: 53.2rem; padding-top: {{ 13.3 + $upOffset }}rem">
+                                X</p>
+                            <p
+                                style="position: absolute; padding-left: 57rem; padding-top: {{ 13.3 + $upOffset }}rem">
+                                {{ $tutor->specific_occupation }}
+                            </p>
+                        @endif
+
+                        @php
+                            $upOffset += 25.6;
+                        @endphp
+                    @elseif ($tutor->is_present == 0)
+                        <p style="position: absolute; padding-left: 36.5rem; padding-top: {{ 7.9 + $upOffset }}rem">X
+                        </p>
+
+                        @if ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Divorced->value)
+                            <p
+                                style="position: absolute; padding-left: 4.5rem; padding-top: {{ 20.1 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Separated->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 20.1 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::LivesElsewhere->value)
+                            <p
+                                style="position: absolute; padding-left: 36.6rem; padding-top: {{ 20.1 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Dead->value)
+                            @php
+                                $date = $tutor->deathdate->format('d/m/y');
+                            @endphp
+
+                            <p style="position: absolute; padding-left: 57.3rem; padding-top: 20.2rem">
+                                {{ $date[0] }}</p>
+                            <p style="position: absolute; padding-left: 59rem; padding-top: 20.2rem">
+                                {{ $date[1] }}</p>
+                            <p style="position: absolute; padding-left: 61rem; padding-top: 20.2rem">
+                                {{ $date[3] }}</p>
+                            <p style="position: absolute; padding-left: 62.7rem; padding-top: 20.2rem">
+                                {{ $date[4] }}</p>
+                            <p style="position: absolute; padding-left: 64.9rem; padding-top: 20.2rem">
+                                {{ $date[6] }}</p>
+                            <p style="position: absolute; padding-left: 66.4rem; padding-top: 20.2rem">
+                                {{ $date[7] }}</p>
+                        @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Other->value)
+                            <p
+                                style="position: absolute; padding-left: 7.5rem; padding-top: {{ 22.3 + $upOffset }}rem">
+                                {{ $tutor->specific_reason }}
+                            </p>
+                        @endif
+                    @endif
+
+
+
+                    {{-- Para madre o cuidadora --}}
+                @elseif ($tutor?->gender == \App\Enums\Gender::Female->value)
+                    @if ($tutor->is_present == 1)
+                        <p style="position: absolute; padding-left: 30.4rem; padding-top: {{ 33.5 + $upOffset }}rem">X
+                        </p>
+                        <p
+                            style="position: absolute; padding-left: 62rem; padding-top: {{ 33.5 + $upOffset }}rem; white-space: nowrap; ">
+                            {{ $tutor->salary }}
+                        </p>
+
+                        @if ($tutor->occupation == \App\Enums\Occupation::PrivateEmployee->value)
+                            <p
+                                style="position: absolute; padding-left: 4.5rem; padding-top: {{ 37.3 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Artisan->value)
+                            <p style="position: absolute; padding-left: 4.5rem; padding-top: {{ 39 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Farmer->value)
+                            <p
+                                style="position: absolute; padding-left: 4.5rem; padding-top: {{ 40.7 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::AnimalKeeper->value)
+                            <p
+                                style="position: absolute; padding-left: 4.5rem; padding-top: {{ 42.4 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Cook->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 37.3 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Carpenter->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 39 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Builder->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 40.7 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::DayLaborer->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 42.4 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Mechanic->value)
+                            <p
+                                style="position: absolute; padding-left: 32.5rem; padding-top: {{ 37.3 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Salesman->value)
+                            <p
+                                style="position: absolute; padding-left: 32.5rem; padding-top: {{ 39 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::PaidHouseholdWork->value)
+                            <p
+                                style="position: absolute; padding-left: 32.5rem; padding-top: {{ 40.7 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::UnpaidHouseholdWork->value)
+                            <p
+                                style="position: absolute; padding-left: 32.5rem; padding-top: {{ 42.7 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Unknown->value)
+                            <p
+                                style="position: absolute; padding-left: 53.2rem; padding-top: {{ 37.3 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->occupation == \App\Enums\Occupation::Other->value)
+                            <p
+                                style="position: absolute; padding-left: 53.2rem; padding-top: {{ 39 + $upOffset }}rem">
+                                X</p>
+                            <p style="position: absolute; padding-left: 57rem; padding-top: {{ 39 + $upOffset }}rem">
+                                {{ $tutor->specific_occupation }}
+                            </p>
+                        @endif
+
+                        @php
+                            $upOffset += 25.6;
+                        @endphp
+                    @elseif ($tutor->is_present == 0)
+                        <p style="position: absolute; padding-left: 36.5rem; padding-top: {{ 33.5 + $upOffset }}rem">
+                            X
+                        </p>
+
+                        @if ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Divorced->value)
+                            <p
+                                style="position: absolute; padding-left: 4.5rem; padding-top: {{ 46 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Separated->value)
+                            <p
+                                style="position: absolute; padding-left: 20.1rem; padding-top: {{ 46 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::LivesElsewhere->value)
+                            <p
+                                style="position: absolute; padding-left: 36.6rem; padding-top: {{ 46 + $upOffset }}rem">
+                                X</p>
+                        @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Dead->value)
+                            @php
+                                $date = $tutor->deathdate->format('d/m/y');
+                            @endphp
+
+                            <p style="position: absolute; padding-left: 57.3rem; padding-top: 45.9rem">
+                                {{ $date[0] }}</p>
+                            <p style="position: absolute; padding-left: 59rem; padding-top: 45.9rem">
+                                {{ $date[1] }}</p>
+                            <p style="position: absolute; padding-left: 61rem; padding-top: 45.9rem">
+                                {{ $date[3] }}</p>
+                            <p style="position: absolute; padding-left: 62.7rem; padding-top: 45.9rem">
+                                {{ $date[4] }}</p>
+                            <p style="position: absolute; padding-left: 64.9rem; padding-top: 45.9rem">
+                                {{ $date[6] }}</p>
+                            <p style="position: absolute; padding-left: 66.4rem; padding-top: 45.9rem">
+                                {{ $date[7] }}</p>
+                        @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Other->value)
+                            <p
+                                style="position: absolute; padding-left: 7.5rem; padding-top: {{ 48 + $upOffset }}rem">
+                                {{ $tutor->specific_reason }}
+                            </p>
+                        @endif
+                    @endif
                 @endif
 
-                @if ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Divorced->value)
-                    <p style="position: absolute; padding-left: 4.5rem; padding-top: {{ 20.1 + $upOffset }}rem">X</p>
-                @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Separated->value)
-                    <p style="position: absolute; padding-left: 20.1rem; padding-top: {{ 20.1 + $upOffset }}rem">X</p>
-                @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::LivesElsewhere->value)
-                    <p style="position: absolute; padding-left: 36.6rem; padding-top: {{ 20.1 + $upOffset }}rem">X</p>
-                @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Dead->value)
-                    <p style="position: absolute; padding-left: 60rem; padding-top: {{ 20.1 + $upOffset }}rem">FECHA
-                    </p>
-                @elseif ($tutor->reason_not_present == \App\Enums\ReasonsIsNotPresent::Other->value)
-                    <p style="position: absolute; padding-left: 7.5rem; padding-top: {{ 22.3 + $upOffset }}rem">
 
-                        {{ $tutor->specific_reason }}
-                    </p>
-                @endif
 
-                <p
-                    style="position: absolute; padding-left: 62rem; padding-top: {{ 7.9 + $upOffset }}rem; white-space: nowrap; ">
-                    {{ $tutor->salary }}
-                </p>
 
-                @if ($tutor->occupation == \App\Enums\Occupation::PrivateEmployee->value)
-                    <p style="position: absolute; padding-left: 4.5rem; padding-top: {{ 11.6 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::Artisan->value)
-                    <p style="position: absolute; padding-left: 4.5rem; padding-top: {{ 13.3 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::Farmer->value)
-                    <p style="position: absolute; padding-left: 4.5rem; padding-top: {{ 15 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::AnimalKeeper->value)
-                    <p style="position: absolute; padding-left: 4.5rem; padding-top: {{ 16.7 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::Cook->value)
-                    <p style="position: absolute; padding-left: 20.1rem; padding-top: {{ 11.6 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::Carpenter->value)
-                    <p style="position: absolute; padding-left: 20.1rem; padding-top: {{ 13.3 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::Builder->value)
-                    <p style="position: absolute; padding-left: 20.1rem; padding-top: {{ 15 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::DayLaborer->value)
-                    <p style="position: absolute; padding-left: 20.1rem; padding-top: {{ 16.7 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::Mechanic->value)
-                    <p style="position: absolute; padding-left: 32.5rem; padding-top: {{ 11.6 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::Salesman->value)
-                    <p style="position: absolute; padding-left: 32.5rem; padding-top: {{ 13.3 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::PaidHouseholdWork->value)
-                    <p style="position: absolute; padding-left: 32.5rem; padding-top: {{ 15 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::UnpaidHouseholdWork->value)
-                    <p style="position: absolute; padding-left: 32.5rem; padding-top: {{ 16.7 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::Unknown->value)
-                    <p style="position: absolute; padding-left: 53.2rem; padding-top: {{ 11.6 + $upOffset }}rem">X</p>
-                @elseif ($tutor->occupation == \App\Enums\Occupation::Other->value)
-                    <p style="position: absolute; padding-left: 53.2rem; padding-top: {{ 13.3 + $upOffset }}rem">X</p>
-                    <p style="position: absolute; padding-left: 57.5rem; padding-top: {{ 13.3 + $upOffset }}rem">
-                        {{ $tutor->specific_occupation }}
-                    </p>
-                @endif
 
-                @php
-                    $upOffset += 25.6;
-                @endphp
+
             @endif
         @endforeach
+
+
+
+
 
 
         @if ($child->family_nucleus->house->property == \App\Enums\HousePropertyTypes::SelfOwned->value)
@@ -905,41 +1218,161 @@
             @endphp
         @endforeach
 
+
+        <p style="position: absolute; padding-left: 30rem; padding-top: 32.8rem; white-space: nowrap;">
+            {{ $child->manager->name }}
+        </p>
+
+
+
+        @php
+            $date = $child->created_at->format('d/m/y');
+        @endphp
+
+
+        <p style="position: absolute; padding-left: 30.4rem; padding-top: 34.9rem">{{ $date[0] }}</p>
+        <p style="position: absolute; padding-left: 32.1rem; padding-top: 34.9rem">{{ $date[1] }}</p>
+        <p style="position: absolute; padding-left: 34.1rem; padding-top: 34.9rem">{{ $date[3] }}</p>
+        <p style="position: absolute; padding-left: 35.8rem; padding-top: 34.9rem">{{ $date[4] }}</p>
+        <p style="position: absolute; padding-left: 37.9rem; padding-top: 34.9rem">{{ $date[6] }}</p>
+        <p style="position: absolute; padding-left: 39.6rem; padding-top: 34.9rem">{{ $date[7] }}</p>
+
+        <img style="position: absolute; padding-left: 58rem; padding-top: 32.5rem; transform: rotate(2deg);"
+            src="{{ $child->manager->getFilamentAvatarUrl() }}" width="20">
+
+
         <p style="position: absolute; padding-left: 23.8rem; padding-top: 57rem; white-space: nowrap;">
             {{ $child->name . ' ' . $child->last_name }}
         </p>
 
-        @php
-            $upOffset = 0;
-        @endphp
+        <p style="position: absolute; padding-left: 55.4rem; padding-top: 57rem; white-space: nowrap;">
+            {{ $child->children_number }}
+        </p>
+
 
         @foreach ($tutors as $tutor)
-            <p
-                style="position: absolute; padding-left: 31rem; padding-top: {{ 59.1 + $upOffset }}rem; white-space: nowrap;">
-                {{ $tutor?->name }}
-            </p>
+            @if ($tutor?->gender == \App\Enums\Gender::Male->value)
+                <p style="position: absolute; padding-left: 29.4rem; padding-top: 59.1rem; white-space: nowrap;">
+                    {{ $tutor?->name }}
+                </p>
 
-            <p style="position: absolute; padding-top: {{ 61.2 + $upOffset }}rem;">
-                @php
-                    $accountNumberDigits = str_split($tutor?->dni);
-                    $leftOffset = 51;
-                @endphp
+                @if ($tutor?->relationship->value == 1)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 61.2rem; white-space: nowrap;">
+                        Padre</p>
+                @elseif ($tutor?->relationship->value == 2)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 61.2rem; white-space: nowrap;">
+                        Abuelo</p>
+                @elseif ($tutor?->relationship->value == 3)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 61.2rem; white-space: nowrap;">
+                        Hermano</p>
+                @elseif ($tutor?->relationship->value == 4)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 61.2rem; white-space: nowrap;">
+                        Tío</p>
+                @elseif ($tutor?->relationship->value == 5)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 61.2rem; white-space: nowrap;">
+                        Primo</p>
+                @elseif ($tutor?->relationship->value == 6)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 61.2rem; white-space: nowrap;">
+                        Padrastro</p>
+                @elseif ($tutor?->relationship->value == 7)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 61.2rem; white-space: nowrap;">
+                        Hermanastro</p>
+                @elseif ($tutor?->relationship->value == 0)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 61.2rem; white-space: nowrap;">
+                        Otro</p>
+                @endif
 
-                @foreach ($accountNumberDigits as $digit)
-                    <span style="position: absolute; left: {{ $leftOffset }}rem;">
-                        {{ $digit }}
-                    </span>
-
+                <p style="position: absolute; padding-top: 61.2rem;">
                     @php
-                        $leftOffset += 1.71;
+                        $accountNumberDigits = str_split($tutor?->dni);
+                        $leftOffset = 51;
                     @endphp
-                @endforeach
-            </p>
 
-            @php
-                $upOffset = 4.1;
-            @endphp
+                    @foreach ($accountNumberDigits as $digit)
+                        <span style="position: absolute; left: {{ $leftOffset }}rem;">
+                            {{ $digit }}
+                        </span>
+
+                        @php
+                            $leftOffset += 1.71;
+                        @endphp
+                    @endforeach
+                </p>
+            @elseif ($tutor?->gender == \App\Enums\Gender::Female->value)
+                <p style="position: absolute; padding-left: 31rem; padding-top: 63.3rem; white-space: nowrap;">
+                    {{ $tutor?->name }}
+                </p>
+
+                @if ($tutor?->relationship->value == 1)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 65.3rem; white-space: nowrap;">
+                        Madre</p>
+                @elseif ($tutor?->relationship->value == 2)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 65.3rem; white-space: nowrap;">
+                        Abuela</p>
+                @elseif ($tutor?->relationship->value == 3)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 65.3rem; white-space: nowrap;">
+                        Hermana</p>
+                @elseif ($tutor?->relationship->value == 4)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 65.3rem; white-space: nowrap;">
+                        Tía</p>
+                @elseif ($tutor?->relationship->value == 5)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 65.3rem; white-space: nowrap;">
+                        Prima</p>
+                @elseif ($tutor?->relationship->value == 6)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 65.3rem; white-space: nowrap;">
+                        Madrastra</p>
+                @elseif ($tutor?->relationship->value == 7)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 65.3rem; white-space: nowrap;">
+                        Hermanastra</p>
+                @elseif ($tutor?->relationship->value == 0)
+                    <p style="position: absolute; padding-left: 10.7rem; padding-top: 65.3rem; white-space: nowrap;">
+                        Otra</p>
+                @endif
+
+                <p style="position: absolute; padding-top: 65.3rem;">
+                    @php
+                        $accountNumberDigits = str_split($tutor?->dni);
+                        $leftOffset = 51;
+                    @endphp
+
+                    @foreach ($accountNumberDigits as $digit)
+                        <span style="position: absolute; left: {{ $leftOffset }}rem;">
+                            {{ $digit }}
+                        </span>
+
+                        @php
+                            $leftOffset += 1.71;
+                        @endphp
+                    @endforeach
+                </p>
+
+
+                {{-- PARA GENERO: OTRO --}}
+                {{-- @elseif ($tutor?->gender == \App\Enums\Gender::Other->value)
+                <p
+                    style="position: absolute; padding-left: 31rem; padding-top: 59.1rem; white-space: nowrap;">
+                    {{ $tutor?->name }}
+                </p>
+
+                <p style="position: absolute; padding-top: {{ 61.2 + $upOffset }}rem;">
+                    @php
+                        $accountNumberDigits = str_split($tutor?->dni);
+                        $leftOffset = 51;
+                    @endphp
+
+                    @foreach ($accountNumberDigits as $digit)
+                        <span style="position: absolute; left: {{ $leftOffset }}rem;">
+                            {{ $digit }}
+                        </span>
+
+                        @php
+                            $leftOffset += 1.71;
+                        @endphp
+                    @endforeach
+                </p> --}}
+            @endif
         @endforeach
+
 
         <img style="z-index: -1; position: relative" src="{{ public_path('/images/sheet/4.jpg') }}" height="1120">
     </div>
